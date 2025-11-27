@@ -1,0 +1,52 @@
+package vn.datn.social.service;
+
+import vn.datn.social.constant.ApiResponseCode;
+import vn.datn.social.dto.request.LoginUserRequestDTO;
+import vn.datn.social.dto.response.AuthResponseDTO;
+import vn.datn.social.dto.response.TokenPairResponseDTO;
+import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import vn.datn.social.entity.User;
+import vn.datn.social.exception.BusinessException;
+import vn.datn.social.repository.UserRepository;
+import vn.datn.social.security.jwt.TokenProvider;
+
+import java.text.ParseException;
+import java.time.Instant;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class AuthService {
+    UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
+    TokenProvider tokenProvider;
+    UserService userService;
+
+    public AuthResponseDTO generateToken(LoginUserRequestDTO loginUserRequestDTO) {
+        User user = userRepository.findByEmail(loginUserRequestDTO.getEmail())
+                .orElseThrow(() -> new BusinessException(ApiResponseCode.BAD_REQUEST, "Tài khoản chưa được đăng ký"));
+        if (!passwordEncoder.matches(loginUserRequestDTO.getPassword(), user.getPassword())) {
+            throw new BusinessException(ApiResponseCode.BAD_REQUEST, "Mật khẩu không hợp lệ");
+        }
+        TokenPairResponseDTO tokenPair = tokenProvider.createTokenPair(user);
+        Long expirationTime = tokenProvider.getRefreshTokenValidity();
+        return buildAuthResponseDTO(user, expirationTime, tokenPair);
+    }
+
+    private AuthResponseDTO buildAuthResponseDTO(User user, Long expirationTime, TokenPairResponseDTO tokenPair) {
+        return AuthResponseDTO.builder()
+                .tokenType("Bearer")
+                .expiresIn(expirationTime)
+                .user(userService.convertToUserResponseDTO(user))
+                .accessToken(tokenPair.getToken())
+                .refreshToken(tokenPair.getRefreshToken())
+                .created(Instant.now().getEpochSecond())
+                .build();
+    }
+}

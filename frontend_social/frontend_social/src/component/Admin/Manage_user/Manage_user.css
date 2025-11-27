@@ -1,0 +1,227 @@
+/* ==================== LAYOUT CHUNG ==================== */
+.main {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+/* ==================== TRANG QUẢN LÝ NGƯỜI DÙNG ==================== */
+.manage-user-page {
+    flex: 1;
+    margin-left: 280px;
+    /* = chiều rộng sidebar */
+    padding: 40px 50px;
+    background-color: #f1f5f9;
+    min-height: 100vh;
+}
+
+/* Tiêu đề đẹp hơn */
+.manage-user-page h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 32px;
+    text-align: center;
+    position: relative;
+}
+
+.manage-user-page h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 5px;
+    background: linear-gradient(90deg, #3b82f6, #6366f1);
+    border-radius: 10px;
+}
+
+/* Thanh tìm kiếm – đẹp hơn hẳn */
+.search-box {
+    width: 100%;
+    max-width: 660px;
+    margin: 0 auto 36px;
+    display: block;
+    padding: 16px 24px;
+    font-size: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    background-color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.search-box:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+    transform: translateY(-2px);
+}
+
+/* Danh sách người dùng – card đẹp, nhẹ nhàng */
+.user-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.user-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.35s ease;
+}
+
+.user-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 35px rgba(59, 130, 246, 0.18);
+    border-color: #93c5fd;
+}
+
+.user-info strong {
+    font-size: 19px;
+    font-weight: 700;
+    color: #1e293b;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.user-info span {
+    font-size: 15px;
+    color: #64748b;
+}
+
+/* Badge – đẹp hơn, hiện đại hơn */
+.user-status {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.admin {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge.user {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge.inactive {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+/* Phân trang – đẹp, gọn, chuyên nghiệp */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.pagination button {
+    padding: 12px 28px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+}
+
+.pagination button:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+}
+
+.pagination button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.pagination span {
+    background: white;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading / Empty / Error – sạch sẽ */
+.loading,
+.empty,
+.error-msg {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 19px;
+    font-weight: 600;
+    color: #64748b;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    margin: 40px auto;
+    max-width: 600px;
+}
+
+.empty {
+    color: #16a34a;
+    border: 2px dashed #86efac;
+}
+
+.error-msg {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+/* Responsive – vẫn đẹp trên mọi thiết bị */
+@media (max-width: 992px) {
+    .manage-user-page {
+        margin-left: 80px;
+        padding: 30px 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .manage-user-page {
+        margin-left: 0;
+        padding: 20px 15px;
+    }
+
+    .user-list {
+        grid-template-columns: 1fr;
+    }
+
+    .search-box {
+        font-size: 16px;
+    }
+}

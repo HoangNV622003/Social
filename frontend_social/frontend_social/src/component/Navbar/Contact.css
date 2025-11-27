@@ -1,0 +1,45 @@
+/* Container for the contact page */
+.contact-container {
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Black text */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Title styling */
+.contact-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Content styling */
+.contact-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 600px;
+    text-align: left;
+}
+
+/* List styling */
+.contact-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.contact-list li {
+    margin-bottom: 0.5rem;
+}
+
+/* Footer text styling */
+.contact-footer {
+    font-style: italic;
+    margin-top: 2rem;
+    text-align: center;
+}

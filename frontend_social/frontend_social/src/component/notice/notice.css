@@ -1,0 +1,47 @@
+/* notification.css */
+
+/* CSS cho thông báo */
+.notification {
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #00285A; /* Màu nền */
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+
+    z-index: 1000;
+    font-family: Arial, sans-serif;
+    transition: opacity 1s ease-out; /* Hiệu ứng mờ dần */
+    opacity: 1;
+}
+
+/* Nút đóng */
+.notification .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    margin-left: 16px;
+    cursor: pointer;
+}
+
+/* Ẩn thông báo */
+.hidden {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+/* Hiển thị thông báo */
+.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.fade-out {
+    opacity: 0; /* Mờ dần xuống 0 */
+}

@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: social
+  datasource:
+    url: jdbc:mysql://localhost:3306/social
+    username: root
+    password: root
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 500
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  servlet:
+    multipart:
+      max-request-size: 50MB
+      max-file-size: 50MB
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    enabled: true
+  #  kafka:
+  #    bootstrap-servers: localhost:9094
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: phucnek169@gmail.com
+    password: ikaq erop kmpa reey
+    properties:
+      mail:
+        debug: false
+        mine:
+          charset: utf-8
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+
+server:
+  port: 8080
+  servlet:
+    context-path: /social
+jhipster:
+  security:
+    authentication:
+      jwt:
+        base64-secret: NTQxNjIwMjZmNzU1MmNmMzgwNzllMDYwMDUzNmRkMjQ5NTFmOTk5YTdkODIyYjY1M2Q1ZmJjYzBmYzdiOTVlMTE4MjgwNzEwODdiODUxM2FhNDE1ZTA2OTQ1MmZmNGE4NmNkOTE2Y2E0MTBjN2NmODM0OTdhNDA5Mzc0MjE4Yzg=
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
+    content-security-policy: "default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
