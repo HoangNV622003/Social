@@ -208,16 +208,16 @@ public class TokenProvider {
         return claim != null ? claim.toString() : null;
     }
 
-    public Authentication getAuthentication(Jwt jwtToken) {
+    public Authentication getAuthentication(String token) {
         try {
-            SignedJWT jwt = SignedJWT.parse(jwtToken.getTokenValue());
+            SignedJWT jwt = SignedJWT.parse(token);
             String authStr = getClaim(jwt, AUTHORITIES_KEY);
             Collection<GrantedAuthority> authorities = parseAuthorities(authStr);
             Long userId = Long.valueOf(jwt.getJWTClaimsSet().getSubject());
             String username = getClaim(jwt, USERNAME_KEY);
 
             IBEUser principal = new IBEUser(userId, username, "", authorities);
-            AuthenticationToken auth = new AuthenticationToken(principal, "", authorities, jwtToken.getTokenValue());
+            AuthenticationToken auth = new AuthenticationToken(principal, "", authorities, token);
             auth.setDetails("pre_auth");
             auth.setUserId(userId);
             auth.setRoles(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));

@@ -128,7 +128,7 @@ public class PostService {
     public Post findById(Long postId) {
         // Sử dụng Optional để xử lý trường hợp không tìm thấy Post
         return postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found with id " + postId));
+                .orElseThrow(() -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Post not found with id " + postId));
     }
 
     public void deleteCourse(Long id) {

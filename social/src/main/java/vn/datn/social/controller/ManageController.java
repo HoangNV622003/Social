@@ -18,7 +18,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @RequestMapping("/api/manage")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ManageRestController {
+public class ManageController {
 
     UserService userService;
 

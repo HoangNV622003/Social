@@ -4,76 +4,101 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import vn.datn.social.dto.response.UserWithLastMessageDTO;
+import vn.datn.social.constant.ApiResponseCode;
+import vn.datn.social.dto.request.CreateChatRequestDTO;
+import vn.datn.social.dto.response.ChatDetailResponseDTO;
+import vn.datn.social.dto.response.ChatProjection;
+import vn.datn.social.dto.response.ChatResponseDTO;
+import vn.datn.social.dto.response.UserResponseDTO;
 import vn.datn.social.entity.Chat;
-import vn.datn.social.entity.Message;
 import vn.datn.social.entity.User;
+import vn.datn.social.exception.BusinessException;
 import vn.datn.social.repository.ChatRepository;
-import vn.datn.social.repository.ChatUserRepository;
-import vn.datn.social.repository.UserRepository;
+import vn.datn.social.repository.MessageRepository;
+import vn.datn.social.utils.BlobUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatService {
 
-    private ChatRepository chatRepository;
+    ChatRepository chatRepository;
+    MessageRepository messageRepository;
+    UserService userService;
+    MessageService messageService;
 
-    private UserRepository userRepository;
-
-    private ChatUserRepository chatUserRepository;
-
-    // Fetch the latest message for the given chatId
-    public Optional<Message> findLastMessageByChatId(Long chatId) {
-        List<Message> messages = chatRepository.findLastMessageByChatId(chatId, PageRequest.of(0, 1));
-        return messages.isEmpty() ? Optional.empty() : Optional.of(messages.get(0));
+    public Page<ChatResponseDTO> findAll(Long currentUserId, Pageable pageable) {
+        return chatRepository.findAllByUserId(currentUserId, pageable).map(this::convertToChatResponseDTO);
     }
 
-    // Phương thức lấy người dùng và tin nhắn cuối cùng
-    public List<UserWithLastMessageDTO> getUsersWithMessages(String username) {
-        List<Chat> chats = chatRepository.findByParticipantsUsername(username);
-        List<UserWithLastMessageDTO> userWithMessages = new ArrayList<>();
+    public ChatDetailResponseDTO getChatDetails(Long chatId, Long currentUserId,Pageable pageable) {
+        User receiver = userService.findReceiverByChatIdAndCurrentUserId(chatId, currentUserId);
+        return ChatDetailResponseDTO.builder()
+                .id(chatId)
+                .receiver(userService.convertToUserResponseDTO(receiver))
+                .messages(messageService.findAllByChatId(chatId, pageable))
+                .build();
+    }
 
-        for (Chat chat : chats) {
-            for (User participant : chat.getParticipants()) {
-                if (!participant.getUsername().equals(username)) {
-                    // Get the last message in the chat
-                    Optional<Message> lastMessageOpt = findLastMessageByChatId(chat.getId());
-                    if (lastMessageOpt.isPresent()) {
-                        Message lastMessage = lastMessageOpt.get();
-                        // Create DTO with userId and other information
-                        UserWithLastMessageDTO dto = UserWithLastMessageDTO.builder()
-                                .username(participant.getUsername())
-                                .chatId(chat.getId())
-                                .lastMessageContent(lastMessage.getContent())
-                                .lastMessageTimestamp(lastMessage.getTimestamp())
-                                .build();
-                        userWithMessages.add(dto);
-                    }
-                }
-            }
-        }
-        return userWithMessages;
+    public ChatResponseDTO createChat(Long currentUserId, CreateChatRequestDTO requestDTO) {
+        Chat chat = chatRepository.findByTwoUserIds(currentUserId, requestDTO.receiverId())
+                .orElseGet(() -> saveChat(currentUserId, requestDTO));
+        User user = userService.findById(requestDTO.receiverId());
+        UserResponseDTO userResponseDTO = UserResponseDTO.builder()
+                .id(user.getId())
+                .image(user.getImage() != null ? BlobUtil.blobToBase64(user.getImage()) : null)
+                .username(user.getUsername())
+                .build();
+        return ChatResponseDTO.builder()
+                .chatId(chat.getId())
+                .lastMessage(chat.getLastMessage())
+                .lastMessageDate(null)
+                .receiver(userResponseDTO)
+                .build();
+    }
+
+    public Chat saveChat(Long currentUserId, CreateChatRequestDTO requestDTO) {
+        Chat chat = Chat.builder()
+                .user1Id(requestDTO.receiverId())
+                .user2Id(currentUserId)
+                .build();
+        return chatRepository.save(chat);
+    }
+
+    public boolean existsChatById(Long chatId) {
+        return chatRepository.existsById(chatId);
+    }
+
+    public ChatResponseDTO convertToChatResponseDTO(ChatProjection projection) {
+        UserResponseDTO receiverDTO = UserResponseDTO.builder()
+                .id(projection.getReceiverId())
+                .username(projection.getReceiverName())
+                .image(projection.getReceiverImage() != null ? BlobUtil.blobToBase64(projection.getReceiverImage()) : null)
+                .build();
+
+        return ChatResponseDTO.builder()
+                .chatId(projection.getId())
+                .lastMessage(projection.getLastMessage())
+                .lastMessageDate(projection.getLastMessageDate() != null
+                        ? projection.getLastMessageDate().toEpochMilli()
+                        : null)
+                .receiver(receiverDTO)
+                .build();
     }
 
     public Chat findById(Long chatId) {
-        return chatRepository.findById(chatId).orElseThrow(() -> new RuntimeException("Chat not found"));
+        return chatRepository.findById(chatId).orElseThrow(
+                () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy đoạn chat"));
     }
 
-    @Transactional
     public void deleteChat(Long chatId) {
-        // Xóa tất cả các bản ghi liên kết trong bảng chat_user
-
-        chatUserRepository.deleteByChatId(chatId);
-
-        // Xóa bản ghi trong bảng chat
         chatRepository.deleteById(chatId);
+        messageRepository.deleteAllByChatId(chatId);
     }
 }

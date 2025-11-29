@@ -3,8 +3,8 @@ spring:
     name: social
   datasource:
     url: jdbc:mysql://localhost:3306/social
-    username: root
-    password: root
+    username: root  #sửa username
+    password: root #sửa mật khẩu
   jpa:
     properties:
       hibernate:

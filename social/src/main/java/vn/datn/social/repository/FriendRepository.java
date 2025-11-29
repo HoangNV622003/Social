@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import vn.datn.social.dto.response.FriendSummaryProjection;
 import vn.datn.social.entity.FriendShip;
 import vn.datn.social.entity.User;
 
@@ -18,10 +19,21 @@ public interface FriendRepository extends JpaRepository<FriendShip, Long> {
 //    List<User> findFriendsByUsername(@Param("username") String username);
     // Truy vấn để lấy danh sách bạn bè theo cả hai chiều
     @Query("SELECT f.friend FROM FriendShip f WHERE f.user.username = :username " +
-            "UNION " +
-            "SELECT f.user FROM FriendShip f WHERE f.friend.username = :username")
+           "UNION " +
+           "SELECT f.user FROM FriendShip f WHERE f.friend.username = :username")
     List<User> findFriendsByUsername(@Param("username") String username);
 
+    @Query("""
+            SELECT
+                u.id AS id,
+                u.username AS username,
+                u.image as image
+            FROM User u INNER JOIN FriendShip f ON f.user.id=u.id WHERE u.id=:userId AND
+                        (:keyword IS NULL OR :keyword = '' OR
+                        LOWER(u.username) LIKE LOWER(CONCAT('%',:keyword,'%')) OR
+                        LOWER(u.email) LIKE LOWER(CONCAT('%',:keyword,'%')))
+            """)
+    List<FriendSummaryProjection> searchMyFriends(@Param("keyword") String keyword,@Param("userId")Long userId);
 
     // Kiểm tra mối quan hệ bạn bè giữa hai người
     boolean existsByUserAndFriend(User user, User friend);
@@ -35,12 +47,10 @@ public interface FriendRepository extends JpaRepository<FriendShip, Long> {
     FriendShip findByUserAndFriend(User user, User friend);
 
     @Query("SELECT f FROM FriendShip f " +
-            "WHERE (f.user.username = :currentUsername AND f.friend.username = :otherUsername) " +
-            "OR (f.user.username = :otherUsername AND f.friend.username = :currentUsername)")
+           "WHERE (f.user.username = :currentUsername AND f.friend.username = :otherUsername) " +
+           "OR (f.user.username = :otherUsername AND f.friend.username = :currentUsername)")
     Optional<FriendShip> findFriendShipBetweenUsers(@Param("currentUsername") String currentUsername,
                                                     @Param("otherUsername") String otherUsername);
-
-
 }
 
 

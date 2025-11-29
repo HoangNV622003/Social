@@ -3,18 +3,16 @@ package vn.datn.social.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import vn.datn.social.constant.NotificationType;
+import vn.datn.social.dto.response.FriendSummaryResponseDTO;
 import vn.datn.social.entity.FriendShip;
 import vn.datn.social.entity.Notification;
 import vn.datn.social.entity.User;
 import vn.datn.social.repository.FriendRepository;
 import vn.datn.social.repository.UserRepository;
 import vn.datn.social.security.CurrentUserId;
-import vn.datn.social.security.IBEUser;
 import vn.datn.social.service.FriendService;
 import vn.datn.social.service.NotificationService;
 import vn.datn.social.service.SearchService;
@@ -23,6 +21,7 @@ import vn.datn.social.service.UserService;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/api/friend")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class FriendShipRestController {
+public class FriendShipController {
     SearchService service;
 
     UserService userService;
@@ -130,5 +129,10 @@ public class FriendShipRestController {
             response.put("error", "An error occurred while canceling the friendship.");
             return ResponseEntity.status(500).body(response);
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FriendSummaryResponseDTO>> searchMyFriends(@RequestParam(required = false, name = "keyword") String keyword, @CurrentUserId Long currentUserId) {
+        return ResponseEntity.ok(friendShipService.searchFriends(keyword, currentUserId));
     }
 }

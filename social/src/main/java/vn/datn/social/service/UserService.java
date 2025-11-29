@@ -12,13 +12,11 @@ import vn.datn.social.constant.ApiResponseCode;
 import vn.datn.social.dto.request.ChangePasswordRequest;
 import vn.datn.social.dto.request.CreateUserRequestDTO;
 import vn.datn.social.dto.request.Edit_pf_Request;
-import vn.datn.social.dto.response.Edit_pf;
-import vn.datn.social.dto.response.UserDto;
-import vn.datn.social.dto.response.UserManageDto;
-import vn.datn.social.dto.response.UserResponseDTO;
+import vn.datn.social.dto.response.*;
 import vn.datn.social.entity.User;
 import vn.datn.social.exception.BusinessException;
 import vn.datn.social.repository.UserRepository;
+import vn.datn.social.utils.BlobUtil;
 
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -45,6 +43,11 @@ public class UserService {
         }
 
         return userRepository.save(convertToUser(requestDTO));
+    }
+
+    public User findReceiverByChatIdAndCurrentUserId(Long chatId, Long currentUserId) {
+        return userRepository.findOtherUserInChat(chatId, currentUserId)
+                .orElseThrow(() -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND));
     }
 
     private User convertToUser(CreateUserRequestDTO request) {
@@ -138,7 +141,7 @@ public class UserService {
 
         // Cập nhật email và địa chỉ nếu có
         if (StringUtils.isNotBlank(request.email())) {
-            if(userRepository.existsByEmailIgnoreCaseAndIdNot(request.email(), userId)) {
+            if (userRepository.existsByEmailIgnoreCaseAndIdNot(request.email(), userId)) {
                 throw new BusinessException(ApiResponseCode.BAD_REQUEST, "Email already exists");
             }
             currentUser.setEmail(request.email());

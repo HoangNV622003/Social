@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
-public class ReportedPostController {
+public class ReportedController {
 
     private final ReportedPostService reportedPostService;
     private final PostService postService;

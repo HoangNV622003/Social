@@ -19,7 +19,7 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
     @Override
     public AbstractAuthenticationToken convert(@Nonnull Jwt jwt) {
         try{
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+            Authentication authentication = tokenProvider.getAuthentication(jwt.getTokenValue());
             if(!(authentication instanceof AbstractAuthenticationToken)){
                 logger.error("Authentication is not of type AbstractAuthenticationToken");
                 throw new IllegalArgumentException("Authentication is not of type AbstractAuthenticationToken");

@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ProfileRestController {
+public class ProfileController {
 
     UserService userService;
 

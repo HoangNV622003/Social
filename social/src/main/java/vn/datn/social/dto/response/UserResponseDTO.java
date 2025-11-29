@@ -12,4 +12,5 @@ public class UserResponseDTO {
     private String username;
     private String email;
     private boolean isAdmin;
+    private String image;
 }

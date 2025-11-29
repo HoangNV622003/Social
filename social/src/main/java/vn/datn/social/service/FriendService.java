@@ -5,10 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.datn.social.dto.response.FriendDTO;
+import vn.datn.social.dto.response.FriendSummaryProjection;
+import vn.datn.social.dto.response.FriendSummaryResponseDTO;
 import vn.datn.social.entity.FriendShip;
 import vn.datn.social.entity.User;
 import vn.datn.social.repository.FriendRepository;
 import vn.datn.social.repository.UserRepository;
+import vn.datn.social.utils.BlobUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +38,20 @@ public class FriendService {
 
     public void acceptFriend(Long currentUserId, String friendUsername) {
         User user = userService.findByUsername(friendUsername);
+    }
 
+    public List<FriendSummaryResponseDTO> searchFriends(String keyword, Long currentUserId) {
+        return friendRepository.searchMyFriends(keyword, currentUserId).stream()
+                .map(this::convertToFriendSummaryResponse)
+                .toList();
+    }
+
+    private FriendSummaryResponseDTO convertToFriendSummaryResponse(FriendSummaryProjection projection) {
+        return FriendSummaryResponseDTO.builder()
+                .id(projection.getId())
+                .username(projection.getUsername())
+                .image(projection.getImage() != null ? BlobUtil.blobToBase64(projection.getImage()) : null)
+                .build();
     }
 
     public boolean existsBetweenUsers(User currentUser, User user) {
@@ -53,16 +69,14 @@ public class FriendService {
     // Check if a friend request is pending
     public boolean isFriendPending(User user1, User user2) {
         return friendRepository.existsByUserAndFriendAndAccepted(user1, user2, false)
-                || friendRepository.existsByUserAndFriendAndAccepted(user2, user1, false);
+               || friendRepository.existsByUserAndFriendAndAccepted(user2, user1, false);
     }
-
 
     // Check if users are friends (friendship is accepted)
     public boolean isFriendAccepted(User user1, User user2) {
         return friendRepository.existsByUserAndFriendAndAccepted(user1, user2, true)
-                || friendRepository.existsByUserAndFriendAndAccepted(user2, user1, true);
+               || friendRepository.existsByUserAndFriendAndAccepted(user2, user1, true);
     }
-
 
     //    public FriendShip findPendingRequest(User sender, User receiver) {
 //        return friendShipRepository.findByUserAndFriendAndAcceptedFalse(sender, receiver);
@@ -74,6 +88,4 @@ public class FriendService {
     public boolean isCurrentUserFriendRequestReceiver(User sender, User receiver) {
         return friendRepository.existsByUserAndFriendAndAccepted(receiver, sender, false);
     }
-
-
 }

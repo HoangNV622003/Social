@@ -23,7 +23,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotBlank(message = "Username không được để trống")
     @Size(min = 5, message = "Username phải có ít nhất 5 ký tự")

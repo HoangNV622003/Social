@@ -2,35 +2,31 @@ package vn.datn.social.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "chat")
+@Table(name = "chats")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Chat {
+public class Chat extends AbstractAuditingEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "user1_id", nullable = false)
+    private Long user1Id;
+    @Column(name = "user2_id", nullable = false)
+    private Long user2Id;
 
-    @Column(nullable = false)
-    private boolean isGroup;
-
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> messages;
-
-    @ManyToMany
-    @JoinTable(
-            name = "chat_user",
-            joinColumns = @JoinColumn(name = "chat_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> participants;
+    @Column(name = "last_message")
+    private String lastMessage;
 }
