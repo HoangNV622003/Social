@@ -10,7 +10,10 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -40,7 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:3000")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
@@ -54,14 +57,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     if (tokenList == null || tokenList.isEmpty()) {
-                        return null; // Từ chối kết nối
+                        throw new IllegalArgumentException("Missing Authorization header");
                     }
                     String token = tokenList.get(0).replace("Bearer ", "");
                     try {
                         Authentication auth = tokenProvider.getAuthentication(token);
                         accessor.setUser(auth);
+                        SecurityContext context=SecurityContextHolder.createEmptyContext();
+                        context.setAuthentication(auth);
+                        accessor.setHeader("simpSecurityContext", context);
                     } catch (Exception e) {
-                        return null; // Token sai → từ chối
+                        accessor.setUser(null);
+                        throw new IllegalArgumentException("Invalid token");
                     }
                 }
                 return message;
@@ -69,3 +76,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         });
     }
 }
+

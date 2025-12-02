@@ -21,6 +21,8 @@ import Contact from './component/Navbar/Contact';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import FullScreenLoading from './component/Loading/FullScreenLoading';
+import { WebSocketProvider } from './context/WebSocketContext';
+import ChatPage from './component/ChatPage/ChatPage';
 function AppContent() {
   const { loading } = useAuth(); // Lấy trạng thái loading từ AuthContext
 
@@ -35,7 +37,7 @@ function AppContent() {
             <Route path="/" element={<Login />} /> {/* This will display the Login page at the root URL */}
             <Route path="/signup" element={<SignUp />} />
             <Route path="/Blockchat" element={<BlockChat />} />
-            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages" element={<ChatPage />} />
             <Route path="/search_page" element={<SearchPage />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/noti" element={<Noti />} />
@@ -63,7 +65,9 @@ function App() {
   return (
 
     <AuthProvider>
-      <AppContent />
+      <WebSocketProvider>
+        <AppContent />
+      </WebSocketProvider>
     </AuthProvider>
   );
 }

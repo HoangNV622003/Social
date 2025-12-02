@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.sql.Blob;
 
 @Entity
 @Table(name = "chat_rooms")
@@ -23,7 +24,16 @@ public class ChatRoom extends AbstractAuditingEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "name",nullable = false)
+    @Column(name = "last_message_id")
+    Long lastMessageId;
+
+    @Column(name = "name")
     String name;
+
+    @Lob
+    @Column(name = "image")
+    Blob image;
+
+    @Column(name = "type", nullable = false)
     Integer type;
 }

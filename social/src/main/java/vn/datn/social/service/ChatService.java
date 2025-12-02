@@ -9,17 +9,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.datn.social.constant.ApiResponseCode;
+import vn.datn.social.constant.ChatTypeConstants;
+import vn.datn.social.dto.request.CreateChatGroupRequestDTO;
 import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.response.ChatDetailResponseDTO;
 import vn.datn.social.dto.response.ChatProjection;
 import vn.datn.social.dto.response.ChatResponseDTO;
 import vn.datn.social.dto.response.UserResponseDTO;
-import vn.datn.social.entity.Chat;
+import vn.datn.social.entity.ChatRoom;
 import vn.datn.social.entity.User;
 import vn.datn.social.exception.BusinessException;
-import vn.datn.social.repository.ChatRepository;
+import vn.datn.social.repository.ChatMemberRepository;
+import vn.datn.social.repository.ChatRoomRepository;
 import vn.datn.social.repository.MessageRepository;
+import vn.datn.social.repository.UserRepository;
 import vn.datn.social.utils.BlobUtil;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,77 +36,93 @@ import vn.datn.social.utils.BlobUtil;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatService {
 
-    ChatRepository chatRepository;
+    ChatRoomRepository chatRoomRepository;
     MessageRepository messageRepository;
     UserService userService;
     MessageService messageService;
+    private final ChatMemberRepository chatMemberRepository;
+    private final ChatMemberService chatMemberService;
+    private final UserRepository userRepository;
 
     public Page<ChatResponseDTO> findAll(Long currentUserId, Pageable pageable) {
-        return chatRepository.findAllByUserId(currentUserId, pageable).map(this::convertToChatResponseDTO);
+        return chatRoomRepository.findAllByUserId(currentUserId, pageable).map(this::convertToChatResponseDTO);
     }
 
-    public ChatDetailResponseDTO getChatDetails(Long chatId, Long currentUserId,Pageable pageable) {
-        User receiver = userService.findReceiverByChatIdAndCurrentUserId(chatId, currentUserId);
+    public ChatDetailResponseDTO getChatDetails(Long chatId, Pageable pageable) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatId).orElseThrow(
+                () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy đoạn chat"));
+        Set<UserResponseDTO> members = userRepository.findAllByChatRoomId(chatId).stream()
+                .map(userService::convertToUserResponseDTO)
+                .collect(Collectors.toSet());
+
         return ChatDetailResponseDTO.builder()
                 .id(chatId)
-                .receiver(userService.convertToUserResponseDTO(receiver))
+                .members(members)
+                .name(chatRoom.getName())
+                .type(ChatTypeConstants.find(chatRoom.getType()).name())
+                .image(chatRoom.getImage() != null ? BlobUtil.blobToBase64(chatRoom.getImage()) : null)
                 .messages(messageService.findAllByChatId(chatId, pageable))
                 .build();
     }
 
-    public ChatResponseDTO createChat(Long currentUserId, CreateChatRequestDTO requestDTO) {
-        Chat chat = chatRepository.findByTwoUserIds(currentUserId, requestDTO.receiverId())
-                .orElseGet(() -> saveChat(currentUserId, requestDTO));
-        User user = userService.findById(requestDTO.receiverId());
-        UserResponseDTO userResponseDTO = UserResponseDTO.builder()
-                .id(user.getId())
-                .image(user.getImage() != null ? BlobUtil.blobToBase64(user.getImage()) : null)
-                .username(user.getUsername())
+    public ChatDetailResponseDTO createChatPrivate(Long currentUserId, CreateChatRequestDTO requestDTO) {
+        ChatRoom chat = chatRoomRepository.findByTwoUserIds(currentUserId, requestDTO.userId())
+                .orElseGet(() -> saveChatPrivate(currentUserId, requestDTO));
+
+        return getChatDetails(chat.getId(), null);
+    }
+
+    public ChatDetailResponseDTO createChatGroup(Long currentUserId, CreateChatGroupRequestDTO requestDTO) {
+        ChatRoom chatRoom = ChatRoom.builder()
+                .name(requestDTO.groupName())
+                .type(ChatTypeConstants.GROUP.getValue())
                 .build();
-        return ChatResponseDTO.builder()
-                .chatId(chat.getId())
-                .lastMessage(chat.getLastMessage())
-                .lastMessageDate(null)
-                .receiver(userResponseDTO)
+        chatRoomRepository.save(chatRoom);
+        requestDTO.userIds().add(currentUserId);
+        chatMemberService.saveAllChatMembers(chatRoom.getId(), requestDTO.userIds());
+        List<User> users = userRepository.findAllById(requestDTO.userIds());
+        Set<UserResponseDTO> userResponseDTOS = users.stream()
+                .map(userService::convertToUserResponseDTO)
+                .collect(Collectors.toSet());
+        return ChatDetailResponseDTO.builder()
+                .id(chatRoom.getId())
+                .name(chatRoom.getName())
+                .image(chatRoom.getImage() != null ? BlobUtil.blobToBase64(chatRoom.getImage()) : null)
+                .members(userResponseDTOS)
+                .type(ChatTypeConstants.find(chatRoom.getType()).name())
                 .build();
     }
 
-    public Chat saveChat(Long currentUserId, CreateChatRequestDTO requestDTO) {
-        Chat chat = Chat.builder()
-                .user1Id(requestDTO.receiverId())
-                .user2Id(currentUserId)
+    public ChatRoom saveChatPrivate(Long currentUserId, CreateChatRequestDTO requestDTO) {
+        ChatRoom chat = ChatRoom.builder()
+                .type(ChatTypeConstants.PRIVATE.getValue())
                 .build();
-        return chatRepository.save(chat);
-    }
-
-    public boolean existsChatById(Long chatId) {
-        return chatRepository.existsById(chatId);
+        chat = chatRoomRepository.save(chat);
+        chatMemberService.saveAllChatMembers(chat.getId(), List.of(currentUserId, requestDTO.userId()));
+        return chat;
     }
 
     public ChatResponseDTO convertToChatResponseDTO(ChatProjection projection) {
-        UserResponseDTO receiverDTO = UserResponseDTO.builder()
-                .id(projection.getReceiverId())
-                .username(projection.getReceiverName())
-                .image(projection.getReceiverImage() != null ? BlobUtil.blobToBase64(projection.getReceiverImage()) : null)
-                .build();
-
         return ChatResponseDTO.builder()
                 .chatId(projection.getId())
                 .lastMessage(projection.getLastMessage())
                 .lastMessageDate(projection.getLastMessageDate() != null
                         ? projection.getLastMessageDate().toEpochMilli()
                         : null)
-                .receiver(receiverDTO)
+                .name(projection.getName())
+                .image(projection.getImage())
+                .type(ChatTypeConstants.find(projection.getType()).name())
                 .build();
     }
 
-    public Chat findById(Long chatId) {
-        return chatRepository.findById(chatId).orElseThrow(
+    public ChatRoom findById(Long chatId) {
+        return chatRoomRepository.findById(chatId).orElseThrow(
                 () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy đoạn chat"));
     }
 
-    public void deleteChat(Long chatId) {
-        chatRepository.deleteById(chatId);
-        messageRepository.deleteAllByChatId(chatId);
+    public void deleteChat(Long chatRoomId) {
+        chatRoomRepository.deleteById(chatRoomId);
+        chatMemberRepository.deleteAllByRoomId(chatRoomId);
+        messageRepository.deleteAllByRoomId(chatRoomId);
     }
 }

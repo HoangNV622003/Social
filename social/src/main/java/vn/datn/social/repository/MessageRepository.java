@@ -13,13 +13,17 @@ import java.util.List;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    Page<Message> findByChatId(Long chatId, Pageable pageable);
+    @Query("""
+        SELECT m FROM Message m WHERE m.roomId= :roomId ORDER BY m.dateCreated DESC
+    """)
+    Page<Message> findByRoomId(Long roomId,  Pageable pageable);
 
     @Query(value = "SELECT YEAR(timestamp) AS year, MONTH(timestamp) AS month, COUNT(*) AS message_count " +
             "FROM messages " +
             "GROUP BY YEAR(timestamp), MONTH(timestamp) " +
             "ORDER BY year ASC, month ASC", nativeQuery = true)
     List<Object[]> getMessageStatistics();
-    void deleteAllByChatId(Long chatId);
+
+    void deleteAllByRoomId(Long roomId);
 }
 

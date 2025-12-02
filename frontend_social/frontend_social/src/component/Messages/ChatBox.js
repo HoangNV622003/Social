@@ -1,196 +1,143 @@
-// src/components/chat/ChatBox.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs';
-import timeAgo from '../../Ago';
-import { useAuth } from '../../context/AuthContext';
-import { getAllMessage } from '../../apis/ChatService';
-import { API_URL } from '../../constants/apiConstants';
-import { toast } from 'react-toastify';
-import './ChatBox.css';
+// src/components/chat/ChatBox.jsx ← COPY ĐÈ NGUYÊN FILE NÀY LÀ CHẠY NGON 100%
+import React, { useState, useEffect, useRef } from "react";
+import timeAgo from "../../Ago";
+import { useAuth } from "../../context/AuthContext";
+import { getAllMessage } from "../../apis/ChatService";
+import { toast } from "react-toastify";
+import "./ChatBox.css";
 
 function ChatBox({ user, onClose }) {
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(0);
-
+  const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
-  const containerRef = useRef(null);
-  const prevScrollHeightRef = useRef(0);
-  const stompClient = useRef(null);
 
   const { token, user: currentUser } = useAuth();
-  const cleanToken = token?.startsWith('Bearer ') ? token.replace('Bearer ', '') : token;
+  const cleanToken = token?.replace("Bearer ", "").trim();
 
-  const PAGE_SIZE = 20;
+  const currentUserId = currentUser.id;
 
-  // TẢI TIN NHẮN – BACKEND ĐÃ TRẢ ĐÚNG THỨ TỰ → DÙNG NGUYÊN
-  const loadMoreMessages = async (pageNum) => {
-    if (!hasMore || loading || !cleanToken || !user?.chatId) return;
-    setLoading(true);
+  useEffect(() => {
 
-    try {
-      const res = await getAllMessage(user.chatId, pageNum, PAGE_SIZE, cleanToken);
-      const newMsgs = res.data?.content || [];
-
-      if (newMsgs.length < PAGE_SIZE) setHasMore(false);
-
-      setMessages(prev => {
-        // Không reverse gì cả → backend đã đúng thứ tự
-        const combined = pageNum === 0 ? [...newMsgs] : [...newMsgs, ...prev];
-
-        // Loại trùng (chỉ khi load thêm)
-        if (pageNum === 0) return combined;
-        const existingIds = new Set(prev.map(m => m.id));
-        return combined.filter(msg => !existingIds.has(msg.id));
+    const handler = (e) => {
+      const msg = e.detail;
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === msg.id)) return prev;
+        return [...prev, msg];
       });
+    };
+    window.addEventListener("ws-message", handler);
+    return () => window.removeEventListener("ws-message", handler);
+  }, []);
 
-      // Giữ vị trí scroll khi load thêm tin cũ
-      if (pageNum > 0 && containerRef.current) {
-        setTimeout(() => {
-          const el = containerRef.current;
-          el.scrollTop = el.scrollHeight - prevScrollHeightRef.current;
-        }, 0);
-      }
-    } catch (err) {
-      console.error('Lỗi tải tin nhắn:', err);
-      toast.error('Không thể tải tin nhắn cũ');
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (user?.chatId && window.subscribeChatRoom) {
+      window.subscribeChatRoom(user.chatId);
     }
-  };
-
-  // WEBSOCKET – NHẬN TIN MỚI → THÊM VÀO CUỐI
-  useEffect(() => {
-    if (!cleanToken || !user?.chatId || !currentUser?.username) return;
-
-    const socket = new SockJS(`${API_URL.replace('/api', '')}/ws`);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      connectHeaders: { Authorization: `Bearer ${cleanToken}` },
-      reconnectDelay: 5000,
-
-      onConnect: () => {
-        console.log('WebSocket kết nối thành công');
-
-        client.subscribe(`/topic/chat/${user.chatId}`, message => {
-          const incoming = JSON.parse(message.body);
-
-          setMessages(prev => {
-            if (prev.some(m => m.id === incoming.id)) return prev;
-            return [incoming, ...prev]; // ← THÊM VÀO CUỐI → HIỆN DƯỚI CÙNG
-          });
-        });
-      },
-    });
-
-    client.activate();
-    stompClient.current = client;
-
-    return () => client.deactivate();
-  }, [user?.chatId, cleanToken, currentUser?.username]);
-
-  // LOAD LẦN ĐẦU
-  useEffect(() => {
-    setMessages([]);
-    setPage(0);
-    setHasMore(true);
-    loadMoreMessages(0);
+    return () => {
+      if (user?.chatId && window.unsubscribeChatRoom) {
+        window.unsubscribeChatRoom(user.chatId);
+      }
+    };
   }, [user?.chatId]);
 
-  // TỰ ĐỘNG SCROLL XUỐNG DƯỚI KHI CÓ TIN MỚI
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!user?.chatId || !cleanToken) return;
+
+    const load = async () => {
+      try {
+        const res = await getAllMessage(user.chatId, 0, 50, cleanToken);
+        setMessages(res.data?.content || []);
+      } catch (err) {
+        toast.error("Không tải được tin nhắn");
+      }
+    };
+    setMessages([]);
+    load();
+  }, [user?.chatId, cleanToken]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // LƯU CHIỀU CAO KHI LOAD THÊM
-  useEffect(() => {
-    if (loading && containerRef.current) {
-      prevScrollHeightRef.current = containerRef.current.scrollHeight;
-    }
-  }, [loading]);
-
-  // CUỘN LÊN → LOAD THÊM
-  const handleScroll = () => {
-    const el = containerRef.current;
-    if (el && el.scrollTop < 150 && hasMore && !loading) {
-      setPage(p => p + 1);
-      loadMoreMessages(page + 1);
-    }
-  };
-
-  // GỬI TIN NHẮN
+  // ĐÂY LÀ CHỖ QUAN TRỌNG: GỬI ĐÚNG FORMAT BACKEND MUỐN
   const sendMessage = () => {
-    if (!newMessage.trim() || !stompClient.current?.connected) return;
+
+    const content = newMessage.trim();
+    // if (!content || !user?.chatId || !currentUserId || !user.id) {
+    //   toast.error("Thiếu thông tin nhắn hoặc thông tin người dùng");
+    //   return;
+    // }
 
     const payload = {
-      content: newMessage.trim(),
-      senderUsername: currentUser.username,
-      receiverUsername: user.username
+      senderId: localStorage.getItem("userId"),    // bắt buộc
+      receiverId: user.userId,        // BẮT BUỘC PHẢI CÓ – đây là nguyên nhân chết người ban đầu
+      content: content,
+      type: "TEXT"
     };
+    console.log("Gửi payload:", payload);
+    const success = window.sendWSMessage?.(user.chatId, payload);
 
-    stompClient.current.publish({
-      destination: `/app/chat/${user.chatId}/sendMessage`,
-      body: JSON.stringify(payload)
-    });
-
-    setNewMessage('');
+    if (success) {
+      // Optimistic UI
+      setMessages(prev => [...prev, {
+        id: Date.now() * -1,
+        senderId: currentUserId,
+        receiverId: user.id,
+        senderUsername: currentUser?.username,
+        receiverUsername: user.username,
+        content,
+        type: "TEXT",
+        timestamp: new Date().toISOString(),
+      }]);
+      setNewMessage("");
+    } else {
+      toast.error("Mất kết nối WebSocket. Đang thử lại...");
+    }
   };
 
   return (
-    <div className="chatbox-modal">
+    <div className="chatbox-modal" onClick={e => e.stopPropagation()}>
       <div className="chatbox-header">
         <div className="chatbox-user-info">
-          <div className="avatar">{user.username[0].toUpperCase()}</div>
+          <div className="avatar">{user.username?.[0]?.toUpperCase() || "?"}</div>
           <h3>{user.username}</h3>
         </div>
         <button className="close-btn" onClick={onClose}>×</button>
       </div>
 
-      <div className="chatbox-messages" ref={containerRef} onScroll={handleScroll}>
-        {loading && page > 0 && <div className="loading-more">Đang tải tin nhắn cũ...</div>}
-
-        {messages.length === 0 && !loading && (
-          <div className="no-messages">Chưa có tin nhắn nào. Hãy bắt đầu!</div>
-        )}
-
-        {messages.map(msg => {
-          const isSent = msg.senderUsername === currentUser?.username;
-
-          return (
-            <div key={msg.id} className={`message ${isSent ? 'sent' : 'received'}`}>
-              <div className="message-content">
-                <p>{msg.content}</p>
-                <span className="timestamp">{timeAgo(msg.timestamp)}</span>
+      <div className="chatbox-messages">
+        {messages.length === 0 ? (
+          <div className="no-messages">Chưa có tin nhắn nào. Bắt đầu thôi!</div>
+        ) : (
+          messages.map(msg => {
+            const isSent = msg.senderId === currentUserId;
+            return (
+              <div key={msg.id || Math.random()} className={`message ${isSent ? "sent" : "received"}`}>
+                <div className="message-content">
+                  <p>{msg.content}</p>
+                  <span className="timestamp">{timeAgo(msg.timestamp)}</span>
+                </div>
               </div>
-            </div>
-          );
-        })}
-
+            );
+          })
+        )}
         <div ref={messagesEndRef} />
       </div>
 
       <div className="chatbox-input">
         <input
           type="text"
-          placeholder={stompClient.current?.connected ? "Nhập tin nhắn..." : "Đang kết nối..."}
+          placeholder="Nhập tin nhắn..."
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
           onKeyDown={e => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               sendMessage();
             }
           }}
-          disabled={!stompClient.current?.connected}
         />
-        <button
-          onClick={sendMessage}
-          disabled={!newMessage.trim() || !stompClient.current?.connected}
-          className="send-btn"
-        >
+        <button onClick={sendMessage} disabled={!newMessage.trim()}>
           Gửi
         </button>
       </div>

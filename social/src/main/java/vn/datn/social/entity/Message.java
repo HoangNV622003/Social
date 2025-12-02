@@ -26,4 +26,7 @@ public class Message extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "content", nullable = false)
     private String content;
+
+    @Column(name="sender_id", nullable = false)
+    private Long senderId;
 }

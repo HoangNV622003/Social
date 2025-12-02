@@ -1,0 +1,160 @@
+/* src/components/FriendSearchBar.css */
+.friend-search-wrapper {
+    position: relative;
+    margin: 16px;
+}
+
+.friend-search-input-container {
+    display: flex;
+    align-items: center;
+    background: #f3f4f6;
+    border-radius: 16px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.friend-search-input-container:focus-within {
+    background: white;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+.search-icon {
+    color: #6b7280;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.friend-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    color: #1f2937;
+}
+
+.friend-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.clear-search-btn {
+    background: #e5e7eb;
+    color: #6b7280;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.clear-search-btn:hover {
+    background: #d1d5db;
+    color: #374151;
+}
+
+/* Dropdown */
+.friend-search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 16px;
+    margin-top: 8px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    max-height: 420px;
+    overflow-y: auto;
+    z-index: 1000;
+    animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-item:hover {
+    background: #f8fafc;
+}
+
+.search-item.loading {
+    padding: 20px;
+}
+
+.skeleton-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    animation: pulse 1.5s infinite;
+}
+
+.skeleton-text {
+    height: 16px;
+    width: 120px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    margin-left: 12px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.friend-info {
+    margin-left: 12px;
+    flex: 1;
+}
+
+.friend-username {
+    font-weight: 600;
+    color: #1f2937;
+    display: block;
+}
+
+.friend-fullname {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.search-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+}
+
+.search-empty p {
+    margin-top: 12px;
+    font-size: 15px;
+}

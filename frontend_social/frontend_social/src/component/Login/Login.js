@@ -37,6 +37,7 @@ const Login = () => {
 
             if (response.status === 200) {
                 const { accessToken, user } = response.data;
+                console.log('Login successful:', user);
                 login(accessToken, user);
                 toast.success('Đăng nhập thành công! Chào mừng trở lại');
                 navigate('/Blockchat', { replace: true });

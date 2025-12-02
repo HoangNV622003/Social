@@ -45,11 +45,6 @@ public class UserService {
         return userRepository.save(convertToUser(requestDTO));
     }
 
-    public User findReceiverByChatIdAndCurrentUserId(Long chatId, Long currentUserId) {
-        return userRepository.findOtherUserInChat(chatId, currentUserId)
-                .orElseThrow(() -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND));
-    }
-
     private User convertToUser(CreateUserRequestDTO request) {
         return User.builder()
                 .email(request.email())
@@ -67,6 +62,7 @@ public class UserService {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .isAdmin(user.isAdmin())
+                .image(user.getImage() != null ? BlobUtil.blobToBase64(user.getImage()) : null)
                 .build();
     }
 

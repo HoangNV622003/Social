@@ -1,0 +1,70 @@
+/* src/components/chat/MessageItem.css – SIÊU ĐƠN GIẢN, CHỮ RÕ RÀNG */
+
+.message-wrapper {
+    display: flex;
+    margin: 12px 10px;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.message-wrapper.me {     /* tin nhắn của mình */
+    justify-content: flex-end;
+}
+
+.message-wrapper.other {  /* tin nhắn người khác */
+    justify-content: flex-start;
+}
+
+/* Bubble tin nhắn */
+
+/* Của mình */
+.message-bubble.me {
+    background: #F0F2F5;
+    color: #181818 !important;
+    border-bottom-right-radius: 4px;
+}
+
+/* Của người khác */
+.message-bubble.other {
+    background: #f0f0f0;
+    color: #000 !important;
+    border-bottom-left-radius: 4px;
+}
+
+/* Nội dung tin nhắn */
+.message-content {
+    color: black;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* Dòng nhỏ ở dưới: thời gian + trạng thái */
+.message-footer {
+    margin-top: 4px;
+    font-size: 11px;
+    color: inherit;
+    opacity: 0.9;
+    text-align: right;
+}
+
+/* Trạng thái */
+.status {
+    margin-left: 6px;
+    font-weight: 500;
+}
+
+.status.pending   { color: #ff9800; }
+.status.sent      { color: #aaa; }
+.status.seen      { color: #4fc3f7; font-weight: 600; }
+
+/* Tick đơn giản */
+.status.sent::before   { content: "✓ "; }
+.status.seen::before   { content: "✓✓ "; color: #4fc3f7; }
+
+/* Avatar */
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}

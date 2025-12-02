@@ -10,6 +10,7 @@ import vn.datn.social.entity.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -25,18 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmailIgnoreCaseOrUsernameIgnoreCase(String email, String username);
 
-    @Query(value = """
-        SELECT u.*
-        FROM chats c
-        JOIN user u ON u.id = CASE
-            WHEN c.user1_id = :userId THEN c.user2_id
-            ELSE c.user1_id
-        END
-        WHERE c.id = :chatId
-          AND :userId IN (c.user1_id, c.user2_id)
-        """, nativeQuery = true)
-    Optional<User> findOtherUserInChat(@Param("chatId") Long chatId, @Param("userId") Long userId);
-
     Optional<User> findByVerificationCode(String verificationCode);
 
     @Query(value = "SELECT address, COUNT(*) AS user_count " +
@@ -44,4 +33,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
                    "GROUP BY address " +
                    "ORDER BY user_count DESC", nativeQuery = true)
     List<Object[]> getUsersByAddress();
+
+    @Query("""
+                SELECT u FROM User u RIGHT JOIN ChatMember c ON c.userId = u.id WHERE c.roomId = :chatRoomId
+            """)
+    Set<User> findAllByChatRoomId(Long chatRoomId);
 }

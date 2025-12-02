@@ -59,9 +59,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/users").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .requestMatchers( "/websocket/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()      // handshake + SockJS fallback
-                        .requestMatchers("/ws").permitAll()
-                        .requestMatchers("/ws/info").permitAll()
+                        .requestMatchers("/ws").authenticated()     // handshake + SockJS fallback
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

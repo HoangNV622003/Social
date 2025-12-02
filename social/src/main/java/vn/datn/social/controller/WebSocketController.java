@@ -3,28 +3,60 @@ package vn.datn.social.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import vn.datn.social.dto.request.CreateChatGroupRequestDTO;
+import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.request.MessageRequestDTO;
 import vn.datn.social.entity.User;
+import vn.datn.social.security.CurrentUserId;
 import vn.datn.social.security.IBEUser;
 import vn.datn.social.service.MessageService;
 import vn.datn.social.service.UserService;
+import vn.datn.social.service.WebSocketService;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSocketController {
-    private SimpMessageSendingOperations messagingTemplate;
-
+    SimpMessageSendingOperations messagingTemplate;
+    WebSocketService webSocketService;
     UserService userService;
     private final MessageService messageService;
+
+    // GỬI TIN NHẮN – ĐÚNG ĐƯỜNG DẪN, CÓ AUTH, BROADCAST ĐÚNG CHỖ
+    @MessageMapping("/chat/{chatId}/send-message")
+    public void sendMessage(
+            @DestinationVariable Long chatId,
+            @Payload MessageRequestDTO request
+    ) {
+        webSocketService.sendMessage(chatId, request);
+    }
+
+    @MessageMapping("/chat/create-chat")
+    public void createChat(
+            @Payload CreateChatRequestDTO request,
+            @CurrentUserId Long currentUserId
+    ) {
+        webSocketService.createChatPrivate(currentUserId, request);
+    }
+
+    @MessageMapping("/chat/create-group")
+    public void createGroup(
+            @Payload CreateChatGroupRequestDTO requestDTO,
+            @CurrentUserId Long currentUserId
+    ) {
+        webSocketService.createChatGroup(currentUserId, requestDTO);
+    }
 
     @MessageMapping("/viewProfile")
     public void notifyProfileViewed(ViewProfileMessage message) throws Exception {

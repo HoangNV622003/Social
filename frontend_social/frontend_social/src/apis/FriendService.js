@@ -54,3 +54,13 @@ export const cancelFriendRequest = async (otherName, accessToken) => {
         getAuthConfig(cleanToken)
     );
 };
+
+export const searchFriend = async (keyword, accessToken) => {
+    return await axios.get(
+        `${API_URL}/friend/search`,
+        {
+            ...getAuthConfig(accessToken),
+            params: { keyword }
+        }
+    );
+}

@@ -14,7 +14,9 @@ public class MessageResponseDTO {
     private Long id;
     private Long chatId;
     private Long senderId;
-    private Long receiverId;
+    private String clientTempId;
+    private String senderName;
+    private String senderImage;
     private String content;
     private Long dateCreated;
 }

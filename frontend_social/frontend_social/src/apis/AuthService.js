@@ -7,3 +7,12 @@ export const authenticateUser = async (payload) => {
         }
     });
 }
+
+export const getProfile = async (token) => {
+    return await axios.get(`${API_URL}/authenticate/me`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+}

@@ -16,6 +16,7 @@ export const getToken = () => {
 };
 
 // Lưu token
+
 export const setToken = (token) => {
     try {
         if (token) {
@@ -70,7 +71,7 @@ export const removeUserId = () => {
 };
 
 // (Tùy chọn) Lưu toàn bộ object user – hữu ích khi không muốn gọi lại API profile
-export const setUser = (userData) => {
+export const setCurrentUser = (userData) => {
     try {
         if (userData) {
             localStorage.setItem(KEY_USER, JSON.stringify(userData));
@@ -122,7 +123,7 @@ export default {
     removeUserId,
 
     getUser,
-    setUser,
+    setCurrentUser,
     removeUser,
 
     clearAuthStorage
