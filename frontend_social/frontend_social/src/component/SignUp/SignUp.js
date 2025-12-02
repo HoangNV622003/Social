@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import './SignUp.css';
-import backgroundImage from '../../assets/images/backgr.png';
 import {
   Typography,
   Button,
@@ -10,14 +7,15 @@ import {
   Grid,
   TextField,
   Card,
-  CardHeader,
   CardContent,
 } from '@mui/material';
-
-import '../notice/notice.css';  
-import { showAlert } from '../notice/notice.js';  
-
+import { toast } from 'react-toastify';
+import { createUser } from '../../apis/UserService';
+import './SignUp.css';
+import backgroundImage from '../../assets/images/backgr.png'; // giữ lại nếu bạn dùng background
+import { useNavigate } from 'react-router-dom'; // Thêm cái này
 export default function Registration() {
+  const navigate = useNavigate(); // Dùng để chuyển trang
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -36,107 +34,146 @@ export default function Registration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setLoading(true);
-    if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match');
-        setLoading(false);
-        return;
-    }
     setError('');
 
-    try {
-        const response = await axios.post('http://localhost:8080/register', formData);
-
-        if (response.status === 201) {
-            // Handle successful registration (e.g., show a success message)
-            showAlert('Registration successful! Please verify your email.');
-        }
-    } catch (err) {
-        if (err.response && err.response.status === 409) {
-            // Handle duplicate email/username
-            setError(err.response.data); // Hiển thị thông báo từ backend
-        } else if (err.response && err.response.status === 500) {
-            // Handle server errors
-            setError('A server error occurred. Please try again later.');
-        } else {
-            setError('An unexpected error occurred. Please try again.');
-        }
-    } finally {
-        setLoading(false);
+    // Validate mật khẩu trùng khớp
+    if (formData.password !== formData.confirmPassword) {
+      const msg = 'Mật khẩu xác nhận không khớp';
+      setError(msg);
+      toast.error(msg);
+      return;
     }
-};
 
+    setLoading(true);
+
+    try {
+      await createUser({
+        email: formData.email.trim(),
+        username: formData.username.trim(),
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
+        // confirmPassword: nếu backend không cần thì bỏ, nếu cần thì giữ lại
+      });
+
+      toast.success('Đăng ký tài khoản thành công!');
+
+      // Reset form sau khi đăng ký thành công
+      setFormData({
+        email: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
+      });
+      setTimeout(() => {
+        navigate('/'); // Đảm bảo route này tồn tại trong App.jsx
+      }, 1500);
+      // Nếu muốn chuyển hướng sau khi đăng ký thành công:
+      // navigate('/login'); // nếu dùng react-router
+
+    } catch (err) {
+      console.error('Registration error:', err);
+
+      // Lấy thông báo lỗi từ backend (theo đúng format bạn cung cấp)
+      const errorMsg =
+        err.response?.data?.errorDescription ||
+        err.response?.data?.message ||
+        'Đăng ký thất bại, vui lòng thử lại!';
+
+      setError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div>
-      <div id="notification" className="notification hidden" >
-    <span id="notification-message"></span>
-</div>
-    <div className="Signup-container">
-      <Card sx={{ maxWidth: 700, margin: '30px auto', border: '3px solid #356' }}>
-      
+    <div className="Signup-container" style={{
+      backgroundImage: `url(${backgroundImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      minHeight: '100vh',
+      padding: '20px 0'
+    }}>
+      <Card sx={{ maxWidth: 700, margin: '30px auto', border: '3px solid #335566' }}>
         <CardContent>
-          <Container maxWidth="xs">
-            <Box sx={{ mt: 0 }}>
-              <Typography variant="h4" align="center" gutterBottom>
-                Register
+          <Container maxWidth="sm">
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
+                Đăng ký tài khoản
               </Typography>
 
               <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ mt: 1 }}>
                   <Grid item xs={12}>
                     <TextField
                       label="Email"
                       name="email"
+                      type="email"
                       fullWidth
+                      required
                       value={formData.email}
                       onChange={handleChange}
-                      required
+                      autoComplete="email"
                     />
                   </Grid>
+
                   <Grid item xs={12}>
                     <TextField
-                      label="Username"
+                      label="Tên đăng nhập"
                       name="username"
                       fullWidth
+                      required
                       value={formData.username}
                       onChange={handleChange}
-                      required
+                      autoComplete="username"
                     />
                   </Grid>
+
                   <Grid item xs={12}>
                     <TextField
-                      label="Password"
+                      label="Mật khẩu"
                       name="password"
                       type="password"
                       fullWidth
+                      required
                       value={formData.password}
                       onChange={handleChange}
-                      required
+                      autoComplete="new-password"
                     />
                   </Grid>
+
                   <Grid item xs={12}>
                     <TextField
-                      label="Confirm Password"
+                      label="Xác nhận mật khẩu"
                       name="confirmPassword"
                       type="password"
                       fullWidth
+                      required
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      required
+                      autoComplete="new-password"
+                      error={!!error && formData.password !== formData.confirmPassword}
                     />
                   </Grid>
+
                   {error && (
                     <Grid item xs={12}>
-                      <Typography color="error" variant="body2">
+                      <Typography color="error" variant="body2" align="center">
                         {error}
                       </Typography>
                     </Grid>
                   )}
+
                   <Grid item xs={12}>
-                    <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading}>
-                      {loading ? 'Processing...' : 'Register'}
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      size="large"
+                      disabled={loading}
+                      sx={{ py: 1.5 }}
+                    >
+                      {loading ? 'Đang xử lý...' : 'Đăng ký'}
                     </Button>
                   </Grid>
                 </Grid>
@@ -145,9 +182,6 @@ export default function Registration() {
           </Container>
         </CardContent>
       </Card>
-
-     
-    </div>
     </div>
   );
 }
