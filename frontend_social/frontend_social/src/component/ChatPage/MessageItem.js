@@ -45,8 +45,8 @@ const MessageItem = ({ message, currentUserId, chatType, opponent }) => {
             {/* Avatar bên trái (người khác gửi) */}
             {!isMe && (
                 <UserAvatar
-                    username={sender?.username || 'Unknown'}
-                    image={sender?.image}
+                    username={sender?.senderName || 'Unknown'}
+                    image={sender?.senderImage || null}
                     size="small"
                     className="message-avatar"
                 />

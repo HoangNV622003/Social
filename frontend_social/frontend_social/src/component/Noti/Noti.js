@@ -142,14 +142,6 @@ function Noti() {
         </header>
 
         <div className="blockchat-noti-2025-list">
-          {/* Trạng thái trống */}
-          {notifications.length === 0 && !isLoading && (
-            <div className="blockchat-noti-2025-empty">
-              <div className="empty-icon">Bell</div>
-              <h3>Chưa có thông báo nào</h3>
-              <p>Khi có hoạt động mới, chúng sẽ xuất hiện ở đây.</p>
-            </div>
-          )}
 
           {/* Danh sách thông báo */}
           {notifications.map((noti, index) => (

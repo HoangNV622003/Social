@@ -77,6 +77,7 @@ const ChatDetail = ({ chat, currentUserId }) => {
     if (!chat) return <div className="empty">Chọn cuộc trò chuyện</div>;
 
     return (
+
         <div className="chat-detail">
             {/* HEADER – luôn có tên + ảnh ngay khi load xong */}
             <div className="chat-detail-header">

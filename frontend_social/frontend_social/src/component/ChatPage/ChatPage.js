@@ -5,7 +5,8 @@ import ChatDetail from './ChatDetail';
 import { getAllChats } from '../../apis/ChatService';
 import { useAuth } from '../../context/AuthContext';
 import './ChatPage.css';
-
+import Navbar from '../Navbar/Navbar';
+import SearchFriend from '../SearchFriend/SearchFriend';
 const ChatPage = () => {
     const { token, user } = useAuth();
 
@@ -63,45 +64,46 @@ const ChatPage = () => {
     );
 
     return (
-        <div className="chat-page-container">
-            {/* SIDEBAR */}
-            <div className={`chat-page-sidebar ${selectedChat ? 'hidden-mobile' : ''}`}>
-                <div className="chat-list-header">
-                    <h1>Tin nhắn</h1>
-                    <div className="search-bar">
-                        <input
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Tìm kiếm cuộc trò chuyện..."
+        <div className="chat-page">
+            <Navbar />
+            <div className="chat-page-body">
+
+                <div className="chat-page-container">
+                    {/* SIDEBAR */}
+                    <div className={`chat-page-sidebar ${selectedChat ? 'hidden-mobile' : ''}`}>
+                        <div className="chat-list-header">
+                            <h1>Tin nhắn</h1>
+                            <SearchFriend />
+                        </div>
+
+                        <ChatList
+                            chats={filteredChats}
+                            selectedChatId={selectedChat?.id}
+                            onChatSelect={selectChat}
+                            loading={loading}
                         />
                     </div>
-                </div>
 
-                <ChatList
-                    chats={filteredChats}
-                    selectedChatId={selectedChat?.id}
-                    onChatSelect={selectChat}
-                    loading={loading}
-                />
-            </div>
-
-            {/* MAIN */}
-            <div className="chat-page-main">
-                {selectedChat ? (
-                    <ChatDetail
-                        key={selectedChat.id}           // Bắt buộc để reload khi đổi phòng
-                        chat={selectedChat}
-                        currentUserId={user?.id}
-                    />
-                ) : (
-                    <div className="empty-state">
-                        <div className="empty-icon">Message</div>
-                        <h3>Chào mừng bạn đến với Chat</h3>
-                        <p>Chọn một cuộc trò chuyện để bắt đầu</p>
+                    {/* MAIN */}
+                    <div className="chat-page-main">
+                        {selectedChat ? (
+                            <ChatDetail
+                                key={selectedChat.id}           // Bắt buộc để reload khi đổi phòng
+                                chat={selectedChat}
+                                currentUserId={user?.id}
+                            />
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-icon">Message</div>
+                                <h3>Chào mừng bạn đến với Chat</h3>
+                                <p>Chọn một cuộc trò chuyện để bắt đầu</p>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </div>
+
     );
 };
 
