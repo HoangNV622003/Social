@@ -12,6 +12,7 @@ import vn.datn.social.dto.request.CreateChatGroupRequestDTO;
 import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.response.ChatDetailResponseDTO;
 import vn.datn.social.dto.response.ChatResponseDTO;
+import vn.datn.social.dto.response.projection.ChatSummaryProjection;
 import vn.datn.social.security.CurrentUserId;
 import vn.datn.social.service.ChatService;
 
@@ -58,7 +59,7 @@ public class ChatController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<ChatResponseDTO>> search(
+    public ResponseEntity<Page<ChatSummaryProjection>> search(
             @CurrentUserId Long currentUserId,
             @RequestParam String keyword,
             @PageableDefault(size = 20) Pageable pageable) {

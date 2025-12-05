@@ -1,6 +1,7 @@
 // src/components/group/FriendSearchItem.jsx
 import React from 'react';
 import './FriendSearchItem.css';
+import UserAvatar from '../../UserAvatar/UserAvatar';
 
 const FriendSearchItem = ({ friend, isSelected, onSelect }) => {
     return (
@@ -8,10 +9,10 @@ const FriendSearchItem = ({ friend, isSelected, onSelect }) => {
             className={`fsi-item ${isSelected ? 'selected' : ''}`}
             onClick={isSelected ? null : onSelect}
         >
-            <img
-                src={friend.image || '/default-avatar.png'}
-                alt={friend.username}
-                className="fsi-avatar"
+            <UserAvatar
+                username={friend.username}
+                image={friend.image}
+                size='small'
             />
             <span className="fsi-name">{friend.username}</span>
             {isSelected && <span className="fsi-check">✓ Đã chọn</span>}

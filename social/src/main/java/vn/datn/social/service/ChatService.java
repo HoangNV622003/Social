@@ -17,6 +17,7 @@ import vn.datn.social.dto.response.ChatResponseDTO;
 import vn.datn.social.dto.response.UserResponseDTO;
 import vn.datn.social.dto.response.UserSummaryResponseDTO;
 import vn.datn.social.dto.response.projection.ChatProjection;
+import vn.datn.social.dto.response.projection.ChatSummaryProjection;
 import vn.datn.social.entity.ChatRoom;
 import vn.datn.social.entity.User;
 import vn.datn.social.exception.BusinessException;
@@ -48,8 +49,8 @@ public class ChatService {
         return chatRoomRepository.findAllByUserId(currentUserId, pageable).map(this::convertToChatResponseDTO);
     }
 
-    public Page<ChatResponseDTO> findChatByName(Long currentUserId, String keyword, Pageable pageable) {
-        return chatRoomRepository.searchByName(keyword, currentUserId, pageable).map(this::convertToChatResponseDTO);
+    public Page<ChatSummaryProjection> findChatByName(Long currentUserId, String keyword, Pageable pageable) {
+        return chatRoomRepository.searchByName(keyword, currentUserId, pageable);
     }
     public ChatDetailResponseDTO getChatDetails(Long chatId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatId).orElseThrow(
