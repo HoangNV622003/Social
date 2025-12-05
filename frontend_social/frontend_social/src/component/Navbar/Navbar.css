@@ -10,7 +10,7 @@
   background: white;
   border-bottom: 1px solid #e5e7eb;
   z-index: 1000;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .blockchat-navbar-2025-inner {
@@ -134,7 +134,7 @@
   margin-top: 8px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
   min-width: 220px;
   overflow: hidden;
   border: 1px solid #e5e7eb;
@@ -175,8 +175,40 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .blockchat-navbar-2025-brand-text { display: none; }
-  .blockchat-navbar-2025-inner { padding: 0 12px; }
-  .blockchat-navbar-2025-center { gap: 4px; }
-  .blockchat-navbar-2025-item { padding: 10px; }
+  .blockchat-navbar-2025-brand-text {
+    display: none;
+  }
+  .blockchat-navbar-2025-inner {
+    padding: 0 12px;
+  }
+  .blockchat-navbar-2025-center {
+    gap: 4px;
+  }
+  .blockchat-navbar-2025-item {
+    padding: 10px;
+  }
+}
+/* Thêm vào cuối file Navbar.css */
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  color: #4f46e5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }

@@ -1,11 +1,12 @@
+// src/components/Navbar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { useAuth } from '../../context/AuthContext';
-import { getUnreadNotifications, markAllAsRead, getUnreadCount } from '../../apis/NotificationService';
+import { getUnreadCount, markAllAsRead } from '../../apis/NotificationService';
 import { toast } from 'react-toastify';
+import UserAvatar from '../UserAvatar/UserAvatar';
 
-// === SVG Icons (giữ nguyên, rất đẹp) ===
 const HomeIcon = () => (
   <svg viewBox="0 0 24 24" width="32" height="32"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor" /></svg>
 );
@@ -30,49 +31,43 @@ const LogoIcon = () => (
 
 function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const dropdownRef = useRef(null);
 
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const dropdownRef = useRef(null);
 
-  const isAdmin = user?.role == "ROLE_ADMIN";
+  const isAdmin = user?.role === "ROLE_ADMIN";
   const username = user?.username || user?.fullName || 'User';
-  console.log(user)
-  // === Lấy số lượng thông báo chưa đọc ===
+
+  // Lấy số thông báo
   const fetchUnreadCount = async () => {
     if (!token) return;
     try {
       const res = await getUnreadCount(token);
-      const count = res.data;
-      setUnreadCount(count);
-      setHasNewNotification(count > 0);
+      setUnreadCount(res.data || 0);
     } catch (err) {
       console.error('Lỗi lấy thông báo:', err);
     }
   };
 
-  // === Gọi API mỗi 15s & khi mount ===
   useEffect(() => {
     if (token) {
       fetchUnreadCount();
-      const interval = setInterval(fetchUnreadCount, 15000); // 15 giây
+      const interval = setInterval(fetchUnreadCount, 15000);
       return () => clearInterval(interval);
     }
   }, [token]);
 
-  // === Click vào chuông: đánh dấu tất cả đã đọc + chuyển trang ===
   const handleNotiClick = async () => {
-    if (hasNewNotification) {
+    if (unreadCount > 0) {
       try {
         await markAllAsRead(token);
-        setHasNewNotification(false);
         setUnreadCount(0);
-        toast.success('Đã đánh dấu tất cả thông báo là đã đọc');
-      } catch (err) {
-        toast.error('Lỗi khi đánh dấu đã đọc');
+        toast.success('Đã đánh dấu tất cả là đã đọc');
+      } catch {
+        toast.error('Lỗi cập nhật thông báo');
       }
     }
     navigate('/noti');
@@ -81,8 +76,8 @@ function Navbar() {
   const handleLogout = () => {
     logout();
     navigate('/');
-  }
-  // === Đóng dropdown khi click ngoài ===
+  };
+
   useEffect(() => {
     const handleOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -98,27 +93,19 @@ function Navbar() {
   return (
     <header className="blockchat-navbar-2025-main">
       <div className="blockchat-navbar-2025-inner">
-
-        {/* Logo */}
         <Link to="/Blockchat" className="blockchat-navbar-2025-logo">
           <LogoIcon />
           <span className="blockchat-navbar-2025-brand-text">BlockChat</span>
         </Link>
 
-        {/* Thanh icon giữa */}
         <nav className="blockchat-navbar-2025-center">
           <Link to="/Blockchat" className={`blockchat-navbar-2025-item ${isActive('/Blockchat') ? 'blockchat-navbar-2025-active' : ''}`}>
             <HomeIcon />
           </Link>
-
           <Link to="/messages" className={`blockchat-navbar-2025-item ${isActive('/messages') ? 'blockchat-navbar-2025-active' : ''}`}>
             <MessageIcon />
           </Link>
-
-          <button
-            onClick={handleNotiClick}
-            className={`blockchat-navbar-2025-item ${isActive('/noti') ? 'blockchat-navbar-2025-active' : ''}`}
-          >
+          <button onClick={handleNotiClick} className={`blockchat-navbar-2025-item ${isActive('/noti') ? 'blockchat-navbar-2025-active' : ''}`}>
             <NotificationIcon />
             {unreadCount > 0 && (
               <span className="blockchat-navbar-2025-noti-badge">
@@ -126,20 +113,25 @@ function Navbar() {
               </span>
             )}
           </button>
-
           <Link to="/search_page" className={`blockchat-navbar-2025-item ${isActive('/search_page') ? 'blockchat-navbar-2025-active' : ''}`}>
             <SearchIcon />
           </Link>
         </nav>
 
-        {/* User dropdown */}
         <div className="blockchat-navbar-2025-user-section" ref={dropdownRef}>
           <button
             className="blockchat-navbar-2025-user-btn"
             onClick={() => setShowDropdown(!showDropdown)}
           >
             <div className="blockchat-navbar-2025-user-avatar">
-              {username[0]?.toUpperCase() || 'U'}
+              {/* ĐÃ FIX LỖI TẠI ĐÂY */}
+              {user ? (
+                <UserAvatar username={username} image={user.image || null} size="small" />
+              ) : (
+                <div className="skeleton-avatar">
+                  {(username[0]?.toUpperCase() || 'U')}
+                </div>
+              )}
             </div>
             <span className="blockchat-navbar-2025-username">{username}</span>
             <svg className={`blockchat-navbar-2025-arrow ${showDropdown ? 'blockchat-navbar-2025-arrow-up' : ''}`} viewBox="0 0 24 24" width="20" height="20">
@@ -149,7 +141,7 @@ function Navbar() {
 
           {showDropdown && (
             <div className="blockchat-navbar-2025-dropdown">
-              <Link to={`/profile/` + user.id} className="blockchat-navbar-2025-dropdown-item">Hồ sơ cá nhân</Link>
+              <Link to={`/profile/${user?.id}`} className="blockchat-navbar-2025-dropdown-item">Hồ sơ cá nhân</Link>
               <Link to="/Edit_profile" className="blockchat-navbar-2025-dropdown-item">Chỉnh sửa hồ sơ</Link>
               {isAdmin && <Link to="/manage_user" className="blockchat-navbar-2025-dropdown-item blockchat-navbar-2025-admin">Quản trị hệ thống</Link>}
               <div className="blockchat-navbar-2025-divider"></div>
