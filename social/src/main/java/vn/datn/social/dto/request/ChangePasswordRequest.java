@@ -1,20 +1,15 @@
 package vn.datn.social.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ChangePasswordRequest {
-    @NotBlank
-    private String currentPassword;
+public record ChangePasswordRequest(
+        @NotBlank
+        String currentPassword,
 
-    @NotBlank
-    private String newPassword;
+        @NotBlank
+        String newPassword,
 
-    @NotBlank
-    private String confirmPassword;
+        @NotBlank
+        String confirmPassword
+) {
 }

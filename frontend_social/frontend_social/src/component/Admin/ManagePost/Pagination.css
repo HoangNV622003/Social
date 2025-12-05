@@ -1,0 +1,34 @@
+/* src/pages/admin/components/Pagination.css */
+.mp-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin: 3rem 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.mp-pagination button {
+  padding: 0.9rem 2rem;
+  background: white;
+  border: 2px solid #e0e7ff;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.mp-pagination button:hover:not(:disabled) {
+  background: #6366f1;
+  color: white;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(99, 102, 241, 0.3);
+}
+
+.mp-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

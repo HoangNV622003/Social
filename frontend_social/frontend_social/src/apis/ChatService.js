@@ -22,7 +22,7 @@ export const createPrivateChat = async (payload, token) => {
 }
 
 export const createGroupChat = async (payload, token) => {
-    return await axios.post(`${CHAT_API}/create-group`, payload, authHeader(token));
+    return await axios.post(`${CHAT_API}/group`, payload, authHeader(token));
 }
 
 export const addToGroupChat = async (chatId, memberIds, token) => {

@@ -1,49 +1,62 @@
-// apis/NotificationService.js
+// src/services/NotificationService.js
 import axios from 'axios';
 import { API_URL } from '../constants/apiConstants';
 
-// Base URL cho notification
+// Base URL
 const NOTIFICATION_API = `${API_URL}/notifications`;
 
-// Helper thêm token
-const authHeader = (token) => ({
+
+// Helper tạo header có token
+const authHeader = (accessToken) => ({
     headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+    },
 });
 
-/**
- * 1. Lấy danh sách thông báo chưa đọc
- * GET /api/notifications/unread
- */
-export const getUnreadNotifications = async (token) => {
-    return await axios.get(`${NOTIFICATION_API}/unread`, authHeader(token));
-};
 
-/**
- * 2. Lấy tất cả thông báo của người dùng hiện tại (phân trang)
- * GET /api/notifications?page=0&size=5
- */
-export const getNotifications = async (token, page = 0, size = 10) => {
-    return await axios.get(NOTIFICATION_API, {
-        ...authHeader(token),
-        params: { page, size }
+export const getMyNotifications = async (accessToken, page = 0, size = 20) => {
+    const response = await axios.get(NOTIFICATION_API, {
+        ...authHeader(accessToken),
+        params: { page, size },
     });
-};
+    return response.data; // Spring trả về Page<NotificationResponseDTO>
+}
 
 /**
- * 3. Đánh dấu tất cả thông báo là đã đọc
- * POST /api/notifications/mark-all-read
+ * Tạo thông báo mới (dành cho admin hoặc hệ thống)
+ * @param {Object} data - CreateNotificationRequest
+ * @returns Promise<void>
  */
-export const markAllNotificationsAsRead = async (token) => {
-    return await axios.post(`${NOTIFICATION_API}/mark-all-read`, null, authHeader(token));
-};
+export const createNotification = async (accessToken, data) => {
+    await axios.post(NOTIFICATION_API, data, authHeader(accessToken));
+}
 
 /**
- * Bonus: Đánh dấu 1 thông báo cụ thể là đã đọc (nếu backend có)
- * POST /api/notifications/mark-read/{id}
+ * Đánh dấu tất cả thông báo của user hiện tại là đã đọc
+ * @returns Promise<void>
  */
-// export const markNotificationAsRead = async (token, notificationId) => {
-//     return await axios.post(`${NOTIFICATION_API}/mark-read/${notificationId}`, null, authHeader(token));
-// };
+export const markAllAsRead = async (accessToken) => {
+    await axios.post(`${NOTIFICATION_API}/mark-all-read`, {}, authHeader(accessToken));
+}
+
+/**
+ * Đánh dấu một thông báo theo id là đã đọc
+ * @param {number|string} notificationId
+ * @returns Promise<void>
+ */
+export const markAsRead = async (accessToken, notificationId) => {
+    await axios.post(
+        `${NOTIFICATION_API}/mark-read/${notificationId}`,
+        authHeader(accessToken)
+    );
+}
+
+/**
+ * Lấy số lượng thông báo chưa đọc (tùy chọn - nếu bạn muốn thêm endpoint này sau)
+ */
+export const getUnreadCount = async (accessToken) => {
+    const response = await axios.get(`${NOTIFICATION_API}/unread-count`, authHeader(accessToken));
+    return response.data; // ví dụ trả về { count: 5 }
+}
+

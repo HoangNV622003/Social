@@ -1,0 +1,30 @@
+/* src/pages/admin/components/UserSearch/UserSearch.css */
+.user-search {
+  position: relative;
+  margin: 20px 0;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 1.3rem;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.search-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}

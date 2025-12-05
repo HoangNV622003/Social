@@ -1,8 +1,11 @@
 package vn.datn.social.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Auditable;
 import vn.datn.social.constant.NotificationType;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,25 +14,24 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notification {
+@Table(name = "notifications")
+public class Notification extends AbstractAuditingEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String contentnoti;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User sender;
+    @Column(name = "content", nullable = false)
+    private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_id")
-    private User receiver;
+    @Column(name = "deep_link", nullable = false)
+    private String deepLink;
 
-    private String status; // e.g., "unread", "read"
+    @Column(name = "type", nullable = false)
+    private Short type;
 
-    private LocalDateTime timestamp; // to store the notification creation time
-
-    @Enumerated(EnumType.STRING) // Sử dụng EnumType.STRING để lưu trữ giá trị enum
-    private NotificationType type;
+    @Column(name = "status", nullable = false)
+    private Short status;
 }

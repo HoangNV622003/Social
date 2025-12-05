@@ -19,11 +19,14 @@ const authHeader = (token) => ({
  * @param {number} size - Số kết quả mỗi trang (mặc định 7)
  * @returns {Promise} - Danh sách người dùng + trạng thái kết bạn
  */
+export const searchAll = async (keyword, token) => {
+    return await axios.get(`${SEARCH_API}?keyword=${keyword}`, authHeader(token))
+}
 export const searchUsers = async (keyword = "", token, page = 0, size = 7) => {
     // Nếu keyword rỗng hoặc chỉ có khoảng trắng → trả về mảng rỗng (tránh gọi API vô ích)
 
     try {
-        const response = await axios.get(SEARCH_API, {
+        const response = await axios.get(`${SEARCH_API}/users`, {
             ...authHeader(token),
             params: {
                 keyword: keyword.trim(),

@@ -11,53 +11,50 @@ const getAuthConfig = (token) => ({
     withCredentials: true
 });
 
-export const addFriendRequest = async (username, accessToken) => {
-    // Làm sạch token (phòng trường hợp frontend gửi có Bearer)
-    const cleanToken = accessToken?.startsWith('Bearer ')
-        ? accessToken.replace('Bearer ', '')
-        : accessToken;
-
-    console.log("Token đã làm sạch (FriendService):", cleanToken); // Debug
+export const getFriend = async (userId, accessToken) => {
+    return await axios.get(`${API_URL}/friend/${userId}`, { ...getAuthConfig(accessToken) })
+}
+export const addFriendRequest = async (userId, accessToken) => {
 
     return await axios.post(
-        `${API_URL}/friend/add_friend`,  // URL
-        null,                            // data = null (vì dùng params)
+        `${API_URL}/friend/add`, { userId },
         {
-            ...getAuthConfig(cleanToken),
-            params: { username }
+            ...getAuthConfig(accessToken)
         }
     );
 };
 
-export const acceptFriendRequest = async (username, accessToken) => {
-    const cleanToken = accessToken?.startsWith('Bearer ')
-        ? accessToken.replace('Bearer ', '')
-        : accessToken;
-
-    return await axios.post(
-        `${API_URL}/friend/accept`,
+export const acceptFriendRequest = async (userId, accessToken) => {
+    return await axios.put(
+        `${API_URL}/friend/${userId}/accept`,
         null,
         {
-            ...getAuthConfig(cleanToken),
-            params: { username }
+            ...getAuthConfig(accessToken)
         }
     );
 };
 
-export const cancelFriendRequest = async (otherName, accessToken) => {
-    const cleanToken = accessToken?.startsWith('Bearer ') ? accessToken.replace('Bearer ', '') : accessToken;
-
-    // Lưu ý: cancel dùng PathVariable → phải dùng /cancel/{otherName}
-    return await axios.post(
-        `${API_URL}/friend/cancel/${otherName}`,  // ĐÚNG: dùng PathVariable
+export const cancelFriendRequest = async (userId, accessToken) => {
+    return await axios.put(
+        `${API_URL}/friend/${userId}/cancel`,  // ĐÚNG: dùng PathVariable
         null,
-        getAuthConfig(cleanToken)
+        getAuthConfig(accessToken)
     );
 };
 
-export const searchFriend = async (keyword, accessToken) => {
+export const unfriend = async (userId, accessToken) => {
+    console.log("token", accessToken)
+    return await axios.delete(`${API_URL}/friend/${userId}`, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,  // ← chỉ thêm Bearer 1 lần
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export const searchFriend = async (keyword, userId, accessToken) => {
     return await axios.get(
-        `${API_URL}/friend/search`,
+        `${API_URL}/friend/${userId}`,
         {
             ...getAuthConfig(accessToken),
             params: { keyword }

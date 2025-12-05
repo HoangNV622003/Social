@@ -1,0 +1,67 @@
+/* src/components/notification/NotificationList.css */
+.notification-list {
+  max-width: 680px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e4e6eb;
+}
+
+.notification-header {
+  padding: 20px 24px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #1c1e21;
+  background: linear-gradient(135deg, #f0f2f5, #ffffff);
+  border-bottom: 1px solid #e4e6eb;
+  letter-spacing: -0.5px;
+}
+
+/* Trạng thái trống */
+.notification-empty {
+  text-align: center;
+  padding: 80px 40px;
+  color: #65676b;
+}
+
+.notification-empty img {
+  width: 120px;
+  height: 120px;
+  opacity: 0.6;
+  margin-bottom: 20px;
+}
+
+.notification-empty h3 {
+  font-size: 22px;
+  margin: 16px 0;
+  color: #1c1e21;
+}
+
+.notification-empty p {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Loading */
+.notification-loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.notification-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e4e6eb;
+  border-top: 4px solid #1877f2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

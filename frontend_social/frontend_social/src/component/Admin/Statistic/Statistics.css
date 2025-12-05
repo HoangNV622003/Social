@@ -1,0 +1,211 @@
+/* src/pages/admin/Statistics.css */
+.stats-layout {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.stats-container {
+  flex: 1;
+  margin-left: 150px;
+  padding: 2.5rem;
+  color: white;
+}
+
+@media (max-width: 1024px) {
+  .stats-container {
+    margin-left: 80px;
+  }
+}
+@media (max-width: 768px) {
+  .stats-container {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+}
+
+.stats-title {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin: 0 0 2rem;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.year-selector {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.year-selector label {
+  font-size: 1.3rem;
+  margin-right: 1rem;
+  font-weight: 600;
+}
+
+.year-selector select {
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  background: white;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Tổng quan */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.4s;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-info h3 {
+  font-size: 2.2rem;
+  margin: 0;
+  font-weight: 800;
+}
+
+.stat-info p {
+  margin: 8px 0 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Biểu đồ */
+.chart-card {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.chart-card h2 {
+  text-align: center;
+  margin: 0 0 2rem;
+  font-size: 1.9rem;
+}
+
+/* Skeleton */
+.loading-skeleton {
+  padding: 2rem;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem 0;
+}
+
+.skeleton-card,
+.skeleton-chart {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-card {
+  height: 140px;
+}
+
+.skeleton-chart {
+  height: 450px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+/* Thêm vào cuối Statistics.css */
+
+.monthly-chart-container {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  margin-top: 2rem;
+}
+
+.monthly-chart-container h2 {
+  text-align: center;
+  margin: 0 0 2.5rem;
+  font-size: 2.1rem;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+/* Tooltip cực đẹp */
+.custom-tooltip {
+  background: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e0e0e0;
+}
+
+.custom-tooltip .label {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #1e293b;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* Legend có icon */
+.custom-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #374151;
+}

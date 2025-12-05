@@ -5,12 +5,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.datn.social.constant.ApiResponseCode;
-import vn.datn.social.dto.request.CreateCommentRequestDTO;
-import vn.datn.social.dto.response.CommentDTO;
+import vn.datn.social.constant.ClientUrls;
+import vn.datn.social.constant.NotificationType;
+import vn.datn.social.dto.request.CommentRequestDTO;
+import vn.datn.social.dto.request.CreateNotificationRequest;
+import vn.datn.social.dto.response.CommentResponseDTO;
+import vn.datn.social.dto.response.UserSummaryResponseDTO;
+import vn.datn.social.dto.response.projection.CommentProjection;
 import vn.datn.social.entity.Comment;
 import vn.datn.social.entity.Post;
 import vn.datn.social.entity.User;
@@ -18,12 +22,7 @@ import vn.datn.social.exception.BusinessException;
 import vn.datn.social.repository.CommentRepository;
 import vn.datn.social.repository.PostRepository;
 import vn.datn.social.repository.UserRepository;
-import vn.datn.social.utils.BlobUtil;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
+import vn.datn.social.security.IBEUser;
 
 @Service
 @Transactional
@@ -32,46 +31,54 @@ import java.util.List;
 public class CommentService {
 
     CommentRepository commentRepository;
-
-    UserRepository userRepository;
-
     PostRepository postRepository;
-    private final UserService userService;
-    private final PostService postService;
+    NotificationService notificationService;
+    UserRepository userRepository;
+    private final UploadService uploadService;
 
-    public List<Comment> findCommentsByPost(Post post) {
-        return commentRepository.findByPost(post);
+    public CommentResponseDTO createComment(IBEUser ibeUser, Long postId, CommentRequestDTO request) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy bài viết"));
+        String image = request.file() != null ? uploadService.uploadImage(request.file()) : null;
+        Comment comment = Comment.builder()
+                .postId(postId)
+                .content(request.content())
+                .image(image)
+                .build();
+        comment = commentRepository.save(comment);
+        User receiver = userRepository.findByPostId(postId)
+                .orElseThrow(() -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "User not found"));
+        CommentProjection projection = commentRepository.findByCommentId(comment.getId()).orElseThrow(
+                () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Comment not found"));
+        if (receiver.getId().equals(ibeUser.getId())) return convertToDTO(projection);
+
+        String content = " đã bình luận về bài viết của bạn";
+        String deepLink = ClientUrls.POST_DETAIL_URL + post.getId();
+        sendNotification(content, deepLink, receiver.getId(), NotificationType.COMMENT.name());
+
+        return convertToDTO(projection);
     }
 
-    // Phương thức lấy danh sách bình luận theo postId với phân trang
-    public Page<CommentDTO> getCommentsForPost(Long postId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size); // Tạo Pageable với số trang và kích thước
-        Page<Comment> commentsPage = commentRepository.findByPostId(postId, pageable); // Lấy Page<Comment> với phân trang
-
-        return commentsPage.map(comment -> {
-            String username = comment.getUser().getUsername();
-            String image = BlobUtil.blobToBase64(comment.getUser().getImage());
-            return new CommentDTO(username, comment.getContent(), image); // Ánh xạ Comment thành CommentDTO
-        });
+    public Page<CommentResponseDTO> findAllByPostId(Long postId, Pageable pageable) {
+        return commentRepository.findByPostId(postId, pageable).map(this::convertToDTO);
     }
 
-    public Comment saveComment(Long userId, CreateCommentRequestDTO request) {
-        // Tìm bài post theo ID
-        Post post = postService.findById(request.postId());
+    private CommentResponseDTO convertToDTO(CommentProjection projection) {
+        UserSummaryResponseDTO authorDTO = UserSummaryResponseDTO.builder()
+                .id(projection.getUserId())
+                .username(projection.getUsername())
+                .image(projection.getUserImage())
+                .build();
+        return CommentResponseDTO.builder()
+                .id(projection.getId())
+                .content(projection.getContent())
+                .image(projection.getImage())
+                .author(authorDTO)
+                .build();
+    }
 
-        // Tìm người dùng theo tên người dùng
-        User user = userService.findById(userId);
-
-        // Tạo một bình luận mới
-        Comment comment = new Comment();
-        comment.setPost(post);
-        comment.setUser(user);
-        comment.setContent(request.content());
-        // Chuyển LocalDateTime thành Date
-        Date createdAt = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
-        comment.setCreatedAt(createdAt);
-
-        // Lưu bình luận vào cơ sở dữ liệu
-        return commentRepository.save(comment);
+    private void sendNotification(String content, String deepLink, Long receiverId, String type) {
+        CreateNotificationRequest request = new CreateNotificationRequest(content, deepLink, receiverId, type);
+        notificationService.createNotification(request);
     }
 }

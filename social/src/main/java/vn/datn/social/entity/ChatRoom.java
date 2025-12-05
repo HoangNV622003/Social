@@ -30,9 +30,8 @@ public class ChatRoom extends AbstractAuditingEntity implements Serializable {
     @Column(name = "name")
     String name;
 
-    @Lob
     @Column(name = "image")
-    Blob image;
+    String image;
 
     @Column(name = "type", nullable = false)
     Integer type;

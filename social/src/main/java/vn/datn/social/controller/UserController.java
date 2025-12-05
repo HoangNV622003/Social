@@ -6,21 +6,18 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vn.datn.social.dto.request.ChangePasswordRequest;
 import vn.datn.social.dto.request.CreateUserRequestDTO;
-import vn.datn.social.dto.request.Edit_pf_Request;
-import vn.datn.social.dto.response.Edit_pf;
+import vn.datn.social.dto.request.UpdateDeepUserRequestDTO;
+import vn.datn.social.dto.response.UserResponseDTO;
 import vn.datn.social.entity.User;
 import vn.datn.social.security.CurrentUserId;
-import vn.datn.social.service.EmailService;
 import vn.datn.social.service.UserService;
-
-import java.security.Principal;
 
 @Slf4j
 @Validated
@@ -31,20 +28,6 @@ import java.security.Principal;
 public class UserController {
     UserService userService;
     PasswordEncoder passwordEncoder;
-    EmailService emailService;
-
-    @GetMapping("/profile")
-    public ResponseEntity<Edit_pf> getUserProfile(Principal principal) {
-        String username = principal.getName();
-        return ResponseEntity.ok(userService.getUser(username));
-    }
-
-    // Endpoint để cập nhật thông tin người dùng
-    @PutMapping("/profile")
-    public ResponseEntity<Void> updateUserProfile(@Valid @RequestBody Edit_pf_Request userProfileRequest, @CurrentUserId Long userId) {
-        User user = userService.updateUserProfile(userId, userProfileRequest); // Giả sử bạn có phương thức cập nhật người dùng
-        return ResponseEntity.ok().build();
-    }
 
     // Thêm endpoint để thay đổi mật khẩu
     @PutMapping("/change-password")
@@ -54,7 +37,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody CreateUserRequestDTO user, HttpServletRequest request) {
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserRequestDTO user, HttpServletRequest request) {
         return ResponseEntity.ok(userService.createUser(user, request));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+    @PutMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateUserByAdmin(@ModelAttribute UpdateDeepUserRequestDTO request, @PathVariable Long userId) {
+        userService.updateDeepUserByAdmin(userId, request);
+        return ResponseEntity.ok().build();
     }
 }

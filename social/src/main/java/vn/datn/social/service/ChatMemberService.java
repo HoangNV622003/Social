@@ -21,12 +21,12 @@ public class ChatMemberService {
     ChatMemberRepository chatMemberRepository;
 
     public void saveChatMember(ChatMemberRequest request) {
-        if (chatMemberRepository.existsByUserIdAndRoomId(request.getUserId(), request.getRoomId())) {
+        if (chatMemberRepository.existsByUserIdAndRoomId(request.userId(), request.roomId())) {
             throw new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Người dùng đã ở trong đoạn chat");
         }
         ChatMember chatMember = ChatMember.builder()
-                .userId(request.getUserId())
-                .roomId(request.getRoomId())
+                .userId(request.userId())
+                .roomId(request.roomId())
                 .build();
         chatMemberRepository.save(chatMember);
     }

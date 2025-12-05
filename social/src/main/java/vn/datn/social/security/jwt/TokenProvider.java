@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 import tech.jhipster.config.JHipsterProperties;
 import vn.datn.social.constant.ApiResponseCode;
+import vn.datn.social.constant.Authorities;
 import vn.datn.social.constant.TokenType;
 import vn.datn.social.dto.response.TokenPairResponseDTO;
 import vn.datn.social.entity.InvalidatedToken;
@@ -80,13 +81,13 @@ public class TokenProvider {
     }
 
     public void logout(String accessToken, String refreshToken) throws ParseException {
-        if(StringUtils.isNotBlank(accessToken)){
-            SignedJWT accessJwt=parseAndVerify(accessToken);
+        if (StringUtils.isNotBlank(accessToken)) {
+            SignedJWT accessJwt = parseAndVerify(accessToken);
             validateAccessTokenForLogout(accessJwt);
             invalidateToken(accessJwt);
         }
-        if(StringUtils.isNotBlank(refreshToken)){
-            SignedJWT refreshJwt=parseAndVerify(refreshToken);
+        if (StringUtils.isNotBlank(refreshToken)) {
+            SignedJWT refreshJwt = parseAndVerify(refreshToken);
             validateRefreshTokenForLogout(refreshJwt);
             invalidateToken(refreshJwt);
         }
@@ -107,6 +108,7 @@ public class TokenProvider {
             throw new JwtException("Not a refresh token");
         }
     }
+
     private String createAccessToken(User user) {
         return buildToken(user, accessTokenValidity, TokenType.ACCESS.getId());
     }
@@ -125,6 +127,7 @@ public class TokenProvider {
                 .claim(EMAIL_KEY, user.getEmail())
                 .claim(USERNAME_KEY, user.getUsername())
                 .claim(TOKEN_TYPE, type)
+                .claim(AUTHORITIES_KEY, Authorities.find(user.getRole()).name())
                 .build();
 
         JWSObject jws = new JWSObject(new JWSHeader(JWSAlgorithm.HS512), new Payload(claims.toJSONObject()));

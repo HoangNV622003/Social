@@ -1,0 +1,17 @@
+/* src/components/group/FriendSearchList.css */
+.fs-list {
+  margin-top: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+}
+
+.fs-loading,
+.fs-empty {
+  text-align: center;
+  padding: 24px;
+  color: #6b7280;
+  font-style: italic;
+}

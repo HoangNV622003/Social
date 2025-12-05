@@ -1,0 +1,89 @@
+/* src/pages/admin/components/UserEditPopup/UserEditPopup.css */
+.ue-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.ue-popup {
+  background: white;
+  border-radius: 16px;
+  width: 520px;
+  max-width: 94vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.4s ease;
+}
+
+.ue-header {
+  padding: 20px 24px;
+  background: linear-gradient(120deg, #6366f1, #8b5cf6);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ue-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.ue-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ue-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.ue-body {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.ue-loading {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.ue-upload-btn:hover {
+  cursor: pointer;
+}

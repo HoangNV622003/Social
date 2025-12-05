@@ -1,56 +1,71 @@
 package vn.datn.social.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import vn.datn.social.dto.response.FriendSummaryProjection;
-import vn.datn.social.entity.FriendShip;
-import vn.datn.social.entity.User;
+import org.springframework.transaction.annotation.Transactional;
+import vn.datn.social.dto.response.projection.FriendSummaryProjection;
+import vn.datn.social.entity.FriendUser;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FriendRepository extends JpaRepository<FriendShip, Long> {
-
-    // Lấy danh sách bạn bè theo tên người dùng
-//    @Query("SELECT f.friend FROM FriendShip f WHERE f.user.username = :username")
-//    List<User> findFriendsByUsername(@Param("username") String username);
-    // Truy vấn để lấy danh sách bạn bè theo cả hai chiều
-    @Query("SELECT f.friend FROM FriendShip f WHERE f.user.username = :username " +
-           "UNION " +
-           "SELECT f.user FROM FriendShip f WHERE f.friend.username = :username")
-    List<User> findFriendsByUsername(@Param("username") String username);
+public interface FriendRepository extends JpaRepository<FriendUser, Long> {
 
     @Query("""
             SELECT
                 u.id AS id,
                 u.username AS username,
-                u.image as image
-            FROM User u INNER JOIN FriendShip f ON f.user.id=u.id WHERE u.id=:userId AND
-                        (:keyword IS NULL OR :keyword = '' OR
-                        LOWER(u.username) LIKE LOWER(CONCAT('%',:keyword,'%')) OR
-                        LOWER(u.email) LIKE LOWER(CONCAT('%',:keyword,'%')))
+                u.image AS image
+            FROM FriendUser f
+            JOIN User u
+                ON u.id = CASE
+                            WHEN f.userId = :myId THEN f.createdBy
+                            ELSE f.userId
+                          END
+            WHERE (f.userId = :myId OR f.createdBy = :myId)
+              AND f.status = 2
+              AND (
+                    :keyword IS NULL OR :keyword = '' OR
+                    LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+                    LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
+              )
             """)
-    List<FriendSummaryProjection> searchMyFriends(@Param("keyword") String keyword,@Param("userId")Long userId);
+    Page<FriendSummaryProjection> searchMyFriends(
+            @Param("myId") Long myId,
+            @Param("keyword") String keyword,
+            Pageable pageable);
 
-    // Kiểm tra mối quan hệ bạn bè giữa hai người
-    boolean existsByUserAndFriend(User user, User friend);
+    @Query("""
+                SELECT f FROM FriendUser f WHERE
+                    ((f.userId=:userId AND f.createdBy=:createdBy) OR
+                    (f.userId=:createdBy AND f.createdBy=:userId)) AND
+                    f.status = :status
+            """)
+    Optional<FriendUser> findByMyIdAndFriendIdAndStatus(@Param("userId") Long userId, @Param("createdBy") Long createdBy, @Param("status") Short status);
 
-    boolean existsByUserAndFriendAndAccepted(User user, User friend, boolean accepted);
+    @Transactional
+    @Modifying
+    @Query("""
+                DELETE FROM FriendUser f WHERE
+                    ((f.userId=:userId AND f.createdBy=:createdBy) OR
+                    (f.userId=:createdBy AND f.createdBy=:userId)) AND
+                    f.status = :status
+            """)
+    void deleteByMyIdAndFriendIdAndStatus(@Param("userId") Long userId,
+                                          @Param("createdBy") Long createdBy,
+                                          @Param("status") Short status);
 
-    // Tìm kiếm mối quan hệ chưa được chấp nhận giữa hai người dùng
-    Optional<FriendShip> findByUserAndFriendAndAccepted(User user, User friend, boolean accepted);
-
-    // Lấy mối quan hệ giữa hai người dùng
-    FriendShip findByUserAndFriend(User user, User friend);
-
-    @Query("SELECT f FROM FriendShip f " +
-           "WHERE (f.user.username = :currentUsername AND f.friend.username = :otherUsername) " +
-           "OR (f.user.username = :otherUsername AND f.friend.username = :currentUsername)")
-    Optional<FriendShip> findFriendShipBetweenUsers(@Param("currentUsername") String currentUsername,
-                                                    @Param("otherUsername") String otherUsername);
+    @Query("""
+                SELECT f FROM FriendUser f WHERE
+                    (f.userId=:friendId AND f.createdBy=:currentUserId) OR
+                    (f.userId=:currentUserId AND f.createdBy=:friendId)
+            """)
+    Optional<FriendUser> findByMyIdAndFriendId(@Param("currentUserId") Long currentUserId, @Param("friendId") Long friendId);
 }
 
 

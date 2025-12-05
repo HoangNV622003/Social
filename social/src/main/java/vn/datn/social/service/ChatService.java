@@ -13,9 +13,10 @@ import vn.datn.social.constant.ChatTypeConstants;
 import vn.datn.social.dto.request.CreateChatGroupRequestDTO;
 import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.response.ChatDetailResponseDTO;
-import vn.datn.social.dto.response.ChatProjection;
 import vn.datn.social.dto.response.ChatResponseDTO;
 import vn.datn.social.dto.response.UserResponseDTO;
+import vn.datn.social.dto.response.UserSummaryResponseDTO;
+import vn.datn.social.dto.response.projection.ChatProjection;
 import vn.datn.social.entity.ChatRoom;
 import vn.datn.social.entity.User;
 import vn.datn.social.exception.BusinessException;
@@ -23,7 +24,6 @@ import vn.datn.social.repository.ChatMemberRepository;
 import vn.datn.social.repository.ChatRoomRepository;
 import vn.datn.social.repository.MessageRepository;
 import vn.datn.social.repository.UserRepository;
-import vn.datn.social.utils.BlobUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -48,6 +48,9 @@ public class ChatService {
         return chatRoomRepository.findAllByUserId(currentUserId, pageable).map(this::convertToChatResponseDTO);
     }
 
+    public Page<ChatResponseDTO> findChatByName(Long currentUserId, String keyword, Pageable pageable) {
+        return chatRoomRepository.searchByName(keyword, currentUserId, pageable).map(this::convertToChatResponseDTO);
+    }
     public ChatDetailResponseDTO getChatDetails(Long chatId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatId).orElseThrow(
                 () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy đoạn chat"));
@@ -60,12 +63,12 @@ public class ChatService {
                 .members(members)
                 .name(chatRoom.getName())
                 .type(ChatTypeConstants.find(chatRoom.getType()).name())
-                .image(chatRoom.getImage() != null ? BlobUtil.blobToBase64(chatRoom.getImage()) : null)
+                .image(chatRoom.getImage())
                 .messages(messageService.findAllByChatId(chatId, pageable))
                 .build();
     }
 
-    public ChatDetailResponseDTO createChatPrivate(Long currentUserId, CreateChatRequestDTO requestDTO) {
+    public ChatDetailResponseDTO openChatPrivate(Long currentUserId, CreateChatRequestDTO requestDTO) {
         ChatRoom chat = chatRoomRepository.findByTwoUserIds(currentUserId, requestDTO.userId())
                 .orElseGet(() -> saveChatPrivate(currentUserId, requestDTO));
 
@@ -87,7 +90,7 @@ public class ChatService {
         return ChatDetailResponseDTO.builder()
                 .id(chatRoom.getId())
                 .name(chatRoom.getName())
-                .image(chatRoom.getImage() != null ? BlobUtil.blobToBase64(chatRoom.getImage()) : null)
+                .image(chatRoom.getImage())
                 .members(userResponseDTOS)
                 .type(ChatTypeConstants.find(chatRoom.getType()).name())
                 .build();

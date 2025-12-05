@@ -10,7 +10,6 @@ const MessageItem = ({ message, currentUserId, chatType, opponent }) => {
     const sender = isMe
         ? null
         : (message.sender || opponent); // fallback về opponent nếu không có sender
-
     // Thời gian
     const time = typeof message.dateCreated === 'number'
         ? new Date(message.dateCreated * 1000)
@@ -45,8 +44,8 @@ const MessageItem = ({ message, currentUserId, chatType, opponent }) => {
             {/* Avatar bên trái (người khác gửi) */}
             {!isMe && (
                 <UserAvatar
-                    username={sender?.senderName || 'Unknown'}
-                    image={sender?.senderImage || null}
+                    username={message?.senderName || 'Unknown'}
+                    image={message?.senderImage || null}
                     size="small"
                     className="message-avatar"
                 />

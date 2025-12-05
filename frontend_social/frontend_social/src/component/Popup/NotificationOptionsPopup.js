@@ -1,0 +1,48 @@
+// src/components/Notification/NotificationOptionsPopup.js
+import React from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { markAllAsRead } from '../../apis/NotificationService';
+import { toast } from 'react-toastify';
+import './NotificationOptionsPopup.css'; // tạo file CSS nhỏ bên dưới
+
+const NotificationOptionsPopup = ({ onClose, onMarkedAllRead }) => {
+    const { token } = useAuth(); // token luôn mới nhất vì component này render lại khi cần
+
+    const handleMarkAllAsRead = async () => {
+        if (!token) {
+
+            toast.error('Không tìm thấy token');
+            return;
+        }
+
+        try {
+            await markAllAsRead(token);
+            toast.success('Đã đánh dấu tất cả là đã đọc');
+
+            // Cập nhật UI cha (NotificationPage)
+            onMarkedAllRead?.();
+
+            // Đóng popup
+            onClose();
+        } catch (err) {
+            console.error(err);
+            toast.error('Có lỗi khi đánh dấu đã đọc');
+        }
+    };
+
+    return (
+        <>
+            {/* Overlay */}
+            <div className="popup-overlay" onClick={onClose} />
+
+            {/* Popup */}
+            <div className="notification-options-popup">
+                <button onClick={handleMarkAllAsRead} className="popup-item">
+                    Đánh dấu tất cả là đã đọc
+                </button>
+            </div>
+        </>
+    );
+};
+
+export default NotificationOptionsPopup;

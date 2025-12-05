@@ -1,5 +1,6 @@
 package vn.datn.social.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +15,9 @@ import vn.datn.social.entity.User;
 import vn.datn.social.exception.BusinessException;
 import vn.datn.social.repository.ChatRoomRepository;
 import vn.datn.social.repository.MessageRepository;
-import vn.datn.social.utils.BlobUtil;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MessageService {
     private final MessageRepository messageRepository;
@@ -57,7 +58,7 @@ public class MessageService {
                 .content(message.getContent())
                 .senderId(message.getSenderId())
                 .senderName(user.getUsername())
-                .senderImage(user.getImage() != null ? BlobUtil.blobToBase64(user.getImage()) : null)
+                .senderImage(user.getImage())
                 .dateCreated(message.getDateCreated().getEpochSecond())
                 .build();
     }

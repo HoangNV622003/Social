@@ -52,8 +52,8 @@ export const getMyPosts = async (token, page = 0, size = 10) => {
 };
 
 // 6. Lấy thông tin profile người khác (có trạng thái friend, pending, request...)
-export const getUserProfile = async (username, token) => {
-    return await axios.get(`${PROFILE_API}/${username}`, authHeader(token));
+export const getUserProfile = async (userId, token) => {
+    return await axios.get(`${PROFILE_API}/${userId}`, authHeader(token));
 };
 
 // 7. Upload avatar (có xử lý file)
@@ -68,3 +68,7 @@ export const uploadAvatar = async (file, token) => {
         }
     });
 };
+
+export const getImage = async (userId, token) => {
+    return await axios.get(`${PROFILE_API}/${userId}/images`, authHeader(token))
+}

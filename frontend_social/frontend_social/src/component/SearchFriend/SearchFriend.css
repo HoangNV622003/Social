@@ -24,6 +24,7 @@
 }
 
 .search-friend-input {
+  margin-left: 20px;
   flex: 1;
   border: none;
   background: transparent;

@@ -1,7 +1,7 @@
 package vn.datn.social.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,20 +9,16 @@ import org.springframework.stereotype.Service;
 import vn.datn.social.constant.ApiResponseCode;
 import vn.datn.social.dto.request.ReportPostRequest;
 import vn.datn.social.dto.response.ReportPostResponseDTO;
-import vn.datn.social.dto.response.ReportedPostProjection;
+import vn.datn.social.dto.response.projection.ReportedPostProjection;
 import vn.datn.social.entity.Post;
 import vn.datn.social.entity.ReportedPost;
 import vn.datn.social.exception.BusinessException;
 import vn.datn.social.repository.PostRepository;
 import vn.datn.social.repository.ReportedPostRepository;
 import vn.datn.social.repository.UserRepository;
-import vn.datn.social.utils.BlobUtil;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ReportedPostService {
 
@@ -32,19 +28,15 @@ public class ReportedPostService {
 
     private final UserRepository userRepository;
 
-    public void reportPost(Long postId, Long reportedById, String reason) {
-        Post post = postRepository.findById(postId).orElseThrow(
+    public void reportPost(ReportPostRequest request) {
+        Post post = postRepository.findById(request.getPostId()).orElseThrow(
                 () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Post not found"));
 
-        // Tạo đối tượng ReportedPost
         ReportedPost reportedPost = ReportedPost.builder()
-                .post(post)
-                .reportedBy(reportedById) // Lưu user_id trực tiếp
-                .reason(reason)
-                .reportedAt(new Date()) // Lấy thời gian hiện tại
+                .postId(post.getId())
+                .reason(request.getReason())
                 .build();
 
-        // Lưu thông tin báo cáo vào database
         reportedPostRepository.save(reportedPost);
     }
 
@@ -53,23 +45,11 @@ public class ReportedPostService {
         return reportedPostRepository.findAllWithQuery(pageable).map(this::convertToDTO);
     }
 
-    public void deletePost(Long postId) {
-        // Trước khi xóa bài viết, cần xóa các bản ghi liên quan trong bảng reported_post
-        List<ReportedPost> reportedPosts = reportedPostRepository.findByPostId(postId);
-        if (reportedPosts != null) {
-            reportedPostRepository.deleteAll(reportedPosts);  // Xóa tất cả báo cáo liên quan
+    public void deleteReport(Long reportId) {
+        if (!reportedPostRepository.existsById(reportId)) {
+            throw new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Reported post not found");
         }
-
-        // Sau đó, xóa bài viết
-        postRepository.deleteById(postId);
-    }
-
-    public boolean removeReport(Long reportId) {
-        if (reportedPostRepository.existsById(reportId)) {
-            reportedPostRepository.deleteById(reportId);
-            return true;
-        }
-        return false;
+        reportedPostRepository.deleteById(reportId);
     }
 
     private ReportPostResponseDTO convertToDTO(ReportedPostProjection projection) {
@@ -79,15 +59,7 @@ public class ReportedPostService {
                 .reportedBy(projection.getReportedBy())
                 .reason(projection.getReason())
                 .postContent(projection.getPostContent())
-                .postImage(projection.getPostImage() != null ? BlobUtil.blobToBase64(projection.getPostImage()) : null)
+                .postImage(projection.getPostImage())
                 .build();
-    }
-
-    public void deleteByPostId(Long postId) {
-        reportedPostRepository.deleteById(postId);
-    }
-
-    public List<ReportedPost> findByPostId(Long postId) {
-        return reportedPostRepository.findByPostId(postId);
     }
 }

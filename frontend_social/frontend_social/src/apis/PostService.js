@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { API_URL } from '../constants/apiConstants';
 
-const POST_API = `${API_URL}/post`;
+const POST_API = `${API_URL}/posts`;
 
 // Helper chung – tự động thêm Bearer token
 const authHeader = (token) => ({
@@ -12,8 +12,11 @@ const authHeader = (token) => ({
 });
 
 // 1. Lấy tất cả bài post (mình + bạn bè)
-export const getAllPosts = async (token) => {
-    return await axios.get(`${POST_API}/all`, authHeader(token));
+export const getAllPosts = async (token, userId, page = 0, size = 20) => {
+    if (userId) {
+        return await axios.get(`${POST_API}?page=${page}&size=${size}&userId=${userId}`, authHeader(token));
+    }
+    return await axios.get(`${POST_API}?page=${page}&size=${size}`, authHeader(token));
 };
 
 // 2. Lấy bài post bạn bè (phân trang)
@@ -48,14 +51,9 @@ export const updatePost = async (token, postId, postData) => {
 };
 
 // TẠO BÀI VIẾT MỚI (có ảnh + nội dung)
-export const createPost = async (token, content, file = null) => {
-    const formData = new FormData();
-    formData.append('content', content);
-    if (file) {
-        formData.append('file', file);
-    }
+export const createPost = async (token, formData) => {
 
-    return await axios.post(`${POST_API}/create`, formData, {
+    return await axios.post(`${POST_API}`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
         }
@@ -63,8 +61,8 @@ export const createPost = async (token, content, file = null) => {
 };
 
 // XÓA BÀI VIẾT
-export const deletePost = async (token, postId) => {
-    return await axios.delete(`${POST_API}/delete/${postId}`, authHeader(token));
+export const deletePost = async (postId, token) => {
+    return await axios.delete(`${POST_API}/${postId}`, authHeader(token));
 };
 // 7. Lấy số liệu thống kê bài viết theo tháng (dùng cho dashboard)
 export const getPostStats = async (token) => {

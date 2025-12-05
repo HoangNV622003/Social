@@ -33,7 +33,7 @@ public class ChatController {
             @CurrentUserId Long currentUserId,
             @RequestBody CreateChatRequestDTO createChatRequestDTO
     ) {
-        return ResponseEntity.ok(chatService.createChatPrivate(currentUserId, createChatRequestDTO));
+        return ResponseEntity.ok(chatService.openChatPrivate(currentUserId, createChatRequestDTO));
     }
 
     @PostMapping("/group")
@@ -55,5 +55,13 @@ public class ChatController {
     public ResponseEntity<Void> deleteChat(@PathVariable Long chatId) {
         chatService.deleteChat(chatId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ChatResponseDTO>> search(
+            @CurrentUserId Long currentUserId,
+            @RequestParam String keyword,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(chatService.findChatByName(currentUserId, keyword, pageable));
     }
 }

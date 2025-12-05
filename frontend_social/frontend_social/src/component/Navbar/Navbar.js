@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { useAuth } from '../../context/AuthContext';
-import { getUnreadNotifications, markAllNotificationsAsRead } from '../../apis/NotificationService';
+import { getUnreadNotifications, markAllAsRead, getUnreadCount } from '../../apis/NotificationService';
 import { toast } from 'react-toastify';
 
 // === SVG Icons (giữ nguyên, rất đẹp) ===
@@ -38,15 +38,15 @@ function Navbar() {
   const location = useLocation();
   const dropdownRef = useRef(null);
 
-  const isAdmin = user?.admin;
+  const isAdmin = user?.role == "ROLE_ADMIN";
   const username = user?.username || user?.fullName || 'User';
-
+  console.log(user)
   // === Lấy số lượng thông báo chưa đọc ===
   const fetchUnreadCount = async () => {
     if (!token) return;
     try {
-      const res = await getUnreadNotifications(token);
-      const count = res.data.length;
+      const res = await getUnreadCount(token);
+      const count = res.data;
       setUnreadCount(count);
       setHasNewNotification(count > 0);
     } catch (err) {
@@ -67,7 +67,7 @@ function Navbar() {
   const handleNotiClick = async () => {
     if (hasNewNotification) {
       try {
-        await markAllNotificationsAsRead(token);
+        await markAllAsRead(token);
         setHasNewNotification(false);
         setUnreadCount(0);
         toast.success('Đã đánh dấu tất cả thông báo là đã đọc');
@@ -149,7 +149,7 @@ function Navbar() {
 
           {showDropdown && (
             <div className="blockchat-navbar-2025-dropdown">
-              <Link to="/profile" className="blockchat-navbar-2025-dropdown-item">Hồ sơ cá nhân</Link>
+              <Link to={`/profile/` + user.id} className="blockchat-navbar-2025-dropdown-item">Hồ sơ cá nhân</Link>
               <Link to="/Edit_profile" className="blockchat-navbar-2025-dropdown-item">Chỉnh sửa hồ sơ</Link>
               {isAdmin && <Link to="/manage_user" className="blockchat-navbar-2025-dropdown-item blockchat-navbar-2025-admin">Quản trị hệ thống</Link>}
               <div className="blockchat-navbar-2025-divider"></div>

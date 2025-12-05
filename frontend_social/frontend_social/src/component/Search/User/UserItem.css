@@ -1,0 +1,98 @@
+/* Card người dùng hình chữ nhật */
+.user-item-card {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid #e4e6eb;
+}
+
+.user-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  border-color: #1877f2;
+}
+
+.user-item-avatar {
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+.user-item-info {
+  flex: 1;
+  min-width: 0; /* cho phép text bị cắt nếu quá dài */
+}
+
+.user-item-name {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c1e21;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-item-id {
+  margin: 0;
+  font-size: 13px;
+  color: #65676b;
+}
+
+/* Nút hành động */
+.user-item-action {
+  margin-left: auto;
+}
+
+.view-profile-btn {
+  background: #e7f3ff;
+  color: #1877f2;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-profile-btn:hover {
+  background: #d8efff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .user-item-card {
+    padding: 10px;
+  }
+
+  .user-item-name {
+    font-size: 15px;
+  }
+
+  .view-profile-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-item-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .user-item-avatar {
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .user-item-action {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}

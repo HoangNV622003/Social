@@ -1,0 +1,30 @@
+.friend-button-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.relation-btn,
+.message-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.relation-btn:hover,
+.message-btn:hover {
+  background-color: #e6e6e6;
+}
+
+.message-btn {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.message-btn:hover {
+  background-color: #e7f1ff;
+}

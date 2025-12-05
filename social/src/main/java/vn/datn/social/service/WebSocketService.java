@@ -10,7 +10,6 @@ import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.request.MessageRequestDTO;
 import vn.datn.social.dto.response.ChatDetailResponseDTO;
 import vn.datn.social.dto.response.MessageResponseDTO;
-import vn.datn.social.entity.Message;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +18,7 @@ public class WebSocketService {
     ChatService chatService;
     MessageService messageService;
     SimpMessagingTemplate simpMessagingTemplate;
+    private final NotificationService notificationService;
 
     public void sendMessage(Long chatId, MessageRequestDTO requestDTO) {
         MessageResponseDTO message = messageService.sendMessage(chatId, requestDTO);
@@ -26,7 +26,7 @@ public class WebSocketService {
     }
 
     public void createChatPrivate(Long currentUserId, CreateChatRequestDTO requestDTO) {
-        ChatDetailResponseDTO chat = chatService.createChatPrivate(currentUserId, requestDTO);
+        ChatDetailResponseDTO chat = chatService.openChatPrivate(currentUserId, requestDTO);
         simpMessagingTemplate.convertAndSendToUser(
                 String.valueOf(requestDTO.userId()),
                 "/queue/new-chat",
@@ -34,7 +34,7 @@ public class WebSocketService {
     }
 
     public void createChatGroup(Long currentUserId, CreateChatGroupRequestDTO requestDTO) {
-        ChatDetailResponseDTO chat= chatService.createChatGroup(currentUserId, requestDTO);
+        ChatDetailResponseDTO chat = chatService.createChatGroup(currentUserId, requestDTO);
         requestDTO.userIds().add(currentUserId);
         requestDTO.userIds().forEach(id -> {
             simpMessagingTemplate.convertAndSendToUser(

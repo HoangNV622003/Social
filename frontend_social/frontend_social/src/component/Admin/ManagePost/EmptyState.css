@@ -1,0 +1,24 @@
+/* src/pages/admin/components/EmptyState.css */
+.mp-empty {
+  text-align: center;
+  padding: 5rem 2rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+  font-size: 4.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mp-empty h3 {
+  font-size: 1.8rem;
+  color: #1e293b;
+  margin: 0 0 0.8rem;
+}
+
+.mp-empty p {
+  color: #64748b;
+  font-size: 1.15rem;
+}

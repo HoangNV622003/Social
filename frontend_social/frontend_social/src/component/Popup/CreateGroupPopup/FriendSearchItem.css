@@ -1,0 +1,43 @@
+/* src/components/group/FriendSearchItem.css */
+.fsi-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.fsi-item:hover {
+  background: #f8fafc;
+}
+
+.fsi-item.selected {
+  background: #eef2ff;
+  pointer-events: none;
+  font-weight: 500;
+}
+
+.fsi-item:last-child {
+  border-bottom: none;
+}
+
+.fsi-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #e5e7eb;
+}
+
+.fsi-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.fsi-check {
+  color: #6366f1;
+  font-size: 0.9rem;
+  font-weight: 600;
+}

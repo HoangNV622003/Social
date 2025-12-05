@@ -1,6 +1,7 @@
 package vn.datn.social.service;
 
 import vn.datn.social.constant.ApiResponseCode;
+import vn.datn.social.constant.Authorities;
 import vn.datn.social.dto.request.LoginUserRequestDTO;
 import vn.datn.social.dto.response.AuthResponseDTO;
 import vn.datn.social.dto.response.TokenPairResponseDTO;
@@ -15,9 +16,7 @@ import vn.datn.social.entity.User;
 import vn.datn.social.exception.BusinessException;
 import vn.datn.social.repository.UserRepository;
 import vn.datn.social.security.jwt.TokenProvider;
-import vn.datn.social.utils.BlobUtil;
 
-import java.text.ParseException;
 import java.time.Instant;
 
 @Service
@@ -31,9 +30,9 @@ public class AuthService {
     UserService userService;
 
     public AuthResponseDTO generateToken(LoginUserRequestDTO loginUserRequestDTO) {
-        User user = userRepository.findByEmail(loginUserRequestDTO.getEmail())
+        User user = userRepository.findByEmail(loginUserRequestDTO.email())
                 .orElseThrow(() -> new BusinessException(ApiResponseCode.BAD_REQUEST, "Tài khoản chưa được đăng ký"));
-        if (!passwordEncoder.matches(loginUserRequestDTO.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginUserRequestDTO.password(), user.getPassword())) {
             throw new BusinessException(ApiResponseCode.BAD_REQUEST, "Mật khẩu không hợp lệ");
         }
         TokenPairResponseDTO tokenPair = tokenProvider.createTokenPair(user);
@@ -48,8 +47,8 @@ public class AuthService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .image(user.getImage() != null ? BlobUtil.blobToBase64(user.getImage()) : null)
-                .isAdmin(user.isAdmin())
+                .image(user.getImage())
+                .role(Authorities.find(user.getRole()).getName())
                 .build();
     }
 

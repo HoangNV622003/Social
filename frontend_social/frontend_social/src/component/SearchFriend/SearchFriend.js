@@ -7,7 +7,7 @@ import { AiOutlineSearch, AiOutlineClose } from 'react-icons/ai';
 import './SearchFriend.css';
 
 const SearchFriend = ({ onSelect, placeholder = "Tìm kiếm bạn bè..." }) => {
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const [keyword, setKeyword] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -25,8 +25,8 @@ const SearchFriend = ({ onSelect, placeholder = "Tìm kiếm bạn bè..." }) =>
 
         setLoading(true);
         try {
-            const res = await searchFriend(searchTerm.trim(), token);
-            const friends = res.data || [];
+            const res = await searchFriend(searchTerm.trim(), user.id, token);
+            const friends = res.data.content || [];
             setResults(friends);
             setShowResults(true);
         } catch (err) {

@@ -1,0 +1,35 @@
+/* src/components/Friend/FriendList.css */
+.friend-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.friend-list-empty {
+  text-align: center;
+  padding: 40px;
+  color: #65676b;
+  font-size: 16px;
+}
+
+@media (max-width: 1200px) {
+  .friend-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 992px) {
+  .friend-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .friend-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .friend-list {
+    grid-template-columns: 1fr;
+  }
+}

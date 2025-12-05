@@ -41,3 +41,14 @@ export const createUser = async (userData, token = null) => {
 
 // Bonus: Nếu bạn có refresh token hoặc logout thì thêm đây
 // export const logout = async (token) => { ... }
+
+export const updateUserByAdmin = async (userId, formData, accessToken) => {
+    return await axios.put(`${USER_API}/${userId}`, formData, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+}
+export const getUserByAdmin = async (userId, accessToken) => {
+    return await axios.get(`${USER_API}/${userId}`, authHeader(accessToken));
+}

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.io.Serializable;
 import java.sql.Blob;
 import java.util.List;
 
@@ -20,59 +21,25 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends AbstractAuditingEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Username không được để trống")
-    @Size(min = 5, message = "Username phải có ít nhất 5 ký tự")
-    @Column(nullable = false, unique = true)
+    @Column(name="username",nullable = false, unique = true)
     private String username;
 
-    @NotBlank(message = "Password không được để trống")
-    @Size(min = 6, message = "Password phải có ít nhất 6 ký tự")
-    @Column(length = 60, nullable = false)
+    @Column(name="password",length = 60, nullable = false)
     private String password;
 
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không hợp lệ")
-    @Column(nullable = false, unique = true)
+    @Column(name="email",nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Post> posts;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Like> likes;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<FriendShip> friendships;
-
-    @OneToMany(mappedBy = "friend", fetch = FetchType.EAGER)
-    private List<FriendShip> friends;
-
-    private boolean enabled;
-    private String verificationCode;
-
-    private boolean isAdmin = false;
-
-    @Transient
-    private boolean friendPending;
-
-    @Transient
-    private boolean friend;
-
-    private boolean isOnline;
-
-
+    @Column(name="address")
     private String address;
 
-    @Lob
-    private Blob image;
+    @Column(name = "image")
+    private String image;
 
-    private boolean friendRequestReceiver; // Thêm thuộc tính này
+    private Integer role;
 }

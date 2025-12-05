@@ -11,6 +11,7 @@ public class UserResponseDTO {
     private Long id;
     private String username;
     private String email;
-    private boolean isAdmin;
+    private String address;
+    private String role;
     private String image;
 }

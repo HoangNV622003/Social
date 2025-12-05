@@ -45,7 +45,8 @@ spring:
         core-size: 2
         max-size: 50
         queue-capacity: 10000
-
+upload:
+  uploadDir: "D:/Xampp/htdocs/uploads/"
 server:
   port: 8080
   servlet:

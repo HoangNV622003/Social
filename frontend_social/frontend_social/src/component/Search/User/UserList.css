@@ -1,0 +1,46 @@
+/* src/components/User/UserList.css */
+.user-grid-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 4px 0;
+}
+
+.user-grid-item {
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s ease;
+}
+
+.user-grid-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
+}
+
+/* Responsive: mobile → 1 cột, tablet trở lên → 2-3 cột */
+@media (max-width: 640px) {
+  .user-grid-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .user-grid-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .user-grid-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
+  .user-grid-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

@@ -2,7 +2,11 @@ package vn.datn.social.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Auditable;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.sql.Blob;
 import java.util.Date;
 
 @Entity
@@ -12,7 +16,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Comment {
+public class Comment extends AbstractAuditingEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,17 +26,9 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "post_id", nullable = false)
+    private Long postId;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
-
-    @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdAt;
-
+    @Column(name = "image")
+    String image;
 }

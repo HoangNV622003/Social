@@ -1,14 +1,11 @@
 package vn.datn.social.dto.request;
 
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChatMemberRequest {
-    Long userId;
-    Long roomId;
-}
+public record ChatMemberRequest(
+        @NotNull(message = "UserId can't null ")
+        Long userId,
+        @NotNull(message = "RoomId can't null ")
+        Long roomId) { }
