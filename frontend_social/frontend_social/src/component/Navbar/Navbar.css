@@ -1,83 +1,118 @@
-/* BLOCKCHAT NAVBAR 2025 - HOÀN TOÀN ĐỘC LẬP */
-/* Không bao giờ bị CSS khác đè */
-
+/* ====================== NAVBAR CHÍNH ====================== */
 .blockchat-navbar-2025-main {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 70px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
   z-index: 1000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .blockchat-navbar-2025-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  padding: 0 20px;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 0 16px;
 }
 
+/* Logo */
 .blockchat-navbar-2025-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   text-decoration: none;
-  font-weight: 800;
-  font-size: 1.5rem;
+  font-weight: 700;
+  font-size: 20px;
   color: #0866ff;
 }
 
 .blockchat-navbar-2025-brand-text {
-  color: #1c1e21;
-  font-size: 1.4rem;
+  color: #0866ff;
+  font-weight: 800;
 }
 
+/* Các icon giữa */
 .blockchat-navbar-2025-center {
   display: flex;
-  gap: 8px;
-  flex: 1;
-  justify-content: center;
-  max-width: 600px;
+  gap: 24px;
 }
 
 .blockchat-navbar-2025-item {
   position: relative;
-  padding: 12px;
-  border-radius: 12px;
   background: none;
   border: none;
+  padding: 8px;
+  border-radius: 50%;
   cursor: pointer;
-  transition: background 0.2s;
-  color: #606770;
+  color: #65676b;
+  transition: all 0.2s;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .blockchat-navbar-2025-item:hover {
   background: #f0f2f5;
 }
 
+.blockchat-navbar-2025-item svg {
+  width: 26px;
+  height: 26px;
+}
+
 .blockchat-navbar-2025-active,
-.blockchat-navbar-2025-active:hover {
+.blockchat-navbar-2025-item:active {
   color: #0866ff;
   background: #e7f3ff;
 }
 
-.blockchat-navbar-2025-noti-badge {
+/* CHẤM ĐỎ THÔNG BÁO - SIÊU ĐẸP NHƯ ZALO/FACEBOOK */
+.blockchat-navbar-2025-noti-dot {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 12px;
-  height: 12px;
-  background: #e41e3f;
+  top: 6px;
+  right: 6px;
+  background: #e31c1c;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2.5px solid white;
+  box-shadow: 0 2px 6px rgba(227, 28, 28, 0.4);
+  animation: notiPulse 2s infinite;
+  z-index: 10;
+  line-height: 1;
 }
 
+@keyframes notiPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(227, 28, 28, 0.4);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(227, 28, 28, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(227, 28, 28, 0.4);
+  }
+}
+
+/* Phần user bên phải */
 .blockchat-navbar-2025-user-section {
   position: relative;
 }
@@ -86,30 +121,39 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 16px;
   background: #f0f2f5;
-  border: none;
+  padding: 6px 12px;
   border-radius: 50px;
   cursor: pointer;
+  border: none;
+  transition: background 0.2s;
   font-weight: 600;
   color: #1c1e21;
-  transition: background 0.2s;
 }
 
 .blockchat-navbar-2025-user-btn:hover {
-  background: #e2e4e9;
+  background: #e4e6ea;
 }
 
 .blockchat-navbar-2025-user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #0866ff;
-  color: white;
+  overflow: hidden;
+  border: 2px solid #e4e6ea;
+}
+
+.skeleton-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e4e6ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: bold;
-  font-size: 1.2rem;
-  display: grid;
-  place-items: center;
+  color: #65676b;
+  font-size: 16px;
 }
 
 .blockchat-navbar-2025-username {
@@ -127,88 +171,69 @@
   transform: rotate(180deg);
 }
 
+/* Dropdown menu */
 .blockchat-navbar-2025-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 8px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
   min-width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+  margin-top: 8px;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
   z-index: 1000;
 }
 
 .blockchat-navbar-2025-dropdown-item {
   display: block;
-  width: 100%;
   padding: 12px 16px;
-  text-align: left;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: #1c1e21;
   text-decoration: none;
+  color: #1c1e21;
+  font-weight: 500;
+  transition: background 0.1s;
 }
 
 .blockchat-navbar-2025-dropdown-item:hover {
-  background: #f5f6f8;
+  background: #f0f2f5;
 }
 
 .blockchat-navbar-2025-admin {
-  color: #dc2626;
+  color: #e31c1c;
   font-weight: 600;
-}
-
-.blockchat-navbar-2025-logout {
-  color: #dc2626;
 }
 
 .blockchat-navbar-2025-divider {
   height: 1px;
-  background: #e5e7eb;
-  margin: 8px 0;
+  background: #e5e5e5;
+  margin: 6px 0;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-  .blockchat-navbar-2025-brand-text {
+.blockchat-navbar-2025-logout {
+  color: #e31c1c;
+  cursor: pointer;
+}
+
+.blockchat-navbar-2025-logout:hover {
+  background: #ffebeb;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .blockchat-navbar-2025-center {
+    gap: 16px;
+  }
+
+  .blockchat-navbar-2025-item {
+    width: 40px;
+    height: 40px;
+  }
+
+  .blockchat-navbar-2025-username {
     display: none;
   }
-  .blockchat-navbar-2025-inner {
-    padding: 0 12px;
-  }
-  .blockchat-navbar-2025-center {
-    gap: 4px;
-  }
-  .blockchat-navbar-2025-item {
-    padding: 10px;
-  }
-}
-/* Thêm vào cuối file Navbar.css */
-.skeleton-avatar {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-  color: #4f46e5;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.1rem;
-  animation: pulse 1.8s infinite;
-}
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
+  .blockchat-navbar-2025-user-btn {
+    padding: 6px;
   }
 }

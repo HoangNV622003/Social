@@ -6,8 +6,7 @@ import UserAvatar from '../UserAvatar/UserAvatar';
 import { AiOutlineSearch, AiOutlineClose } from 'react-icons/ai';
 import './SearchFriend.css';
 
-const SearchFriend = ({ onSelect, placeholder = "Tìm kiếm bạn bè..." }) => {
-    const { token, user } = useAuth();
+const SearchFriend = ({ onSelect, placeholder = "Tìm kiếm bạn bè...", token, user }) => {
     const [keyword, setKeyword] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);

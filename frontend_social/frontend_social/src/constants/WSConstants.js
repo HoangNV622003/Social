@@ -7,6 +7,7 @@ const WS = {
     // Frontend subscribe: /topic/chat/123
     TOPIC: {
         CHAT_ROOM: (chatId) => `/topic/chat/${chatId}`,
+        NOTIFICATIONS: (userId) => `/topic/notifications/${userId}`
     },
 
     // 2. Nhận thông báo có đoạn chat mới (private hoặc group)

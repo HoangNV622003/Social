@@ -135,10 +135,68 @@
 }
 
 .comment-btn .icon-comment {
+  height: 25px;
+  width: 25px;
   color: #262626;
 }
 .comment-btn:hover .icon-comment {
   color: #0095f6;
+  transform: scale(1.1);
+}
+.group-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Base button */
+.group-button button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: #f2f2f2;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover chung */
+.group-button button:hover {
+  background: #e6e6e6;
+  transform: translateY(-2px);
+}
+
+/* Icon */
+.icon-like,
+.icon-comment {
+  font-size: 20px;
+  color: #555;
+  transition: color 0.22s ease, transform 0.2s ease;
+}
+
+/* Like đã bấm */
+.like-btn.liked {
+  background: rgba(0, 120, 255, 0.12);
+}
+
+.like-btn.liked .icon-like {
+  color: #007bff;
+  transform: scale(1.15);
+}
+
+/* Click hiệu ứng ripple nhẹ */
+.group-button button:active {
+  transform: scale(0.92);
+}
+
+/* Optional: hover icon phóng to nhẹ */
+.group-button button:hover .icon-like,
+.group-button button:hover .icon-comment {
   transform: scale(1.1);
 }
 

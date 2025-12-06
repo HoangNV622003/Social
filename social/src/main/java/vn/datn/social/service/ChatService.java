@@ -111,7 +111,7 @@ public class ChatService {
                 .chatId(projection.getId())
                 .lastMessage(projection.getLastMessage())
                 .lastMessageDate(projection.getLastMessageDate() != null
-                        ? projection.getLastMessageDate().toEpochMilli()
+                        ? projection.getLastMessageDate().getEpochSecond()
                         : null)
                 .name(projection.getName())
                 .image(projection.getImage())

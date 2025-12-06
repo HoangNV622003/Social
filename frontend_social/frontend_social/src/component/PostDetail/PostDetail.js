@@ -67,8 +67,6 @@ const PostDetail = () => {
             if (image) formData.append('file', image);
 
             await createComment(token, postId, formData);
-            toast.success('Đã đăng bình luận!');
-
             setContent('');
             setImage(null);
             setImagePreview(null);
@@ -141,16 +139,19 @@ const PostDetail = () => {
 
                 {/* LIKE + COMMENT + SỐ LƯỢT THÍCH */}
                 <div className="post-action">
-                    <button
-                        onClick={handleLike}
-                        className={`like-btn ${post.isLiked ? 'liked' : ''}`}
-                    >
-                        <SlLike className="icon-like" />
-                    </button>
+                    <div className="group-button">
 
-                    <button className="comment-btn">
-                        <GoComment className="icon-comment" />
-                    </button>
+                        <button
+                            onClick={handleLike}
+                            className={`like-btn ${post.isLiked ? 'liked' : ''}`}
+                        >
+                            <SlLike className="icon-like" />
+                        </button>
+
+                        <button className="comment-btn">
+                            <GoComment className="icon-comment" />
+                        </button>
+                    </div>
 
                     <div className="like-count">
                         {post.totalLike > 0 ? `${post.totalLike} lượt thích` : 'Chưa có lượt thích nào'}

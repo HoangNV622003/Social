@@ -65,11 +65,8 @@ public class NotificationService {
                 .image(user.getImage())
                 .dateCreated(notification.getDateCreated().toEpochMilli())
                 .build();
-        simpMessagingTemplate.convertAndSendToUser(
-                request.receiverId().toString(),
-                "/topic/notifications",
-                dto
-        );
+
+        simpMessagingTemplate.convertAndSend("/topic/notifications/" + notification.getUserId(), dto);
     }
 
     public void markReadAll(Long userId) {

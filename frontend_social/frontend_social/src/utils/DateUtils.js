@@ -1,89 +1,132 @@
-// src/utils/dateUtils.js
+// Múi giờ cố định cho Việt Nam
+const VIETNAM_TZ = 'Asia/Ho_Chi_Minh';
 
 /**
- * Format thời gian kiểu Zalo/Messenger:
- * - Vừa xong
- * - 5 phút trước
- * - 2 giờ trước
- * - Hôm qua
- * - 25/12/2024
- * - Thứ 2, 10:30
+ * Trả về Date object theo giờ Việt Nam.
+ * Hỗ trợ cả epochSecond (10 số) và epochMilli (13 số).
+ */
+export const getVietnamDate = (timestamp) => {
+    if (timestamp === null || timestamp === undefined) return null;
+
+    // Nếu backend trả về epochSecond (10 chữ số) → nhân 1000
+    const ts =
+        typeof timestamp === 'number' && timestamp.toString().length === 10
+            ? timestamp * 1000
+            : timestamp;
+
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) return null;
+
+    // Format theo múi giờ Việt Nam
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: VIETNAM_TZ,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hourCycle: 'h23',
+    }).formatToParts(date);
+
+    // Convert formatToParts → object
+    const obj = {};
+    parts.forEach((p) => {
+        if (p.type !== 'literal') obj[p.type] = p.value;
+    });
+
+    // Trả về Date local nhưng dữ liệu theo giờ VN
+    return new Date(
+        Number(obj.year),
+        Number(obj.month) - 1,
+        Number(obj.day),
+        Number(obj.hour),
+        Number(obj.minute),
+        Number(obj.second)
+    );
+};
+
+/**
+ * Format thời gian tin nhắn: 
+ * - "Vừa xong"
+ * - "10 phút trước"
+ * - "Hôm qua"
+ * - "Thứ 3"
+ * - "25/12/2024"
  */
 export const formatMessageTime = (timestamp) => {
     if (!timestamp) return 'Vừa xong';
 
-    const now = new Date();
-    const date = new Date(timestamp);
-    const diffInMs = now - date;
-    const diffInSeconds = Math.floor(diffInMs / 1000);
-    const diffInMinutes = Math.floor(diffInMs / 60000);
-    const diffInHours = Math.floor(diffInMs / 3600000);
-    const diffInDays = Math.floor(diffInMs / 86400000);
+    const date = getVietnamDate(timestamp);
+    if (!date) return 'Vừa xong';
 
-    // Hôm nay
-    if (diffInDays === 0) {
-        if (diffInSeconds < 60) return 'Vừa xong';
-        if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
-        if (diffInHours < 24) return `${diffInHours} giờ trước`;
+    const now = getVietnamDate(Date.now());
+    const diffMs = now - date;
+
+    const sec = Math.floor(diffMs / 1000);
+    const min = Math.floor(diffMs / 60000);
+    const hrs = Math.floor(diffMs / 3600000);
+    const days = Math.floor(diffMs / 86400000);
+
+    if (days === 0) {
+        if (sec < 60) return 'Vừa xong';
+        if (min < 60) return `${min} phút trước`;
+        return `${hrs} giờ trước`;
     }
 
-    // Hôm qua
-    if (diffInDays === 1) {
-        return 'Hôm qua';
+    if (days === 1) return 'Hôm qua';
+
+    if (days < 7) {
+        const names = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+        return names[date.getDay()];
     }
 
-    // Trong vòng 7 ngày → hiện thứ mấy
-    if (diffInDays < 7) {
-        const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
-        return days[date.getDay()];
-    }
-
-    // Quá 7 ngày → hiện ngày/tháng/năm
-    return date.toLocaleDateString('vi-VN'); // 25/12/2024
+    return date.toLocaleDateString('vi-VN');
 };
 
 /**
- * Format thời gian chi tiết cho tin nhắn (dùng trong màn hình chat)
- * Ví dụ: 10:05, Hôm nay, 14:30, Hôm qua, 10:30
+ * Format trong danh sách chat:
+ * - "12:05"
+ * - "Hôm qua 08:30"
+ * - "25/12, 14:20"
  */
 export const formatChatTime = (timestamp) => {
     if (!timestamp) return '';
 
-    const date = new Date(timestamp);
-    const now = new Date();
-    const isToday =
-        date.getDate() === now.getDate() &&
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear();
+    const date = getVietnamDate(timestamp);
+    if (!date) return '';
 
+    const now = getVietnamDate(Date.now());
+
+    const sameDay =
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate();
+
+    const yesterdayDate = new Date(now.getTime() - 86400000);
     const isYesterday =
-        date.getDate() === now.getDate() - 1 &&
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear();
+        date.getFullYear() === yesterdayDate.getFullYear() &&
+        date.getMonth() === yesterdayDate.getMonth() &&
+        date.getDate() === yesterdayDate.getDate();
 
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const hh = date.getHours().toString().padStart(2, '0');
+    const mm = date.getMinutes().toString().padStart(2, '0');
 
-    if (isToday) {
-        return `${hours}:${minutes}`;
-    }
-    if (isYesterday) {
-        return `Hôm qua ${hours}:${minutes}`;
-    }
+    if (sameDay) return `${hh}:${mm}`;
+    if (isYesterday) return `Hôm qua ${hh}:${mm}`;
 
-    // Quá 1 ngày → hiện đầy đủ: 25/12, 10:30
-    return `${date.toLocaleDateString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-    })}, ${hours}:${minutes}`;
+    return `${date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}, ${hh}:${mm}`;
 };
 
 /**
- * Format ngày tháng đầy đủ: 28 Tháng 11, 2025
+ * Format ngày đầy đủ:
+ * - "05 tháng 12 năm 2025"
  */
 export const formatFullDate = (timestamp) => {
-    if (!timestamp) return '';
-    return new Date(timestamp).toLocaleDateString('vi-VN', {
+    const date = getVietnamDate(timestamp);
+    if (!date) return '';
+
+    return date.toLocaleDateString('vi-VN', {
         day: '2-digit',
         month: 'long',
         year: 'numeric',
@@ -91,11 +134,13 @@ export const formatFullDate = (timestamp) => {
 };
 
 /**
- * Format giờ phút: 14:30
+ * Format chỉ giờ:
+ * - "14:35"
  */
 export const formatTimeOnly = (timestamp) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
+    const date = getVietnamDate(timestamp);
+    if (!date) return '';
+
     return date.toLocaleTimeString('vi-VN', {
         hour: '2-digit',
         minute: '2-digit',

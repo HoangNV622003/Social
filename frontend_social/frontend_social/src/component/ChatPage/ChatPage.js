@@ -2,15 +2,16 @@
 import React, { useState, useEffect, memo } from 'react';
 import ChatList from './ChatList';
 import ChatDetail from './ChatDetail';
-import { getAllChats } from '../../apis/ChatService';
+import { getAllChats, createPrivateChat } from '../../apis/ChatService'; // Thêm createPrivateChat
 import { useAuth } from '../../context/AuthContext';
 import { useMiniChat } from '../../context/MiniChatContext';
 import Navbar from '../Navbar/Navbar';
-import SearchFriend from '../SearchFriend/SearchFriend';
-import CreateGroupPopup from '../Popup/CreateGroupPopup/CreateGroupPopup'; // Import popup
+import SearchFriend from '../SearchFriend/SearchFriend'; // Đảm bảo đường dẫn đúng
+import CreateGroupPopup from '../Popup/CreateGroupPopup/CreateGroupPopup';
 import { SlOptions } from "react-icons/sl";
 import './ChatPage.css';
 import { toast } from 'react-toastify';
+
 const ChatPage = () => {
     const { token, user } = useAuth();
     const { setIsEnabled } = useMiniChat();
@@ -18,8 +19,6 @@ const ChatPage = () => {
     const [selectedChat, setSelectedChat] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
-
-    // State cho popup tạo nhóm
     const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
 
     // Tải danh sách chat
@@ -36,9 +35,6 @@ const ChatPage = () => {
                 setChats(res.data.content || []);
             } catch (err) {
                 console.error('Lỗi tải danh sách chat:', err);
-                if (err.response?.status === 401) {
-                    // Xử lý logout nếu cần
-                }
             } finally {
                 setLoading(false);
             }
@@ -52,6 +48,7 @@ const ChatPage = () => {
         return () => setIsEnabled(true);
     }, [setIsEnabled]);
 
+    // Hàm chọn chat từ danh sách (ChatList)
     const selectChat = (chatFromList) => {
         const normalizedChat = {
             id: chatFromList.chatId,
@@ -65,16 +62,53 @@ const ChatPage = () => {
         setSelectedChat(normalizedChat);
     };
 
+    // Hàm xử lý khi chọn bạn từ ô tìm kiếm → tạo/mở chat riêng
+    const handleSearchFriendSelect = async (friend) => {
+        try {
+            // Gọi API tạo chat riêng (nếu chưa có thì tạo, có thì trả về cái cũ)
+            const payload = {
+                userId: friend.id
+            }
+            const response = await createPrivateChat(payload, token);
+            console.log("resposne: ", response)
+            const newChat = {
+                id: response.data.id,
+                type: response.data.type,
+                name: friend.username,
+                image: friend.image || null,
+                members: [
+                    { id: user.id, username: user.username },
+                    { id: friend.id, username: friend.username }
+                ],
+                lastMessage: null,
+                lastMessageDate: null
+            };
+
+            // Mở chat ngay lập tức
+            setSelectedChat(newChat);
+
+            // Thêm vào đầu danh sách nếu chưa tồn tại
+            setChats(prev => {
+                const exists = prev.some(c => c.chatId === newChat.id);
+                if (!exists) {
+                    return [{ ...newChat, chatId: newChat.id }, ...prev];
+                }
+                return prev;
+            });
+
+        } catch (err) {
+            console.error('Lỗi tạo/mở cuộc trò chuyện:', err);
+            toast.error('Không thể mở cuộc trò chuyện với người này');
+        }
+    };
+
     const filteredChats = chats.filter(chat =>
         (chat.name || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Hàm xử lý khi tạo nhóm thành công
     const handleCreateGroupSuccess = (message) => {
         toast.success(message || 'Tạo nhóm thành công!');
         setIsCreateGroupOpen(false);
-        // Có thể reload lại danh sách chat nếu cần
-        // loadChats();
     };
 
     return (
@@ -92,7 +126,6 @@ const ChatPage = () => {
                                         <h1>Tin nhắn</h1>
                                     </div>
                                     <div className="header-right">
-                                        {/* NÚT MỞ POPUP TẠO NHÓM */}
                                         <button
                                             className="options-btn"
                                             onClick={() => setIsCreateGroupOpen(true)}
@@ -102,7 +135,9 @@ const ChatPage = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <SearchFriend />
+
+                                {/* TRUYỀN HÀM ĐỂ KHI CHỌN BẠN TỪ TÌM KIẾM → MỞ CHAT NGAY */}
+                                <SearchFriend onSelect={handleSearchFriendSelect} token={token} user={user} />
                             </div>
 
                             <ChatList

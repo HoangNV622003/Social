@@ -1,38 +1,61 @@
 /* src/components/Notification/NotificationOptionsPopup.css */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: transparent;
-  z-index: 999;
-}
 
+/* Popup hiện ngay dưới nút 3 chấm – không cần overlay */
 .notification-options-popup {
   position: absolute;
-  top: 44px;
-  right: 0;
+  top: 48px; /* Cách nút 3 chấm khoảng 8px */
+  right: 0; /* Căn phải */
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
   min-width: 240px;
   z-index: 1000;
   overflow: hidden;
+  border: 1px solid #e4e6eb;
+  animation: slideDown 0.2s ease-out;
 }
 
+/* Mũi tên nhỏ chỉ lên nút 3 chấm – siêu đẹp */
+.notification-options-popup::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 9px solid white;
+  filter: drop-shadow(0 -3px 3px rgba(0, 0, 0, 0.1));
+}
+
+/* Nút bên trong */
 .popup-item {
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 20px;
   background: none;
   border: none;
   text-align: left;
   font-size: 15px;
+  font-weight: 600;
   color: #1c1e21;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s;
+  display: block;
 }
 
 .popup-item:hover {
-  background-color: #f5f6f7;
+  background-color: #f0f2f5;
+}
+
+/* Hiệu ứng hiện mượt */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
