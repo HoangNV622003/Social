@@ -37,7 +37,7 @@ export const likePost = async (token, postId) => {
 };
 
 // 4. Lấy chi tiết 1 bài
-export const getPostById = async (token, postId) => {
+export const getPostById = async (postId, token) => {
     return await axios.get(`${POST_API}/${postId}`, authHeader(token));
 };
 
@@ -63,8 +63,4 @@ export const createPost = async (token, formData) => {
 // XÓA BÀI VIẾT
 export const deletePost = async (postId, token) => {
     return await axios.delete(`${POST_API}/${postId}`, authHeader(token));
-};
-// 7. Lấy số liệu thống kê bài viết theo tháng (dùng cho dashboard)
-export const getPostStats = async (token) => {
-    return await axios.get(`${POST_API}/all_p`, authHeader(token));
 };

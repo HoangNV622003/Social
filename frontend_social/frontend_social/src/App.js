@@ -19,7 +19,7 @@ import FullScreenLoading from './component/Loading/FullScreenLoading';
 import { WebSocketProvider } from './context/WebSocketContext';
 import ChatPage from './component/ChatPage/ChatPage';
 import HomePage from './component/HomePage/HomePage';
-import PostDetail from './component/Post/PostDetail';
+import PostDetail from './component/PostDetail/PostDetail';
 import MiniChatManager from './component/MiniChat/MiniChatManager';
 import { MiniChatProvider } from './context/MiniChatContext';
 import Statistics from './component/Admin/Statistic/Statistics';

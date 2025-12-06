@@ -48,7 +48,8 @@ public class PostService {
         return getPost(post.getId(), currentUserId);
     }
 
-    private PostResponseDTO getPost(Long id, Long currentUserId) {
+
+    public PostResponseDTO getPost(Long id, Long currentUserId) {
         return convertToDTO(postRepository.findByIdWithQuery(id, currentUserId)
                 .orElseThrow(() -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy bài viết")));
     }
@@ -72,7 +73,7 @@ public class PostService {
         return PostResponseDTO.builder()
                 .id(p.getId())
                 .content(p.getContent())
-                .image(p.getImage())  // convert Blob → String
+                .image(p.getImage())
                 .dateCreated(p.getDateCreated().toEpochMilli())
                 .totalLike(p.getTotalLike())
                 .totalComment(p.getTotalComment())

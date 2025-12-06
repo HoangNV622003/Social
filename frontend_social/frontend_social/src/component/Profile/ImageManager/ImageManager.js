@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getImage } from "../../../apis/ProfileService";
 import "./ImageManager.css";
 import { useNavigate } from "react-router-dom";
+import { IMAGE_SERVER_URL } from "../../../constants/CommonConstants";
 
 export default function ImageManager({ userId, token }) {
     const [images, setImages] = useState([]);
@@ -33,9 +34,7 @@ export default function ImageManager({ userId, token }) {
             {images.length === 0 && <p>Không có hình ảnh nào.</p>}
             {images.map((item, index) => (
                 <div key={index} className="image-item" onClick={() => handleClick(item.postId)}>
-                    <img src={
-                        item.image
-                    } alt="img" />
+                    <img src={IMAGE_SERVER_URL + item.image} alt="img" />
                 </div>
             ))}
         </div>

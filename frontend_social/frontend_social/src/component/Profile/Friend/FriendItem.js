@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './FriendItem.css';
+import { IMAGE_SERVER_URL } from '../../../constants/CommonConstants';
 
 const FriendItem = ({ id, username, image, currentUserId }) => {
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ const FriendItem = ({ id, username, image, currentUserId }) => {
     };
 
     const displayAvatar = image ? (
-        <img src={image} alt={username} className="friend-avatar-img" />
+        <img src={IMAGE_SERVER_URL + image} alt={username} className="friend-avatar-img" />
     ) : (
         <div className="friend-avatar-placeholder">
             {username?.charAt(0).toUpperCase() || '?'}

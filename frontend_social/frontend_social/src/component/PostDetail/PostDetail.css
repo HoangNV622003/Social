@@ -1,0 +1,343 @@
+/* src/pages/PostDetail/PostDetail.css */
+.post-detail-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+}
+
+/* NÚT THOÁT */
+.btn-back {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-back:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.1);
+}
+.btn-back:active {
+  transform: scale(0.95);
+}
+
+/* ẢNH LỚN - 70% */
+.post-detail-left {
+  width: 70%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.post-detail-left img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* PHẦN PHẢI - 30% */
+.post-detail-right {
+  width: 30%;
+  height: 100%;
+  background: #fff;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header & nội dung */
+.post-detail-author,
+.post-detail-content,
+.post-action {
+  padding: 16px 20px;
+  border-bottom: 1px solid #dbdbdb;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.post-detail-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.post-detail-author h3 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* LIKE & COMMENT */
+.post-action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-action button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.post-action button:hover {
+  background: #f0f0f0;
+}
+
+.icon-like,
+.icon-comment {
+  font-size: 26px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.like-btn .icon-like {
+  color: #262626;
+}
+.like-btn.liked .icon-like {
+  color: #ed4956 !important;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(237, 73, 86, 0.5));
+}
+
+.comment-btn .icon-comment {
+  color: #262626;
+}
+.comment-btn:hover .icon-comment {
+  color: #0095f6;
+  transform: scale(1.1);
+}
+
+.like-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* DANH SÁCH BÌNH LUẬN */
+.port-detail-comment {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px;
+  min-height: 0;
+}
+
+.port-detail-comment::-webkit-scrollbar {
+  width: 6px;
+}
+.port-detail-comment::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border-radius: 3px;
+}
+
+/* Ô NHẬP BÌNH LUẬN */
+.comment-form-wrapper {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid #dbdbdb;
+  padding: 12px 20px 16px;
+  flex-shrink: 0;
+  z-index: 20;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.comment-input-container {
+  position: relative;
+}
+
+.comment-input-wrapper {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  z-index: 2;
+  background: #fff;
+}
+
+.comment-input-wrapper input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #dbdbdb;
+  border-radius: 24px;
+  font-size: 14px;
+  background: #fafafa;
+  outline: none;
+  min-width: 0;
+}
+
+.comment-input-wrapper input:focus {
+  border-color: #a8a8a8;
+  background: #fff;
+}
+
+.comment-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.tool-btn {
+  font-size: 24px;
+  color: #262626;
+  cursor: pointer;
+}
+.tool-btn:hover {
+  transform: scale(1.15);
+}
+
+.send-text {
+  color: #0095f6;
+  font-weight: 600;
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.comment-input-wrapper
+  input:not(:placeholder-shown)
+  ~ .comment-tools
+  .send-text,
+.image-preview ~ .comment-tools .send-text {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.send-text:disabled {
+  color: #b3dffc !important;
+  cursor: not-allowed;
+}
+
+/* PREVIEW ẢNH NỔI LÊN */
+.image-preview {
+  position: absolute;
+  bottom: 100%;
+  left: 52px;
+  margin-bottom: 10px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  max-width: calc(100% - 72px);
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.image-preview::before {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 16px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #fff;
+}
+
+.image-preview img {
+  max-height: 120px;
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid #dbdbdb;
+}
+
+.image-preview button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Loading */
+.loading {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #666;
+  background: #fafafa;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .post-detail-container {
+    flex-direction: column;
+  }
+  .post-detail-left,
+  .post-detail-right {
+    position: static;
+    width: 100%;
+  }
+  .post-detail-left {
+    height: 60vh;
+    padding: 10px;
+  }
+  .post-detail-right {
+    height: 40vh;
+  }
+  .btn-back {
+    top: 12px;
+    left: 12px;
+    width: 42px;
+    height: 42px;
+    font-size: 24px;
+  }
+}
