@@ -1,0 +1,55 @@
+/* ChatDetailHeader.css */
+.chat-detail-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+  border-bottom: 1px solid #e4e6eb;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chat-header-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0; /* cho phép text bị cắt */
+}
+
+.chat-header-text {
+  min-width: 0;
+}
+
+.chat-header-text h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1c1e21;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-member-count {
+  font-size: 13px;
+  color: #65676b;
+  margin-top: 2px;
+}
+
+.chat-options-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #65676b;
+  transition: background 0.2s;
+}
+
+.chat-options-btn:hover {
+  background: #f0f2f5;
+}

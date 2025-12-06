@@ -31,7 +31,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
            -- Ảnh phòng chat
            CASE
                WHEN cr.type = 1 THEN opponent.image -- chat 1-1: ảnh người kia
-               WHEN cr.type = 2 THEN NULL -- group: trả về null như yêu cầu
+               WHEN cr.type = 2 THEN cr.image -- group: trả về null như yêu cầu
                END        AS image
     FROM chat_rooms cr
              JOIN chat_members cm ON cr.id = cm.room_id

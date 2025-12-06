@@ -18,6 +18,7 @@ import vn.datn.social.dto.response.ChatResponseDTO;
 import vn.datn.social.dto.response.UserResponseDTO;
 import vn.datn.social.dto.response.projection.ChatProjection;
 import vn.datn.social.dto.response.projection.ChatSummaryProjection;
+import vn.datn.social.entity.ChatMember;
 import vn.datn.social.entity.ChatRoom;
 import vn.datn.social.entity.User;
 import vn.datn.social.exception.BusinessException;
@@ -26,6 +27,7 @@ import vn.datn.social.repository.ChatRoomRepository;
 import vn.datn.social.repository.MessageRepository;
 import vn.datn.social.repository.UserRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,6 +49,7 @@ public class ChatService {
     private final NotificationService notificationService;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final WebSocketService webSocketService;
+    private final UploadService uploadService;
 
     public Page<ChatResponseDTO> findAll(Long currentUserId, Pageable pageable) {
         return chatRoomRepository.findAllByUserId(currentUserId, pageable).map(this::convertToChatResponseDTO);
@@ -81,8 +84,10 @@ public class ChatService {
     }
 
     public ChatDetailResponseDTO createChatGroup(Long currentUserId, CreateChatGroupRequestDTO requestDTO) {
+        String image = requestDTO.file() != null ? uploadService.uploadImage(requestDTO.file()) : null;
         ChatRoom chatRoom = ChatRoom.builder()
                 .name(requestDTO.groupName())
+                .image(image)
                 .type(ChatTypeConstants.GROUP.getValue())
                 .build();
         chatRoomRepository.save(chatRoom);
@@ -101,6 +106,54 @@ public class ChatService {
                 .build();
         webSocketService.sendChatGroup(chat);
         return chat;
+    }
+
+    public void updateChatGroup(Long chatId, CreateChatGroupRequestDTO requestDTO) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatId).orElseThrow(
+                () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy đoạn chat"));
+        updateChatRoom(chatRoom, requestDTO);
+        Set<Long> newUserIds= updateChatMembers(chatId, requestDTO.userIds());
+        if (newUserIds.isEmpty()) return;
+        Set<UserResponseDTO> users = newUserIds.stream()
+                .map(id -> UserResponseDTO.builder()
+                        .id(id)
+                        .build())
+                .collect(Collectors.toSet());
+        ChatDetailResponseDTO chatDetailResponseDTO = ChatDetailResponseDTO.builder()
+                .id(chatId)
+                .name(chatRoom.getName())
+                .image(chatRoom.getImage())
+                .type(ChatTypeConstants.find(chatRoom.getType()).name())
+                .members(users)
+                .build();
+        webSocketService.sendChatGroup(chatDetailResponseDTO);
+    }
+
+    public void updateChatRoom(ChatRoom chatRoom, CreateChatGroupRequestDTO requestDTO) {
+        String image = requestDTO.file() != null ? uploadService.uploadImage(requestDTO.file()) : null;
+        chatRoom.setName(requestDTO.groupName());
+        chatRoom.setImage(image);
+        chatRoomRepository.save(chatRoom);
+    }
+
+    public Set<Long> updateChatMembers(Long chatId, List<Long> userIds) {
+        chatMemberRepository.deleteByUserIdNotInAndRoomId(userIds, chatId);
+        Set<User> currentUsers = userRepository.findAllByChatRoomId(chatId);
+        if (currentUsers.isEmpty()) {
+            return new HashSet<>();
+        }
+        Set<Long> currentIds = currentUsers.stream().map(User::getId).collect(Collectors.toSet());
+        Set<Long> newMemberIds = userIds.stream()
+                .filter(id -> !currentIds.contains(id))
+                .collect(Collectors.toSet());
+        Set<ChatMember> newChatMembers = newMemberIds.stream()
+                .map(id -> ChatMember.builder()
+                        .roomId(chatId)
+                        .userId(id)
+                        .build())
+                .collect(Collectors.toSet());
+        chatMemberRepository.saveAll(newChatMembers);
+        return newMemberIds;
     }
 
     public ChatRoom saveChatPrivate(Long currentUserId, CreateChatRequestDTO requestDTO) {

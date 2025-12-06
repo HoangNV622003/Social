@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.datn.social.dto.request.CreateChatGroupRequestDTO;
@@ -37,9 +38,9 @@ public class ChatController {
         return ResponseEntity.ok(chatService.openChatPrivate(currentUserId, createChatRequestDTO));
     }
 
-    @PostMapping("/group")
+    @PostMapping(value = "/group", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ChatDetailResponseDTO> createGroupChat(
-            @CurrentUserId Long currentUserId, @RequestBody CreateChatGroupRequestDTO requestDTO
+            @CurrentUserId Long currentUserId, @ModelAttribute CreateChatGroupRequestDTO requestDTO
     ) {
         return ResponseEntity.ok(chatService.createChatGroup(currentUserId, requestDTO));
     }
@@ -64,5 +65,11 @@ public class ChatController {
             @RequestParam String keyword,
             @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(chatService.findChatByName(currentUserId, keyword, pageable));
+    }
+
+    @PutMapping(value = "/group/{id}", consumes =  MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void>updateChat(@PathVariable Long id, @ModelAttribute CreateChatGroupRequestDTO requestDTO) {
+        chatService.updateChatGroup(id, requestDTO);
+        return ResponseEntity.ok().build();
     }
 }

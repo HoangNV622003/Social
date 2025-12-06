@@ -25,6 +25,11 @@ export const createGroupChat = async (payload, token) => {
     return await axios.post(`${CHAT_API}/group`, payload, authHeader(token));
 }
 
+export const updateGroupChat = async (chatId, payload, token) => {
+    console.log("payload", payload)
+    return await axios.put(`${CHAT_API}/group/${chatId}`, payload, authHeader(token));
+}
+
 export const addToGroupChat = async (chatId, memberIds, token) => {
     const payload = { memberIds };
     return await axios.post(`${CHAT_API}/group/${chatId}/add-members`, payload, authHeader(token));
@@ -46,3 +51,4 @@ export const getChatDetail = async (chatId, page = 0, size = 20, accessToken) =>
         params: { page, size }
     });
 }
+

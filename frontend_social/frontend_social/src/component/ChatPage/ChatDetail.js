@@ -1,24 +1,36 @@
 // src/components/chat/ChatDetail.jsx
-import React, { useState, useEffect, useRef, memo } from 'react';
 import { useMessageWebSocket } from '../../hooks/useMessageWebSocket';
+import { useChatDetail } from '../../hooks/Chat/useChatDetail'; // ← NEW
 import MessageList from './MessageList';
-import UserAvatar from '../UserAvatar/UserAvatar';
+import ChatDetailHeader from './ChatDetailHeader';
+import GroupUpdatePopup from '../Popup/CreateGroupPopup/GroupUpdatePopup';
 import { AiOutlineSend } from 'react-icons/ai';
 import { useAuth } from '../../context/AuthContext';
-import { getChatDetail } from '../../apis/ChatService';
-import { getChatDisplayInfo } from '../../utils/CommonUtils';
 import './ChatDetail.css';
-
+import { useRef, useEffect, useState, memo } from 'react';
 const ChatDetail = ({ chat, currentUserId }) => {
     const { token } = useAuth();
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [opponent, setOpponent] = useState({ displayName: 'Đ127', displayImage: null });
 
+    // Quản lý tin nhắn riêng (vì WebSocket cập nhật liên tục)
+    const [messages, setMessages] = useState([]);
     const messagesEndRef = useRef(null);
 
-    // WebSocket: nhận tin mới → thêm vào cuối (tin mới ở dưới)
+    // Load thông tin nhóm + opponent + tin nhắn ban đầu
+    const { fullChatData, opponent, loading, reload } = useChatDetail(
+        chat?.id,
+        token,
+        currentUserId
+    );
+
+    // Khi load lần đầu từ API → set tin nhắn
+    useEffect(() => {
+        if (fullChatData?.messages?.content) {
+            const rawMsgs = fullChatData.messages.content;
+            setMessages(rawMsgs.slice().reverse()); // mới nhất ở dưới
+        }
+    }, [fullChatData]);
+
+    // WebSocket: nhận tin nhắn mới
     const { sendMessage } = useMessageWebSocket(chat?.id, (newMessage) => {
         setMessages(prev => {
             if (prev.some(m => m.id === newMessage.id)) return prev;
@@ -26,73 +38,46 @@ const ChatDetail = ({ chat, currentUserId }) => {
         });
     });
 
-    // Load tin nhắn + thông tin người chat (từ API chi tiết → chính xác 100%)
-    useEffect(() => {
-        if (!chat?.id || !token) return;
-
-        const load = async () => {
-            setLoading(true);
-            try {
-                const res = await getChatDetail(chat.id, 0, 30, token);
-
-                // Load tin nhắn: backend trả mới → cũ → reverse lại → cũ ở trên, mới ở dưới
-                const rawMsgs = res.data.messages?.content || [];
-                const msgs = rawMsgs.slice().reverse();
-                setMessages(msgs);
-
-                // Load tên + ảnh từ API chi tiết (luôn chính xác)
-                const info = getChatDisplayInfo(res.data, currentUserId);
-                setOpponent({
-                    displayName: info.displayName,
-                    displayImage: info.displayImage
-                });
-
-            } catch (err) {
-                console.error('Load chat detail error:', err);
-                setOpponent({ displayName: 'Lỗi tải thông tin', displayImage: null });
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        load();
-    }, [chat?.id, token, currentUserId]);
-
-    // Auto scroll xuống tin mới nhất
+    // Auto scroll
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     const handleSend = () => {
         if (!input.trim()) return;
-
         sendMessage({
             content: input.trim(),
             senderId: currentUserId
         });
-
         setInput('');
     };
 
-    if (!chat) return <div className="empty">Chọn cuộc trò chuyện</div>;
+    const [input, setInput] = useState('');
+    const [showGroupUpdate, setShowGroupUpdate] = useState(false);
+
+    if (!chat) {
+        return <div className="chat-detail-empty">Chọn một cuộc trò chuyện...</div>;
+    }
 
     return (
-
         <div className="chat-detail">
-            {/* HEADER – luôn có tên + ảnh ngay khi load xong */}
-            <div className="chat-detail-header">
-                <UserAvatar
-                    username={opponent.displayName}
-                    image={opponent.displayImage}
-                    size="medium"
-                    fallback={opponent.displayName?.[0]?.toUpperCase() || '?'}
-                />
-                <h2>{opponent.displayName}</h2>
-            </div>
+            <ChatDetailHeader
+                chat={chat}
+                opponent={opponent}
+                onUpdateGroup={() => setShowGroupUpdate(true)}
+            />
 
-            {/* TIN NHẮN */}
+            {/* Popup cập nhật nhóm */}
+            {showGroupUpdate && fullChatData && chat.type === 'GROUP' && (
+                <GroupUpdatePopup
+                    chat={fullChatData}
+                    onClose={() => setShowGroupUpdate(false)}
+                    onUpdateSuccess={reload} // ← reload thông tin nhóm + ảnh + tên
+                />
+            )}
+
             <div className="chat-messages-container">
-                {loading && <div className="loading">Đang tải tin nhắn...</div>}
+                {loading && <div className="chat-loading">Đang tải...</div>}
 
                 <MessageList
                     messages={messages}
@@ -104,17 +89,16 @@ const ChatDetail = ({ chat, currentUserId }) => {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* INPUT */}
             <div className="chat-input-area">
                 <input
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyPress={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-                    placeholder="Nhập tin nhắn..."
+                    placeholder="Aa"
                     autoFocus
                 />
                 <button onClick={handleSend} disabled={!input.trim()}>
-                    <AiOutlineSend />
+                    <AiOutlineSend size={24} />
                 </button>
             </div>
         </div>
