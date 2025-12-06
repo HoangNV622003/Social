@@ -7,14 +7,15 @@ const WS = {
     // Frontend subscribe: /topic/chat/123
     TOPIC: {
         CHAT_ROOM: (chatId) => `/topic/chat/${chatId}`,
-        NOTIFICATIONS: (userId) => `/topic/notifications/${userId}`
+        NOTIFICATIONS: (userId) => `/topic/notifications/${userId}`,
+        NEW_CHAT: (userId) => `/topic/new-chat/${userId}`, // dùng chung cho cả chat 1-1 và group (theo code backend bạn)
+
     },
 
     // 2. Nhận thông báo có đoạn chat mới (private hoặc group)
     // Backend gửi đến từng user: /user/123/queue/new-chat
     // Frontend chỉ cần subscribe 1 lần: /user/queue/new-chat
     QUEUE: {
-        NEW_CHAT: '/user/queue/new-chat', // dùng chung cho cả chat 1-1 và group (theo code backend bạn)
     },
 
     // 3. Đường dẫn GỬI tin nhắn lên server (dùng trong client.send hoặc client.publish)

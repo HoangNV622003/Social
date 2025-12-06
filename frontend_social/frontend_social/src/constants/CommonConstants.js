@@ -20,4 +20,4 @@ export const RelationShipStatus = {
         label: "Thêm bạn bè",
     }
 };
-export const IMAGE_SERVER_URL = "http://localhost:8081"
+export const IMAGE_SERVER_URL = "http://localhost"

@@ -13,7 +13,7 @@ const SearchFriend = ({ onSelect, placeholder = "Tìm kiếm bạn bè...", toke
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef(null);
     const debounceRef = useRef(null);
-
+    console.log(token, user)
     // Debounce search
     const performSearch = useCallback(async (searchTerm) => {
         if (!searchTerm.trim()) {

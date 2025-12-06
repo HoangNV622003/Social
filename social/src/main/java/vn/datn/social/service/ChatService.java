@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import vn.datn.social.constant.ApiResponseCode;
 import vn.datn.social.constant.ChatTypeConstants;
@@ -15,7 +16,6 @@ import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.response.ChatDetailResponseDTO;
 import vn.datn.social.dto.response.ChatResponseDTO;
 import vn.datn.social.dto.response.UserResponseDTO;
-import vn.datn.social.dto.response.UserSummaryResponseDTO;
 import vn.datn.social.dto.response.projection.ChatProjection;
 import vn.datn.social.dto.response.projection.ChatSummaryProjection;
 import vn.datn.social.entity.ChatRoom;
@@ -44,6 +44,9 @@ public class ChatService {
     private final ChatMemberRepository chatMemberRepository;
     private final ChatMemberService chatMemberService;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final WebSocketService webSocketService;
 
     public Page<ChatResponseDTO> findAll(Long currentUserId, Pageable pageable) {
         return chatRoomRepository.findAllByUserId(currentUserId, pageable).map(this::convertToChatResponseDTO);
@@ -52,6 +55,7 @@ public class ChatService {
     public Page<ChatSummaryProjection> findChatByName(Long currentUserId, String keyword, Pageable pageable) {
         return chatRoomRepository.searchByName(keyword, currentUserId, pageable);
     }
+
     public ChatDetailResponseDTO getChatDetails(Long chatId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatId).orElseThrow(
                 () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy đoạn chat"));
@@ -88,13 +92,15 @@ public class ChatService {
         Set<UserResponseDTO> userResponseDTOS = users.stream()
                 .map(userService::convertToUserResponseDTO)
                 .collect(Collectors.toSet());
-        return ChatDetailResponseDTO.builder()
+        ChatDetailResponseDTO chat = ChatDetailResponseDTO.builder()
                 .id(chatRoom.getId())
                 .name(chatRoom.getName())
                 .image(chatRoom.getImage())
                 .members(userResponseDTOS)
                 .type(ChatTypeConstants.find(chatRoom.getType()).name())
                 .build();
+        webSocketService.sendChatGroup(chat);
+        return chat;
     }
 
     public ChatRoom saveChatPrivate(Long currentUserId, CreateChatRequestDTO requestDTO) {

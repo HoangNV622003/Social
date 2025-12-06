@@ -1,27 +1,29 @@
 // src/pages/ChatPage.jsx
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import ChatList from './ChatList';
 import ChatDetail from './ChatDetail';
-import { getAllChats, createPrivateChat } from '../../apis/ChatService'; // Thêm createPrivateChat
+import { getAllChats, createPrivateChat } from '../../apis/ChatService';
 import { useAuth } from '../../context/AuthContext';
 import { useMiniChat } from '../../context/MiniChatContext';
 import Navbar from '../Navbar/Navbar';
-import SearchFriend from '../SearchFriend/SearchFriend'; // Đảm bảo đường dẫn đúng
+import SearchFriend from '../SearchFriend/SearchFriend';
 import CreateGroupPopup from '../Popup/CreateGroupPopup/CreateGroupPopup';
 import { SlOptions } from "react-icons/sl";
 import './ChatPage.css';
 import { toast } from 'react-toastify';
+
+// Hook lắng nghe khi được thêm vào nhóm mới
+import { useChatWebSocket } from '../../hooks/useChatWebSocket';
 
 const ChatPage = () => {
     const { token, user } = useAuth();
     const { setIsEnabled } = useMiniChat();
     const [chats, setChats] = useState([]);
     const [selectedChat, setSelectedChat] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
 
-    // Tải danh sách chat
+    // Tải danh sách chat ban đầu
     useEffect(() => {
         if (!token) {
             setLoading(false);
@@ -35,6 +37,7 @@ const ChatPage = () => {
                 setChats(res.data.content || []);
             } catch (err) {
                 console.error('Lỗi tải danh sách chat:', err);
+                toast.error('Không thể tải tin nhắn');
             } finally {
                 setLoading(false);
             }
@@ -43,13 +46,14 @@ const ChatPage = () => {
         loadChats();
     }, [token]);
 
+    // Tắt mini chat khi vào trang chat chính
     useEffect(() => {
         setIsEnabled(false);
         return () => setIsEnabled(true);
     }, [setIsEnabled]);
 
-    // Hàm chọn chat từ danh sách (ChatList)
-    const selectChat = (chatFromList) => {
+    // Chọn chat từ danh sách
+    const selectChat = useCallback((chatFromList) => {
         const normalizedChat = {
             id: chatFromList.chatId,
             type: chatFromList.type,
@@ -60,17 +64,14 @@ const ChatPage = () => {
             lastMessageDate: chatFromList.lastMessageDate
         };
         setSelectedChat(normalizedChat);
-    };
+    }, []);
 
-    // Hàm xử lý khi chọn bạn từ ô tìm kiếm → tạo/mở chat riêng
+    // Khi chọn bạn từ ô tìm kiếm → tạo/mở chat riêng
     const handleSearchFriendSelect = async (friend) => {
         try {
-            // Gọi API tạo chat riêng (nếu chưa có thì tạo, có thì trả về cái cũ)
-            const payload = {
-                userId: friend.id
-            }
+            const payload = { userId: friend.id };
             const response = await createPrivateChat(payload, token);
-            console.log("resposne: ", response)
+
             const newChat = {
                 id: response.data.id,
                 type: response.data.type,
@@ -84,10 +85,8 @@ const ChatPage = () => {
                 lastMessageDate: null
             };
 
-            // Mở chat ngay lập tức
             setSelectedChat(newChat);
 
-            // Thêm vào đầu danh sách nếu chưa tồn tại
             setChats(prev => {
                 const exists = prev.some(c => c.chatId === newChat.id);
                 if (!exists) {
@@ -97,14 +96,32 @@ const ChatPage = () => {
             });
 
         } catch (err) {
-            console.error('Lỗi tạo/mở cuộc trò chuyện:', err);
+            console.error('Lỗi mở cuộc trò chuyện:', err);
             toast.error('Không thể mở cuộc trò chuyện với người này');
         }
     };
 
-    const filteredChats = chats.filter(chat =>
-        (chat.name || '').toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // LẮNG NGHE SỰ KIỆN: "BẠN ĐƯỢC THÊM VÀO NHÓM MỚI"
+    const handleGroupAdded = useCallback((newGroup) => {
+        setChats(prev => {
+            const exists = prev.some(chat => chat.chatId === newGroup.chatId);
+            if (exists) return prev;
+
+            const formattedGroup = {
+                chatId: newGroup.chatId,
+                name: newGroup.name || 'Nhóm chat',
+                type: newGroup.type || 'GROUP',
+                image: newGroup.image || null,
+                lastMessage: 'Bạn đã được thêm vào nhóm',
+                lastMessageDate: newGroup.lastMessageDate || Date.now(),
+                members: newGroup.members || []
+            };
+            return [formattedGroup, ...prev];
+        });
+    }, []);
+
+    // KÍCH HOẠT LẮNG NGHE REAL-TIME KHI ĐƯỢC THÊM VÀO NHÓM
+    useChatWebSocket(handleGroupAdded);
 
     const handleCreateGroupSuccess = (message) => {
         toast.success(message || 'Tạo nhóm thành công!');
@@ -136,12 +153,11 @@ const ChatPage = () => {
                                     </div>
                                 </div>
 
-                                {/* TRUYỀN HÀM ĐỂ KHI CHỌN BẠN TỪ TÌM KIẾM → MỞ CHAT NGAY */}
                                 <SearchFriend onSelect={handleSearchFriendSelect} token={token} user={user} />
                             </div>
 
                             <ChatList
-                                chats={filteredChats}
+                                chats={chats}
                                 selectedChatId={selectedChat?.id}
                                 onChatSelect={selectChat}
                                 loading={loading}

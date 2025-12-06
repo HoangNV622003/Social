@@ -5,7 +5,6 @@ import UserAvatar from '../UserAvatar/UserAvatar';
 import './ChatItem.css';
 
 const ChatItem = ({ chat, isActive, onClick }) => {
-    console.log("image", chat)
     return (
         <div className={`chat-item ${isActive ? 'active' : ''}`} onClick={onClick}>
             <UserAvatar
