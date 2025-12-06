@@ -1,6 +1,6 @@
 // src/components/chat/ChatDetail.jsx
 import React, { useState, useEffect, useRef, memo } from 'react';
-import { useChatWebSocket } from '../../hooks/useChatWebSocket';
+import { useMessageWebSocket } from '../../hooks/useMessageWebSocket';
 import MessageList from './MessageList';
 import UserAvatar from '../UserAvatar/UserAvatar';
 import { AiOutlineSend } from 'react-icons/ai';
@@ -19,7 +19,7 @@ const ChatDetail = ({ chat, currentUserId }) => {
     const messagesEndRef = useRef(null);
 
     // WebSocket: nhận tin mới → thêm vào cuối (tin mới ở dưới)
-    const { sendMessage } = useChatWebSocket(chat?.id, (newMessage) => {
+    const { sendMessage } = useMessageWebSocket(chat?.id, (newMessage) => {
         setMessages(prev => {
             if (prev.some(m => m.id === newMessage.id)) return prev;
             return [...prev, newMessage];

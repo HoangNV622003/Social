@@ -3,7 +3,7 @@ import React, {
 
     , useEffect, useRef, memo
 } from 'react';
-import { useChatWebSocket } from '../../hooks/useChatWebSocket';
+import { useMessageWebSocket } from '../../hooks/useMessageWebSocket';
 import MessageList from '../ChatPage/MessageList';
 import UserAvatar from '../UserAvatar/UserAvatar';
 import { AiOutlineSend, AiOutlineMinus, AiOutlineClose } from 'react-icons/ai';
@@ -29,7 +29,7 @@ const MiniChat = ({ chat, currentUserId, onClose }) => {
         // messagesContainerRef.current?.scrollTop = messagesContainerRef.current?.scrollHeight;
     };
 
-    const { sendMessage } = useChatWebSocket(chat?.id, (newMessage) => {
+    const { sendMessage } = useMessageWebSocket(chat?.id, (newMessage) => {
         setMessages(prev => {
             if (prev.some(m => m.id === newMessage.id)) return prev;
             const updated = [...prev, newMessage];

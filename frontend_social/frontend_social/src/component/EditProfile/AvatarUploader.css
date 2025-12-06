@@ -1,0 +1,93 @@
+/* src/pages/EditProfile/components/AvatarUploader.css */
+.avatar-uploader {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.avatar-preview {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.avatar-preview:hover img {
+  transform: scale(1.08);
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 15px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avatar-placeholder::before {
+  content: "👤";
+  font-size: 40px;
+}
+
+.avatar-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.btn-upload,
+.btn-remove {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 15px;
+}
+
+.btn-upload {
+  background: #10b981;
+  color: white;
+  border: none;
+}
+
+.btn-upload:hover {
+  background: #0d9b6f;
+}
+
+.btn-upload input {
+  display: none;
+}
+
+.btn-remove {
+  background: #ef4444;
+  color: white;
+  border: none;
+}
+
+.btn-remove:hover {
+  background: #dc2626;
+}
+
+.help-text {
+  color: #64748b;
+  font-size: 14px;
+  margin-top: 10px;
+}

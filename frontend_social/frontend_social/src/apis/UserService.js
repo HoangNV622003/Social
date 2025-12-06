@@ -13,12 +13,17 @@ const authHeader = (token) => ({
 
 // 1. Lấy thông tin profile của user hiện tại
 export const getUserProfile = async (token) => {
-    return await axios.get(`${USER_API}/profile`, authHeader(token));
+    return await axios.get(`${USER_API}`, authHeader(token));
 };
 
 // 2. Cập nhật profile (fullName, bio, phone, avatar, ...)
 export const updateUserProfile = async (profileData, token) => {
-    return await axios.put(`${USER_API}/profile`, profileData, authHeader(token));
+    return await axios.put(`${USER_API}`, profileData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 };
 
 // 3. Thay đổi mật khẩu

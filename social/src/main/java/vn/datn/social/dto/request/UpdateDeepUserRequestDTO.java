@@ -7,7 +7,6 @@ public record UpdateDeepUserRequestDTO (
         String email,
         String address,
         Boolean isAdmin,
-        MultipartFile file,
-        String imageUrl
+        MultipartFile file
 ){
 }

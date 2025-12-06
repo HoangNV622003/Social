@@ -10,8 +10,7 @@ import NotificationPage from './component/Notification/NotificationPage';
 import Manage_web from './component/Admin/Manage_web';
 import Manage_post from './component/Admin/ManagePost/Manage_post';
 import ManageUser from './component/Admin/ManageUser/ManageUser';
-import Manage_progress from './component/Admin/ManageProgress/Manage_progress';
-import Edit_profile from './component/Edit_profile/Edit_profile';
+import EditProfile from './component/EditProfile/EditProfile';
 import Manage_Progress from './component/Admin/ManageProgress/Manage_progress';
 import Contact from './component/Navbar/Contact';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -46,7 +45,7 @@ function AppContent() {
             <Route path="/Manage_post" element={<Manage_post />} />
             <Route path="/Manage_user" element={<ManageUser />} />
             <Route path="/Manage_progress" element={<Statistics />} />
-            <Route path="/Edit_profile" element={<Edit_profile />} />
+            <Route path="/Edit_profile" element={<EditProfile />} />
             <Route path='/progress' element={<Manage_Progress />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/post/:postId' element={<PostDetail />} />

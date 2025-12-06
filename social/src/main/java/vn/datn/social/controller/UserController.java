@@ -51,4 +51,9 @@ public class UserController {
         userService.updateDeepUserByAdmin(userId, request);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDTO> updateMyProfile(@ModelAttribute UpdateDeepUserRequestDTO request, @CurrentUserId Long userId) {
+        return ResponseEntity.ok(userService.updateProfile(userId, request));
+    }
 }

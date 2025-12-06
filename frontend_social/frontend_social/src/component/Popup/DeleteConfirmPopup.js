@@ -18,7 +18,7 @@ const DeleteConfirmPopup = ({ postId, onClose, onSuccess }) => {
 
         setIsDeleting(true);
         try {
-            await deletePost(token, postId);
+            await deletePost(postId, token);
             toast.success('Xóa bài viết thành công!');
             onSuccess?.(postId); // Gọi callback để PostList xóa khỏi UI
             onClose();

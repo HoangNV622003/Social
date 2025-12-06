@@ -1,9 +1,9 @@
-// src/hooks/useChatWebSocket.js
+// src/hooks/useMessageWebSocket.js
 import { useEffect, useRef } from 'react';
 import { useWebSocket } from '../context/WebSocketContext';
 import WS from '../constants/WSConstants';
 
-export const useChatWebSocket = (chatId, onMessageReceived) => {
+export const useMessageWebSocket = (chatId, onMessageReceived) => {
     const { client } = useWebSocket();
     const subscriptionRef = useRef(null);
 

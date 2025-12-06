@@ -48,6 +48,7 @@ public class AuthService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .image(user.getImage())
+                .address(user.getAddress())
                 .role(Authorities.find(user.getRole()).getName())
                 .build();
     }

@@ -33,22 +33,35 @@ public class UserService {
         if (userRepository.existsByEmailIgnoreCaseOrUsernameIgnoreCase(requestDTO.email(), requestDTO.username())) {
             throw new BusinessException(ApiResponseCode.BAD_REQUEST, "Email or Username already exists");
         }
-        User user=userRepository.save(convertToUser(requestDTO));
+        User user = userRepository.save(convertToUser(requestDTO));
         return convertToUserResponseDTO(user);
     }
 
     public void updateDeepUserByAdmin(Long userId, UpdateDeepUserRequestDTO requestDTO) {
         User user = findById(userId);
+        updateUser(user, requestDTO);
+        userRepository.save(user);
+    }
+
+    public UserResponseDTO updateProfile(Long currentUserId, UpdateDeepUserRequestDTO requestDTO) {
+        User user = findById(currentUserId);
+        updateUser(user, requestDTO);
+        user = userRepository.save(user);
+        return convertToUserResponseDTO(user);
+    }
+
+    private void updateUser(User user, UpdateDeepUserRequestDTO requestDTO) {
         String imageUrl = requestDTO.file() != null && !requestDTO.file().isEmpty()
                 ? uploadService.uploadImage(requestDTO.file())
                 : user.getImage();
-        Integer role = requestDTO.isAdmin() ? Authorities.ROLE_ADMIN.getId() : user.getRole();
+        Integer role = (requestDTO.isAdmin() != null && requestDTO.isAdmin())
+                ? Authorities.ROLE_ADMIN.getId()
+                : user.getRole();
         user.setImage(imageUrl);
         user.setEmail(requestDTO.email());
         user.setUsername(requestDTO.username());
         user.setRole(role);
         user.setAddress(requestDTO.address());
-        userRepository.save(user);
     }
 
     private User convertToUser(CreateUserRequestDTO request) {
