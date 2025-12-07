@@ -4,7 +4,7 @@ import java.time.Instant;
 
 public interface FriendUserProjection {
     Long getId();
-    Long userId();
+    Long getUserId();
     String getName();
     String getImage();
     Short getStatus();

@@ -24,6 +24,7 @@ import MiniChatManager from './component/MiniChat/MiniChatManager';
 import { MiniChatProvider } from './context/MiniChatContext';
 import Statistics from './component/Admin/Statistic/Statistics';
 import { ChatRealtimeProvider } from './context/ChatRealtimeContext';
+import FriendRequestsPage from './component/FriendRequestPage/FriendRequestPage';
 function AppContent() {
   const { loading } = useAuth(); // Lấy trạng thái loading từ AuthContext
 
@@ -50,7 +51,7 @@ function AppContent() {
             <Route path='/progress' element={<Manage_Progress />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/post/:postId' element={<PostDetail />} />
-
+            <Route path='/friend_page' element={<FriendRequestsPage />} />
           </Routes>
         </Router>
       </div>

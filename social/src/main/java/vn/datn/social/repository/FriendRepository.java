@@ -12,6 +12,7 @@ import vn.datn.social.dto.response.projection.FriendSummaryProjection;
 import vn.datn.social.dto.response.projection.FriendUserProjection;
 import vn.datn.social.entity.FriendUser;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Repository
@@ -81,6 +82,8 @@ public interface FriendRepository extends JpaRepository<FriendUser, Long> {
                 WHERE f.userId=:userId AND f.status=1
             """)
     Page<FriendUserProjection> findAllRequestFriends(@Param("userId")Long userId, Pageable pageable);
+
+    boolean existsByUserIdAndCreatedByAndStatus(Long userId, Long createdBy, Short status);
 }
 
 

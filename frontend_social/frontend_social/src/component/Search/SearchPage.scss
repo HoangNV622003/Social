@@ -1,0 +1,219 @@
+/* ============================================================= */
+/* SEARCH PAGE – ĐÃ ĐƯỢC SCOPED HOÀN TOÀN – KHÔNG BỊ ĐÈ CSS NỮA */
+/* ============================================================= */
+
+.sp-page {
+  margin-top: 70px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+  padding-bottom: 4rem;
+}
+
+.sp-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.sp-header {
+  padding: 2rem 0 1.5rem;
+  text-align: center;
+}
+
+.sp-input-wrapper {
+  position: relative;
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.sp-input-icon {
+  position: absolute;
+  left: 20px;
+  color: #8b9dc3;
+  font-size: 21px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.sp-input {
+  flex: 1;
+  padding: 17px 20px 17px 56px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #1c1e21;
+
+  &::placeholder {
+    color: #8899a6;
+    font-weight: 500;
+  }
+}
+
+.sp-clear-btn {
+  position: absolute;
+  right: 10px;
+  background: #e4e6eb;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #65676b;
+
+  &:hover {
+    background: #d8dadf;
+    transform: scale(1.12);
+  }
+
+  svg {
+    font-size: 19px;
+  }
+}
+
+.sp-content {
+  margin-top: 1.5rem;
+}
+
+/* ==================== TRẠNG THÁI ==================== */
+.sp-state {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: #657786;
+
+  .sp-state-icon {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 1.5rem;
+    background: #e7f3ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007bff;
+    font-size: 38px;
+  }
+
+  .sp-spinner {
+    width: 64px;
+    height: 64px;
+    border: 5px solid #f0f2f5;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: sp-spin 1s linear infinite;
+  }
+
+  h3 {
+    font-size: 24px;
+    margin: 0 0 0.5rem;
+    color: #1c1e21;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 15.5px;
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+@keyframes sp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== KẾT QUẢ ==================== */
+.sp-results {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sp-result-block {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  overflow: visible !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.14);
+  }
+}
+
+.sp-result-header {
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #007bff, #0061d5);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 600;
+  border-radius: 18px 18px 0 0;
+
+  svg {
+    font-size: 25px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+}
+
+/* Người dùng */
+.sp-users-container {
+  padding: 1.8rem;
+  background: #f8f9fa;
+  min-height: 200px;
+}
+
+/* Bài viết – QUAN TRỌNG NHẤT */
+.sp-posts-container {
+  padding: 1.8rem !important;
+  background: #f8f9fa !important;
+  min-height: 400px;
+
+  /* Bắt buộc hiển thị đầy đủ PostList dù CSS bên ngoài có gì */
+  & > * {
+    all: unset !important;
+    display: block !important;
+  }
+
+  /* Đảm bảo PostList và các con của nó không bị cắt */
+  &,
+  & > div,
+  & > div > div,
+  & * {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .sp-header { padding: 1.5rem 0 1rem; }
+  .sp-input { padding: 15px 16px 15px 52px; font-size: 16px; }
+  .sp-input-icon { left: 16px; font-size: 19px; }
+  .sp-clear-btn { width: 34px; height: 34px; right: 8px; }
+  .sp-result-header { padding: 1.3rem 1.6rem; }
+  .sp-result-header h2 { font-size: 18px; }
+  .sp-state { padding: 3.5rem 1rem; }
+  .sp-state h3 { font-size: 21px; }
+}
+
+@media (max-width: 480px) {
+  .sp-input-wrapper { border-radius: 30px; }
+  .sp-result-header { padding: 1.1rem 1.3rem; gap: 10px; }
+  .sp-result-header svg { font-size: 22px; }
+  .sp-result-header h2 { font-size: 17px; }
+}

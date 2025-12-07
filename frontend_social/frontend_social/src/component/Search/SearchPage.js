@@ -5,7 +5,7 @@ import { searchAll } from '../../apis/SearchService';
 import PostList from '../Post/PostList';
 import Navbar from '../Navbar/Navbar';
 import { FiSearch, FiX, FiUsers, FiFileText } from 'react-icons/fi';
-import './SearchPage.css';
+import './SearchPage.scss';
 import UserList from './User/UserList';
 
 const SearchPage = () => {
@@ -63,88 +63,82 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="search-page">
+    <div className="sp-page">
       <Navbar />
 
-      <div className="search-wrapper">
-        <div className="search-header">
-          <div className="search-input-wrapper">
-            <FiSearch className="search-input-icon" />
+      <div className="sp-wrapper">
+        <div className="sp-header">
+          <div className="sp-input-wrapper">
+            <FiSearch className="sp-input-icon" />
             <input
               type="text"
               placeholder="Tìm kiếm người dùng, bài viết, hashtag..."
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              value={keyword || ''}                          // thêm dòng này
+              onChange={(e) => setKeyword(e.target.value ?? '')}  // thêm ?? ''
               autoFocus
-              className="search-input"
+              className="search-input" // hoặc sp-input
             />
             {keyword && (
-              <button onClick={clearSearch} className="search-clear-btn">
+              <button onClick={clearSearch} className="sp-clear-btn">
                 <FiX />
               </button>
             )}
           </div>
         </div>
 
-        <div className="search-content">
+        <div className="sp-content">
           {/* Loading */}
           {loading && (
-            <div className="search-state loading-state">
-              <div className="spinner"></div>
+            <div className="sp-state">
+              <div className="sp-spinner"></div>
               <p>Đang tìm kiếm...</p>
             </div>
           )}
 
-          {/* Không có kết quả */}
+          {/* Empty */}
           {!loading && hasSearched && results.users.length === 0 && results.posts.length === 0 && (
-            <div className="search-state empty-state">
-              <div className="empty-icon">
-                <FiSearch />
-              </div>
+            <div className="sp-state">
+              <div className="sp-state-icon"><FiSearch /></div>
               <h3>Không tìm thấy kết quả</h3>
               <p>Thử dùng từ khóa khác hoặc kiểm tra chính tả nhé!</p>
             </div>
           )}
 
-          {/* Kết quả tìm kiếm */}
+          {/* Results */}
           {!loading && hasSearched && (results.users.length > 0 || results.posts.length > 0) && (
-            <div className="search-results">
-              {/* Người dùng */}
+            <div className="sp-results">
+
               {results.users.length > 0 && (
-                <section className="result-block">
-                  <div className="result-header">
-                    <FiUsers className="result-icon" />
+                <section className="sp-result-block">
+                  <div className="sp-result-header">
+                    <FiUsers />
                     <h2>Người dùng ({results.users.length})</h2>
                   </div>
-                  <div className="users-grid-container">
-                    <UserList
-                      users={results.users}
-                      currentUserId={currentUser?.id}
-                      title={null} // không hiển thị title vì đã có header riêng
-                    />
+                  <div className="sp-users-container">
+                    <UserList users={results.users} currentUserId={currentUser?.id} title={null} />
                   </div>
                 </section>
               )}
 
-              {/* Bài viết */}
               {results.posts.length > 0 && (
-                <section className="result-block">
-                  <div className="result-header">
-                    <FiFileText className="result-icon" />
+                <section className="sp-result-block">
+                  <div className="sp-result-header">
+                    <FiFileText />
                     <h2>Bài viết ({results.posts.length})</h2>
                   </div>
-                  <PostList posts={results.posts} />
+                  <div className="sp-posts-container">
+                    <PostList posts={results.posts} />
+                  </div>
                 </section>
               )}
+
             </div>
           )}
 
-          {/* Gợi ý ban đầu */}
+          {/* Welcome */}
           {!hasSearched && !loading && (
-            <div className="search-state welcome-state">
-              <div className="welcome-icon">
-                <FiSearch />
-              </div>
+            <div className="sp-state">
+              <div className="sp-state-icon"><FiSearch /></div>
               <h3>Bắt đầu tìm kiếm ngay</h3>
               <p>Nhập tên người dùng, nội dung bài viết hoặc hashtag...</p>
             </div>

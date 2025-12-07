@@ -117,7 +117,7 @@ function Navbar() {
             )}
           </button>
 
-          <Link to="/friend" className={`blockchat-navbar-2025-item ${isActive('/search_page') ? 'blockchat-navbar-2025-active' : ''}`}>
+          <Link to="/friend_page" className={`blockchat-navbar-2025-item ${isActive('/friend_page') ? 'blockchat-navbar-2025-active' : ''}`}>
             <HiOutlineUsers size={26} />
           </Link>
           <Link to="/search_page" className={`blockchat-navbar-2025-item ${isActive('/search_page') ? 'blockchat-navbar-2025-active' : ''}`}>

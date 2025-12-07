@@ -14,6 +14,9 @@ const getAuthConfig = (token) => ({
 export const getFriend = async (userId, accessToken) => {
     return await axios.get(`${API_URL}/friend/${userId}`, { ...getAuthConfig(accessToken) })
 }
+export const getFriendRequest = async (accessToken) => {
+    return await axios.get(`${API_URL}/friend/request`, { ...getAuthConfig(accessToken) })
+}
 export const addFriendRequest = async (userId, accessToken) => {
 
     return await axios.post(
@@ -60,4 +63,12 @@ export const searchFriend = async (keyword, userId, accessToken) => {
             params: { keyword }
         }
     );
+}
+export const deleteFriendRequest = async (requestId, accessToken) => {
+    return await axios.delete(`${API_URL}/friend/request/${requestId}`, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,  // ← chỉ thêm Bearer 1 lần
+            'Content-Type': 'application/json'
+        }
+    })
 }

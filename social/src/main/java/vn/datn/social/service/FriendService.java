@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import vn.datn.social.constant.*;
 import vn.datn.social.dto.request.CreateChatRequestDTO;
@@ -40,11 +39,14 @@ public class FriendService {
 
     public void createRequest(FriendRequestDTO friendRequestDTO, Long currentUserId) {
         User user = userService.findById(friendRequestDTO.userId());
-        FriendUser friendUser = FriendUser.builder()
-                .userId(user.getId())
-                .status((short) FriendStatus.PENDING.getValue())
-                .build();
-        friendRepository.save(friendUser);
+        if (!friendRepository.existsByUserIdAndCreatedByAndStatus(
+                user.getId(), currentUserId, (short) FriendStatus.FRIEND.getValue())) {
+            FriendUser friendUser = FriendUser.builder()
+                    .userId(user.getId())
+                    .status((short) FriendStatus.PENDING.getValue())
+                    .build();
+            friendRepository.save(friendUser);
+        }
         User currentUser = userService.findById(currentUserId);
         String content = "Đã gửi cho bạn lời mời kết bạn";
         String deepLink = ClientUrls.USER_DETAIL_URL + currentUserId;
@@ -82,15 +84,16 @@ public class FriendService {
     }
 
     public Page<FriendUserResponseDTO> findAllRequestFriends(Long userId, Pageable pageable) {
-        return friendRepository.findAllRequestFriends(userId,pageable)
+        return friendRepository.findAllRequestFriends(userId, pageable)
                 .map(projection -> FriendUserResponseDTO.builder()
                         .id(projection.getId())
-                        .userId(projection.userId())
+                        .userId(projection.getUserId())
                         .name(projection.getName())
                         .status(FriendStatus.find(projection.getStatus()).name())
                         .dateCreated(projection.getDateCreated().getEpochSecond())
-                .build());
+                        .build());
     }
+
     public String getRelationShip(Long currentUserId, Long friendId) {
         if (currentUserId.equals(friendId)) return RelationShipStatus.SELF.name();
         FriendUser friendUser = friendRepository.findByMyIdAndFriendId(currentUserId, friendId).orElse(null);
