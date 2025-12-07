@@ -104,7 +104,7 @@ public class ChatService {
                 .members(userResponseDTOS)
                 .type(ChatTypeConstants.find(chatRoom.getType()).name())
                 .build();
-        webSocketService.sendChatGroup(chat);
+        webSocketService.sendAddToChatGroup(chat);
         return chat;
     }
 
@@ -112,7 +112,7 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(chatId).orElseThrow(
                 () -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "Không tìm thấy đoạn chat"));
         updateChatRoom(chatRoom, requestDTO);
-        Set<Long> newUserIds= updateChatMembers(chatId, requestDTO.userIds());
+        Set<Long> newUserIds = updateChatMembers(chatRoom, requestDTO.userIds());
         if (newUserIds.isEmpty()) return;
         Set<UserResponseDTO> users = newUserIds.stream()
                 .map(id -> UserResponseDTO.builder()
@@ -126,7 +126,7 @@ public class ChatService {
                 .type(ChatTypeConstants.find(chatRoom.getType()).name())
                 .members(users)
                 .build();
-        webSocketService.sendChatGroup(chatDetailResponseDTO);
+        webSocketService.sendAddToChatGroup(chatDetailResponseDTO);
     }
 
     public void updateChatRoom(ChatRoom chatRoom, CreateChatGroupRequestDTO requestDTO) {
@@ -136,23 +136,37 @@ public class ChatService {
         chatRoomRepository.save(chatRoom);
     }
 
-    public Set<Long> updateChatMembers(Long chatId, List<Long> userIds) {
-        chatMemberRepository.deleteByUserIdNotInAndRoomId(userIds, chatId);
-        Set<User> currentUsers = userRepository.findAllByChatRoomId(chatId);
-        if (currentUsers.isEmpty()) {
-            return new HashSet<>();
+    public Set<Long> updateChatMembers(ChatRoom chat, List<Long> userIds) {
+        Set<Long> currentIds = userRepository.findAllByChatRoomId(chat.getId())
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
+        Set<Long> toDelete = currentIds.stream()
+                .filter(id -> !userIds.contains(id))
+                .collect(Collectors.toSet());
+        webSocketService.sendToUpdateGroup(
+                currentIds.stream()
+                        .filter(id -> !toDelete.contains(id))
+                        .collect(Collectors.toSet()),
+                ChatDetailResponseDTO.builder()
+                        .id(chat.getId())
+                        .type(ChatTypeConstants.find(chat.getType()).name())
+                        .name(chat.getName())
+                        .image(chat.getImage())
+                        .build());
+        if (!toDelete.isEmpty()) {
+            chatMemberRepository.deleteAllByUserIdInAndRoomId(toDelete, chat.getId());
+            webSocketService.sendRemoveFromChatGroup(toDelete, chat.getId());
         }
-        Set<Long> currentIds = currentUsers.stream().map(User::getId).collect(Collectors.toSet());
         Set<Long> newMemberIds = userIds.stream()
                 .filter(id -> !currentIds.contains(id))
                 .collect(Collectors.toSet());
-        Set<ChatMember> newChatMembers = newMemberIds.stream()
+        List<ChatMember> newMember = newMemberIds.stream()
                 .map(id -> ChatMember.builder()
-                        .roomId(chatId)
+                        .roomId(chat.getId())
                         .userId(id)
-                        .build())
-                .collect(Collectors.toSet());
-        chatMemberRepository.saveAll(newChatMembers);
+                        .build()).toList();
+        chatMemberRepository.saveAll(newMember);
         return newMemberIds;
     }
 

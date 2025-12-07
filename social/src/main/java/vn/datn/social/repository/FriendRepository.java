@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import vn.datn.social.dto.response.projection.FriendSummaryProjection;
+import vn.datn.social.dto.response.projection.FriendUserProjection;
 import vn.datn.social.entity.FriendUser;
 
 import java.util.Optional;
@@ -66,6 +67,20 @@ public interface FriendRepository extends JpaRepository<FriendUser, Long> {
                     (f.userId=:currentUserId AND f.createdBy=:friendId)
             """)
     Optional<FriendUser> findByMyIdAndFriendId(@Param("currentUserId") Long currentUserId, @Param("friendId") Long friendId);
+
+    @Query("""
+                SELECT
+                    f.id AS id,
+                    f.userId AS userId,
+                    u.username AS name,
+                    u.image AS image,
+                    f.status AS status,
+                    f.dateCreated AS dateCreated
+                FROM FriendUser f
+                LEFT JOIN User u ON f.userId=u.id
+                WHERE f.userId=:userId AND f.status=1
+            """)
+    Page<FriendUserProjection> findAllRequestFriends(@Param("userId")Long userId, Pageable pageable);
 }
 
 

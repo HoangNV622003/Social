@@ -6,12 +6,14 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.request.MessageRequestDTO;
 import vn.datn.social.dto.response.ChatDetailResponseDTO;
 import vn.datn.social.dto.response.ChatResponseDTO;
 import vn.datn.social.dto.response.MessageResponseDTO;
 import vn.datn.social.dto.response.UserResponseDTO;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class WebSocketService {
     }
 
     @Async
-    public void sendChatGroup(ChatDetailResponseDTO response) {
+    public void sendAddToChatGroup(ChatDetailResponseDTO response) {
         ChatResponseDTO dto = ChatResponseDTO.builder()
                 .chatId(response.getId())
                 .name(response.getName())
@@ -38,5 +40,15 @@ public class WebSocketService {
         response.getMembers().stream()
                 .map(UserResponseDTO::getId)
                 .forEach(id -> simpMessagingTemplate.convertAndSend("/topic/new-chat/" + id, dto));
+    }
+
+    @Async
+    public void sendRemoveFromChatGroup(Set<Long> userIds, Long chatId) {
+        userIds.forEach(id -> simpMessagingTemplate.convertAndSend("/topic/remove-chat/" + id, chatId));
+    }
+
+    @Async
+    public void sendToUpdateGroup(Set<Long> userIds, ChatDetailResponseDTO responseDTO) {
+        userIds.forEach(id -> simpMessagingTemplate.convertAndSend("/topic/update-chat/" + id, responseDTO));
     }
 }

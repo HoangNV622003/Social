@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.datn.social.dto.request.FriendRequestDTO;
 import vn.datn.social.dto.response.FriendSummaryResponseDTO;
+import vn.datn.social.dto.response.FriendUserResponseDTO;
+import vn.datn.social.dto.response.projection.FriendUserProjection;
 import vn.datn.social.security.CurrentUserId;
 import vn.datn.social.service.FriendService;
 
@@ -51,5 +53,10 @@ public class FriendController {
     public ResponseEntity<Void> unfriend(@PathVariable Long userId, @CurrentUserId Long currentUserId) {
         friendService.unfriend(userId, currentUserId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/request")
+    ResponseEntity<Page<FriendUserResponseDTO>> findAllRequestFriends(@CurrentUserId Long userId, Pageable pageable) {
+        return ResponseEntity.ok(friendService.findAllRequestFriends(userId, pageable));
     }
 }

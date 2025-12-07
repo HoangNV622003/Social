@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import vn.datn.social.constant.*;
 import vn.datn.social.dto.request.CreateChatRequestDTO;
 import vn.datn.social.dto.request.CreateNotificationRequest;
 import vn.datn.social.dto.request.FriendRequestDTO;
 import vn.datn.social.dto.response.FriendSummaryResponseDTO;
+import vn.datn.social.dto.response.FriendUserResponseDTO;
 import vn.datn.social.dto.response.projection.FriendSummaryProjection;
 import vn.datn.social.entity.FriendUser;
 import vn.datn.social.entity.User;
@@ -79,6 +81,16 @@ public class FriendService {
         );
     }
 
+    public Page<FriendUserResponseDTO> findAllRequestFriends(Long userId, Pageable pageable) {
+        return friendRepository.findAllRequestFriends(userId,pageable)
+                .map(projection -> FriendUserResponseDTO.builder()
+                        .id(projection.getId())
+                        .userId(projection.userId())
+                        .name(projection.getName())
+                        .status(FriendStatus.find(projection.getStatus()).name())
+                        .dateCreated(projection.getDateCreated().getEpochSecond())
+                .build());
+    }
     public String getRelationShip(Long currentUserId, Long friendId) {
         if (currentUserId.equals(friendId)) return RelationShipStatus.SELF.name();
         FriendUser friendUser = friendRepository.findByMyIdAndFriendId(currentUserId, friendId).orElse(null);
