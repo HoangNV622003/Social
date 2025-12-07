@@ -1,16 +1,20 @@
 // src/components/Navbar.jsx
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { useAuth } from '../../context/AuthContext';
-import { markAllAsRead } from '../../apis/NotificationService'; // Chỉ còn lại markAllAsRead
+import { markAllAsRead } from '../../apis/NotificationService';
 import { toast } from 'react-toastify';
 import UserAvatar from '../UserAvatar/UserAvatar';
 import { GoHome } from "react-icons/go";
 import { FiMessageSquare } from "react-icons/fi";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { IoSearchOutline } from "react-icons/io5";
-import { useNotificationWebSocket } from '../../hooks/useNotificationWebSocket'; // ← Real-time 100%
+
+// THÊM 2 DÒNG NÀY – SIÊU QUAN TRỌNG
+import { useNotificationWebSocket } from '../../hooks/useNotificationWebSocket';
+import { useUnreadChatCount } from '../../context/ChatRealtimeContext';
+import { HiOutlineUsers } from "react-icons/hi2";
 
 const LogoIcon = () => (
   <svg viewBox="0 0 24 24" width="48" height="48">
@@ -20,34 +24,34 @@ const LogoIcon = () => (
 
 function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0); // Số thông báo chưa đọc
+  const [unreadNotiCount, setUnreadNotiCount] = useState(0); // thông báo hệ thống
   const dropdownRef = useRef(null);
 
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
+  // LẤY SỐ TIN NHẮN CHƯA ĐỌC TỪ CONTEXT (real-time)
+  const { unreadCount: unreadChatCount } = useUnreadChatCount();
+
   const isAdmin = user?.role === "ROLE_ADMIN";
   const username = user?.username || user?.fullName || 'User';
 
-  // === REAL-TIME: CẬP NHẬT CHẤM ĐỎ NGAY LẬP TỨC ===
-  const handleNewNotification = useCallback((newNoti) => {
-    // Chỉ tăng nếu thông báo là UNREAD (backend gửi đúng status)
+  // === REAL-TIME THÔNG BÁO HỆ THỐNG ===
+  const handleNewNotification = (newNoti) => {
     if (newNoti.status === 'UNREAD' || newNoti.status === undefined) {
-      setUnreadCount(prev => prev + 1);
+      setUnreadNotiCount(prev => prev + 1);
     }
-  }, []);
-
-  // DÙNG WEBSOCKET THUẦN TÚY – KHÔNG CẦN POLLING NỮA!
+  };
   useNotificationWebSocket(handleNewNotification);
 
-  // Khi mở trang /noti → đánh dấu đã đọc → reset về 0
+  // Đánh dấu đã đọc thông báo hệ thống
   const handleNotiClick = async () => {
-    if (unreadCount > 0) {
+    if (unreadNotiCount > 0) {
       try {
         await markAllAsRead(token);
-        setUnreadCount(0); // Reset ngay lập tức
-        toast.success('Đã đánh dấu tất cả là đã đọc');
+        setUnreadNotiCount(0);
+        toast.success('Đã đánh dấu tất cả thông báo là đã đọc');
       } catch {
         toast.error('Lỗi cập nhật thông báo');
       }
@@ -82,43 +86,52 @@ function Navbar() {
 
         <nav className="blockchat-navbar-2025-center">
           <Link to="/Blockchat" className={`blockchat-navbar-2025-item ${isActive('/Blockchat') ? 'blockchat-navbar-2025-active' : ''}`}>
-            <GoHome />
-          </Link>
-          <Link to="/messages" className={`blockchat-navbar-2025-item ${isActive('/messages') ? 'blockchat-navbar-2025-active' : ''}`}>
-            <FiMessageSquare />
+            <GoHome size={26} />
           </Link>
 
-          {/* CHẤM ĐỎ CẬP NHẬT REAL-TIME 100% */}
+          {/* ICON TIN NHẮN + CHẤM ĐỎ REAL-TIME */}
+          <Link
+            to="/messages"
+            className={`blockchat-navbar-2025-item ${isActive('/messages') ? 'blockchat-navbar-2025-active' : ''}`}
+            style={{ position: 'relative' }}
+          >
+            <FiMessageSquare size={26} strokeWidth={2} />
+            {unreadChatCount > 0 && (
+              <span className="blockchat-navbar-2025-noti-dot">
+                {unreadChatCount > 99 ? '99+' : unreadChatCount}
+              </span>
+            )}
+          </Link>
+
+          {/* ICON THÔNG BÁO HỆ THỐNG */}
           <button
             onClick={handleNotiClick}
             className={`blockchat-navbar-2025-item ${isActive('/noti') ? 'blockchat-navbar-2025-active' : ''}`}
             style={{ position: 'relative' }}
           >
-            <IoIosNotificationsOutline size={26} />
-            {unreadCount > 0 && (
+            <IoIosNotificationsOutline size={30} strokeWidth={10} />
+            {unreadNotiCount > 0 && (
               <span className="blockchat-navbar-2025-noti-dot">
-                {unreadCount > 99 ? '99+' : unreadCount}
+                {unreadNotiCount > 99 ? '99+' : unreadNotiCount}
               </span>
             )}
           </button>
 
+          <Link to="/friend" className={`blockchat-navbar-2025-item ${isActive('/search_page') ? 'blockchat-navbar-2025-active' : ''}`}>
+            <HiOutlineUsers size={26} />
+          </Link>
           <Link to="/search_page" className={`blockchat-navbar-2025-item ${isActive('/search_page') ? 'blockchat-navbar-2025-active' : ''}`}>
-            <IoSearchOutline />
+            <IoSearchOutline size={26} />
           </Link>
         </nav>
 
         <div className="blockchat-navbar-2025-user-section" ref={dropdownRef}>
-          <button
-            className="blockchat-navbar-2025-user-btn"
-            onClick={() => setShowDropdown(!showDropdown)}
-          >
+          <button className="blockchat-navbar-2025-user-btn" onClick={() => setShowDropdown(!showDropdown)}>
             <div className="blockchat-navbar-2025-user-avatar">
               {user ? (
                 <UserAvatar username={username} image={user.image || null} size="small" />
               ) : (
-                <div className="skeleton-avatar">
-                  {(username[0]?.toUpperCase() || 'U')}
-                </div>
+                <div className="skeleton-avatar">U</div>
               )}
             </div>
             <span className="blockchat-navbar-2025-username">{username}</span>
