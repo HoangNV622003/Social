@@ -23,6 +23,7 @@ import PostDetail from './component/PostDetail/PostDetail';
 import MiniChatManager from './component/MiniChat/MiniChatManager';
 import { MiniChatProvider } from './context/MiniChatContext';
 import Statistics from './component/Admin/Statistic/Statistics';
+import { ChatRealtimeProvider } from './context/ChatRealtimeContext';
 function AppContent() {
   const { loading } = useAuth(); // Lấy trạng thái loading từ AuthContext
 
@@ -65,11 +66,12 @@ function App() {
 
     <AuthProvider>
       <WebSocketProvider>
-        <MiniChatProvider>
-
-          <AppContent />
-          <MiniChatManager />
-        </MiniChatProvider>
+        <ChatRealtimeProvider>
+          <MiniChatProvider>
+            <AppContent />
+            <MiniChatManager />
+          </MiniChatProvider>
+        </ChatRealtimeProvider>
       </WebSocketProvider>
     </AuthProvider>
   );

@@ -9,7 +9,8 @@ const WS = {
         CHAT_ROOM: (chatId) => `/topic/chat/${chatId}`,
         NOTIFICATIONS: (userId) => `/topic/notifications/${userId}`,
         NEW_CHAT: (userId) => `/topic/new-chat/${userId}`, // dùng chung cho cả chat 1-1 và group (theo code backend bạn)
-
+        REMOVE_CHAT: (userId) => `/topic/remove-chat/${userId}`,
+        UPDATE_CHAT: (userId) => `/topic/update-chat/${userId}`
     },
 
     // 2. Nhận thông báo có đoạn chat mới (private hoặc group)

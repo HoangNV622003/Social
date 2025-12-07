@@ -7,7 +7,7 @@ import './ChatDetailHeader.css';
 
 const ChatDetailHeader = ({ chat, opponent, onUpdateGroup }) => {
     const [showOptions, setShowOptions] = useState(false);
-
+    console.log("chat detail", chat)
     return (
         <div className="chat-detail-header">
             <div className="chat-header-info">
@@ -20,7 +20,7 @@ const ChatDetailHeader = ({ chat, opponent, onUpdateGroup }) => {
                     <h2>{opponent.displayName}</h2>
                     {chat.type === 'GROUP' && (
                         <span className="group-member-count">
-                            {chat.members?.length || 0} thành viên
+                            {chat.members.length || 0} thành viên
                         </span>
                     )}
                 </div>

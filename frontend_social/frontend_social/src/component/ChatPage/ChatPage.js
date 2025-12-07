@@ -12,18 +12,29 @@ import { SlOptions } from "react-icons/sl";
 import './ChatPage.css';
 import { toast } from 'react-toastify';
 
-// Hook lắng nghe khi được thêm vào nhóm mới
-import { useChatWebSocket } from '../../hooks/useChatWebSocket';
+// QUAN TRỌNG: Dùng đúng các hook realtime
+import { useNewGroups, useRemovedChats, useUpdatedChats } from '../../context/ChatRealtimeContext';
 
 const ChatPage = () => {
     const { token, user } = useAuth();
     const { setIsEnabled } = useMiniChat();
-    const [chats, setChats] = useState([]);
-    const [selectedChat, setSelectedChat] = useState(null);
+    const [chats, setChats] = useState([]);           // mảng chat trong sidebar
+    const [selectedChat, setSelectedChat] = useState(null); // chat đang mở
     const [loading, setLoading] = useState(true);
     const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
 
-    // Tải danh sách chat ban đầu
+    // Realtime hooks
+    const { newGroups, markGroupAsProcessed } = useNewGroups();
+    const { chatIdsToRemove, consumeRemovedChatIds } = useRemovedChats();
+    const { updatedChats, markChatAsUpdated } = useUpdatedChats();
+
+    // Tắt mini chat khi vào trang chính
+    useEffect(() => {
+        setIsEnabled(false);
+        return () => setIsEnabled(true);
+    }, [setIsEnabled]);
+
+    // Load danh sách chat ban đầu
     useEffect(() => {
         if (!token) {
             setLoading(false);
@@ -34,7 +45,18 @@ const ChatPage = () => {
             try {
                 setLoading(true);
                 const res = await getAllChats(token);
-                setChats(res.data.content || []);
+                const chatList = (res.data.content || []).map(chat => ({
+                    chatId: chat.chatId,                    // từ ChatResponseDTO
+                    id: chat.chatId,                        // để selectedChat dùng
+                    name: chat.name || 'Chat mới',
+                    image: chat.image,
+                    type: chat.type,
+                    lastMessage: chat.lastMessage,
+                    lastMessageDate: chat.lastMessageDate
+                        ? new Date(chat.lastMessageDate * 1000).toISOString()
+                        : null,
+                }));
+                setChats(chatList);
             } catch (err) {
                 console.error('Lỗi tải danh sách chat:', err);
                 toast.error('Không thể tải tin nhắn');
@@ -46,84 +68,138 @@ const ChatPage = () => {
         loadChats();
     }, [token]);
 
-    // Tắt mini chat khi vào trang chat chính
+    // 1. XỬ LÝ NHÓM MỚI (khi được thêm vào nhóm)
     useEffect(() => {
-        setIsEnabled(false);
-        return () => setIsEnabled(true);
-    }, [setIsEnabled]);
+        if (newGroups.length === 0) return;
 
-    // Chọn chat từ danh sách
-    const selectChat = useCallback((chatFromList) => {
-        const normalizedChat = {
-            id: chatFromList.chatId,
+        newGroups.forEach(group => {
+            setChats(prev => {
+                const exists = prev.some(c => c.chatId === group.chatId);
+                if (exists) {
+                    markGroupAsProcessed(group.chatId);
+                    return prev;
+                }
+
+                const newChat = {
+                    chatId: group.chatId,
+                    id: group.chatId,                         // quan trọng!
+                    name: group.name || 'Nhóm mới',
+                    image: group.image || null,
+                    type: 'GROUP',
+                    lastMessage: 'Bạn đã được thêm vào nhóm',
+                    lastMessageDate: new Date().toISOString(),
+                    members: group.members || [],
+                };
+
+                markGroupAsProcessed(group.chatId);
+                return [newChat, ...prev];
+            });
+        });
+    }, [newGroups.length]);
+
+    // 2. XỬ LÝ BỊ XÓA KHỎI NHÓM / GIẢI TÁN NHÓM
+    useEffect(() => {
+        if (chatIdsToRemove.length === 0) return;
+
+        const idsToRemove = chatIdsToRemove.map(id => Number(id));
+
+        setChats(prev => {
+            const newChats = prev.filter(chat => !idsToRemove.includes(chat.chatId));
+
+            if (selectedChat && idsToRemove.includes(selectedChat.id)) {
+                setSelectedChat(null);
+            }
+
+            consumeRemovedChatIds(chatIdsToRemove);
+            return newChats;
+        });
+    }, [chatIdsToRemove.length]);
+
+    // 3. XỬ LÝ CẬP NHẬT NHÓM (tên, ảnh, thành viên)
+    useEffect(() => {
+        if (Object.keys(updatedChats).length === 0) return;
+
+        Object.entries(updatedChats).forEach(([rawId, data]) => {
+            const chatId = Number(rawId);
+
+            setChats(prev =>
+                prev.map(chat =>
+                    chat.chatId === chatId
+                        ? {
+                            ...chat,
+                            name: data.name ?? chat.name,
+                            image: data.image ?? chat.image,
+                            members: data.members ?? chat.members,
+                        }
+                        : chat
+                )
+            );
+
+            if (selectedChat?.id === chatId) {
+                setSelectedChat(prev => ({
+                    ...prev,
+                    name: data.name ?? prev.name,
+                    image: data.image ?? prev.image,
+                    members: data.members ?? prev.members,
+                }));
+            }
+
+            markChatAsUpdated(chatId);
+        });
+    }, [Object.keys(updatedChats).length]);
+
+    // Khi chọn chat từ sidebar
+    const selectChat = useCallback(chatFromList => {
+        setSelectedChat({
+            id: chatFromList.chatId,        // ← đây là thứ ChatDetail dùng để gọi API
             type: chatFromList.type,
             name: chatFromList.name,
             image: chatFromList.image,
             members: chatFromList.members || [],
             lastMessage: chatFromList.lastMessage,
-            lastMessageDate: chatFromList.lastMessageDate
-        };
-        setSelectedChat(normalizedChat);
+            lastMessageDate: chatFromList.lastMessageDate,
+        });
     }, []);
 
-    // Khi chọn bạn từ ô tìm kiếm → tạo/mở chat riêng
-    const handleSearchFriendSelect = async (friend) => {
+    // Tạo chat riêng khi chọn bạn từ ô tìm kiếm
+    const handleSearchFriendSelect = async friend => {
         try {
             const payload = { userId: friend.id };
             const response = await createPrivateChat(payload, token);
 
-            const newChat = {
+            const newChatItem = {
+                chatId: response.data.id,
                 id: response.data.id,
-                type: response.data.type,
                 name: friend.username,
                 image: friend.image || null,
+                type: 'PRIVATE',
                 members: [
                     { id: user.id, username: user.username },
-                    { id: friend.id, username: friend.username }
+                    { id: friend.id, username: friend.username },
                 ],
                 lastMessage: null,
-                lastMessageDate: null
+                lastMessageDate: null,
             };
 
-            setSelectedChat(newChat);
-
-            setChats(prev => {
-                const exists = prev.some(c => c.chatId === newChat.id);
-                if (!exists) {
-                    return [{ ...newChat, chatId: newChat.id }, ...prev];
-                }
-                return prev;
+            setSelectedChat({
+                id: newChatItem.id,
+                type: newChatItem.type,
+                name: newChatItem.name,
+                image: newChatItem.image,
+                members: newChatItem.members,
             });
 
+            setChats(prev => {
+                if (prev.some(c => c.chatId === newChatItem.chatId)) return prev;
+                return [newChatItem, ...prev];
+            });
         } catch (err) {
             console.error('Lỗi mở cuộc trò chuyện:', err);
             toast.error('Không thể mở cuộc trò chuyện với người này');
         }
     };
 
-    // LẮNG NGHE SỰ KIỆN: "BẠN ĐƯỢC THÊM VÀO NHÓM MỚI"
-    const handleGroupAdded = useCallback((newGroup) => {
-        setChats(prev => {
-            const exists = prev.some(chat => chat.chatId === newGroup.chatId);
-            if (exists) return prev;
-
-            const formattedGroup = {
-                chatId: newGroup.chatId,
-                name: newGroup.name || 'Nhóm chat',
-                type: newGroup.type || 'GROUP',
-                image: newGroup.image || null,
-                lastMessage: 'Bạn đã được thêm vào nhóm',
-                lastMessageDate: newGroup.lastMessageDate || Date.now(),
-                members: newGroup.members || []
-            };
-            return [formattedGroup, ...prev];
-        });
-    }, []);
-
-    // KÍCH HOẠT LẮNG NGHE REAL-TIME KHI ĐƯỢC THÊM VÀO NHÓM
-    useChatWebSocket(handleGroupAdded);
-
-    const handleCreateGroupSuccess = (message) => {
+    const handleCreateGroupSuccess = message => {
         toast.success(message || 'Tạo nhóm thành công!');
         setIsCreateGroupOpen(false);
     };
@@ -134,7 +210,6 @@ const ChatPage = () => {
                 <Navbar />
                 <div className="chat-page-body">
                     <div className="chat-page-container">
-
                         {/* SIDEBAR */}
                         <div className={`chat-page-sidebar ${selectedChat ? 'hidden-mobile' : ''}`}>
                             <div className="chat-list-header">
@@ -152,7 +227,6 @@ const ChatPage = () => {
                                         </button>
                                     </div>
                                 </div>
-
                                 <SearchFriend onSelect={handleSearchFriendSelect} token={token} user={user} />
                             </div>
 
@@ -164,7 +238,7 @@ const ChatPage = () => {
                             />
                         </div>
 
-                        {/* MAIN */}
+                        {/* MAIN CHAT */}
                         <div className="chat-page-main">
                             {selectedChat ? (
                                 <ChatDetail
@@ -175,7 +249,7 @@ const ChatPage = () => {
                             ) : (
                                 <div className="empty-state">
                                     <div className="empty-icon">Message</div>
-                                    <h3>Chào mừng bạn đến với Chat</h3>
+                                    <h3>Chào mừng đến với Chat</h3>
                                     <p>Chọn một cuộc trò chuyện để bắt đầu</p>
                                 </div>
                             )}

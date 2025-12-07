@@ -6,22 +6,28 @@ import WS from '../constants/WSConstants';
 export const useMessageWebSocket = (chatId, onMessageReceived) => {
     const { client } = useWebSocket();
     const subscriptionRef = useRef(null);
+    const onMessageReceivedRef = useRef(onMessageReceived);
+
+    // Giữ callback mới nhất (rất quan trọng!)
+    useEffect(() => {
+        onMessageReceivedRef.current = onMessageReceived;
+    }, [onMessageReceived]);
 
     const sendMessage = (payload) => {
         if (!chatId || !client?.connected) return;
-        console.log("Sending message via WebSocket:", payload);
         client.publish({
             destination: WS.APP.SEND_MESSAGE(Number(chatId)),
             body: JSON.stringify({
                 content: payload.content,
-                senderId: Number(payload.senderId), // hoặc lấy từ context
+                senderId: Number(payload.senderId),
             }),
         });
     };
 
     useEffect(() => {
-        if (!client?.connected || !chatId || !onMessageReceived) return;
+        if (!client?.connected || !chatId) return;
 
+        // Hủy subscription cũ nếu đổi phòng
         subscriptionRef.current?.unsubscribe();
 
         const topic = WS.TOPIC.CHAT_ROOM(chatId);
@@ -29,13 +35,10 @@ export const useMessageWebSocket = (chatId, onMessageReceived) => {
         const subscription = client.subscribe(topic, (message) => {
             try {
                 const data = JSON.parse(message.body);
-
-                // CHỈ NHẬN TIN NHẮN THẬT (có id) → thêm luôn
                 if (data.id) {
-                    onMessageReceived(data);
+                    // DÙNG REF ĐỂ LUÔN GỌI ĐƯỢC CALLBACK MỚI NHẤT
+                    onMessageReceivedRef.current?.(data);
                 }
-                // BỎ QUA hoàn toàn tin tạm (không có id)
-
             } catch (err) {
                 console.error('Parse WS message error:', err);
             }
@@ -43,8 +46,10 @@ export const useMessageWebSocket = (chatId, onMessageReceived) => {
 
         subscriptionRef.current = subscription;
 
-        return () => subscription.unsubscribe();
-    }, [client?.connected, chatId, onMessageReceived]);
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [client?.connected, chatId]); // THÊM chatId VÀO ĐÂY – QUAN TRỌNG NHẤT!
 
     return { sendMessage };
 };

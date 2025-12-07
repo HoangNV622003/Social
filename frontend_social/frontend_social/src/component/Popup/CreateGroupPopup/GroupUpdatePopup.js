@@ -99,8 +99,6 @@ const GroupUpdatePopup = ({ chat, onClose, onUpdateSuccess }) => {
 
             members.forEach(m => formData.append('userIds', m.id));
             await updateGroupChat(chat.id, formData, token);
-
-            toast.success('Cập nhật nhóm thành công!');
             onUpdateSuccess?.();
             onClose();
         } catch (err) {

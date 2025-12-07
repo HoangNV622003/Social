@@ -1,0 +1,87 @@
+/* src/components/common/ConfirmDeletePopup.css */
+.confirm-delete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.confirm-delete-popup {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+.confirm-delete-header {
+  padding: 20px 24px 12px;
+  text-align: center;
+}
+
+.confirm-delete-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.confirm-delete-body {
+  padding: 0 24px 20px;
+  text-align: center;
+  color: #555;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.confirm-delete-footer {
+  display: flex;
+  border-top: 1px solid #eee;
+}
+
+.confirm-delete-footer button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor:hover {
+    opacity: 0.9;
+  }
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.btn-confirm-danger {
+  background: #ff3b30;
+  color: white;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
