@@ -31,7 +31,9 @@ const FriendRequestsPage = () => {
 
     const handleAccept = async (requestId, userId) => {
         try {
-            await acceptFriendRequest(requestId, token); // API chấp nhận
+            console.log("requestId:", requestId);
+            console.log("requesterId: ", userId)
+            await acceptFriendRequest(userId, token); // API chấp nhận
             setRequests(prev => prev.filter(r => r.id !== requestId));
             toast.success('Đã chấp nhận kết bạn!');
         } catch (err) {

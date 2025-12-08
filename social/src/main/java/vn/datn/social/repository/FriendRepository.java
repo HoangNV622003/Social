@@ -72,7 +72,7 @@ public interface FriendRepository extends JpaRepository<FriendUser, Long> {
     @Query("""
                 SELECT
                     f.id AS id,
-                    f.userId AS userId,
+                    f.createdBy AS userId,
                     u.username AS name,
                     u.image AS image,
                     f.status AS status,

@@ -83,6 +83,14 @@ public class FriendService {
         );
     }
 
+    public void deleteRequest(Long friendUserId) {
+        FriendUser friendUser = friendRepository.findById(friendUserId)
+                .orElseThrow(() -> new BusinessException(
+                        ApiResponseCode.ENTITY_NOT_FOUND,
+                        "Không tìm thấy lời mời đã gửi"));
+        friendRepository.delete(friendUser);
+    }
+
     public Page<FriendUserResponseDTO> findAllRequestFriends(Long userId, Pageable pageable) {
         return friendRepository.findAllRequestFriends(userId, pageable)
                 .map(projection -> FriendUserResponseDTO.builder()

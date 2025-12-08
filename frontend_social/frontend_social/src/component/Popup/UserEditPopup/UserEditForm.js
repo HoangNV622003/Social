@@ -70,8 +70,7 @@ const UserEditForm = ({ user, onSubmit, onCancel, isSaving }) => {
             <div className="ue-avatar-section">
                 <div className="ue-avatar-wrapper">
                     <img
-                        src={preview || 'https://via.placeholder.com/120?text=U'} // fallback nếu không có ảnh
-                        alt="Avatar preview"
+                        src={preview} // fallback nếu không có ảnh
                         className="ue-avatar-preview"
                     />
                     <label className="ue-upload-btn">

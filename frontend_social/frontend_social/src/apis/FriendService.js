@@ -55,6 +55,7 @@ export const unfriend = async (userId, accessToken) => {
     })
 }
 
+
 export const searchFriend = async (keyword, userId, accessToken) => {
     return await axios.get(
         `${API_URL}/friend/${userId}`,

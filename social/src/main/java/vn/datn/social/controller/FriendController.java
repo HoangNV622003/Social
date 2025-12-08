@@ -55,6 +55,11 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/request/{id}")
+    public ResponseEntity<Void> deleteRequest(@PathVariable Long id) {
+        friendService.deleteRequest(id);
+        return ResponseEntity.ok().build();
+    }
     @GetMapping("/request")
     ResponseEntity<Page<FriendUserResponseDTO>> findAllRequestFriends(@CurrentUserId Long userId, Pageable pageable) {
         return ResponseEntity.ok(friendService.findAllRequestFriends(userId, pageable));

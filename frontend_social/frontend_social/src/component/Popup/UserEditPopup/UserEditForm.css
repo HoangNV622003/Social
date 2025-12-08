@@ -1,18 +1,19 @@
 /* src/pages/admin/components/UserEditPopup/UserEditForm.css */
 
 .ue-form {
-  padding: 24px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  min-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Avatar section */
+/* ==================== AVATAR SECTION ==================== */
 .ue-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 12px;
 }
 
 .ue-avatar-wrapper {
@@ -25,16 +26,21 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background-color: #f0f0f0;
+  border: 4px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.ue-avatar-preview:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
 }
 
 .ue-upload-btn {
   position: absolute;
   bottom: 0;
   right: 0;
-  background: #3498db;
+  background: #3b82f6;
   color: white;
   width: 40px;
   height: 40px;
@@ -43,13 +49,13 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
-  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  transition: all 0.2s ease;
+  border: 3px solid white;
 }
 
 .ue-upload-btn:hover {
-  cursor: pointer;
-  background: #2980b9;
+  background: #2563eb;
   transform: scale(1.1);
 }
 
@@ -63,123 +69,197 @@
 
 .ue-file-name {
   margin-top: 12px;
-  font-size: 14px;
-  color: #27ae60;
-  display: flex;
+  font-size: 0.9rem;
+  color: #4b5563;
+  background: #f3f4f6;
+  padding: 8px 14px;
+  border-radius: 8px;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  max-width: 100%;
+  word-break: break-all;
 }
 
 .ue-clear-file {
-  background: none;
+  background: #ef4444;
+  color: white;
   border: none;
-  color: #e74c3c;
-  font-size: 20px;
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 8px;
+  flex-shrink: 0;
 }
 
 .ue-clear-file:hover {
-  background: #fdf2f2;
+  background: #dc2626;
 }
 
-/* Các field */
+/* ==================== FORM FIELDS ==================== */
 .ue-field {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .ue-field label {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 14px;
 }
 
 .ue-field input[type="text"],
 .ue-field input[type="email"] {
-  width: 100%;
   padding: 12px 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: border 0.2s;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
 }
 
 .ue-field input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.ue-field input::placeholder {
+  color: #9ca3af;
+}
+
+/* Checkbox Admin */
+.ue-field.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
 .ue-field.checkbox label {
+  font-weight: 500;
   cursor: pointer;
-  font-weight: normal;
-  font-size: 15px;
+  margin: 0;
 }
 
-/* Nút hành động */
+.ue-field.checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+/* ==================== ACTION BUTTONS ==================== */
 .ue-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 30px;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .ue-btn-cancel,
 .ue-btn-save {
-  padding: 11px 24px;
-  border-radius: 8px;
-  font-size: 15px;
+  padding: 12px 24px;
+  border-radius: 10px;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  min-width: 100px;
 }
 
 .ue-btn-cancel {
-  background: #ecf0f1;
-  color: #7f8c8d;
-  border: none;
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1.5px solid #d1d5db;
 }
 
 .ue-btn-cancel:hover:not(:disabled) {
-  background: #d6dbdc;
+  background: #e5e7eb;
+  border-color: #9ca3af;
 }
 
 .ue-btn-save {
-  background: #2ecc71;
+  background: #3b82f6;
   color: white;
   border: none;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .ue-btn-save:hover:not(:disabled) {
-  background: #27ae60;
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
-.ue-btn-save:disabled,
-.ue-btn-cancel:disabled {
+.ue-btn-cancel:disabled,
+.ue-btn-save:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none !important;
 }
 
-/* Responsive */
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 480px) {
-  .ue-form {
-    min-width: auto;
-    margin: 16px;
-    padding: 20px;
-  }
-
   .ue-avatar-preview {
     width: 100px;
     height: 100px;
+  }
+
+  .ue-actions {
+    flex-direction: column;
+  }
+
+  .ue-btn-cancel,
+  .ue-btn-save {
+    width: 100%;
+  }
+}
+
+/* ==================== DARK MODE (tùy chọn) ==================== */
+@media (prefers-color-scheme: dark) {
+  .ue-form {
+    color: #f3f4f6;
+  }
+
+  .ue-field input[type="text"],
+  .ue-field input[type="email"] {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #f3f4f6;
+  }
+
+  .ue-field input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+  }
+
+  .ue-field label {
+    color: #d1d5db;
+
+    .ue-file-name {
+      background: #374151;
+      color: #e5e7eb;
+    }
+
+    .ue-actions {
+      border-top-color: #374151;
+    }
+
+    .ue-btn-cancel {
+      background: #374151;
+      color: #e5e7eb;
+      border-color: #4b5563;
+    }
   }
 }
