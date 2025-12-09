@@ -2,6 +2,8 @@ package vn.datn.social.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -13,5 +15,5 @@ public class ReportPostResponseDTO {
     private String reportedBy;
     private String reason;
     private String postContent;  // Thêm nội dung bài viết
-    private String postImage;
+    private List<String> postImages;
 }

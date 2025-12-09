@@ -30,10 +30,10 @@ public class AuthService {
     UserService userService;
 
     public AuthResponseDTO generateToken(LoginUserRequestDTO loginUserRequestDTO) {
-        User user = userRepository.findByEmail(loginUserRequestDTO.email())
+        User user = userRepository.findByEmailOrUsername(loginUserRequestDTO.email())
                 .orElseThrow(() -> new BusinessException(ApiResponseCode.BAD_REQUEST, "Tài khoản chưa được đăng ký"));
         if (!passwordEncoder.matches(loginUserRequestDTO.password(), user.getPassword())) {
-            throw new BusinessException(ApiResponseCode.BAD_REQUEST, "Mật khẩu không hợp lệ");
+            throw new BusinessException(ApiResponseCode.BAD_REQUEST, "Mật khẩu không đúng");
         }
         TokenPairResponseDTO tokenPair = tokenProvider.createTokenPair(user);
         Long expirationTime = tokenProvider.getRefreshTokenValidity();

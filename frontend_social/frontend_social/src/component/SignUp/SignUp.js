@@ -1,21 +1,12 @@
+// src/pages/SignUp/SignUp.jsx
 import React, { useState } from 'react';
-import {
-  Typography,
-  Button,
-  Box,
-  Container,
-  Grid,
-  TextField,
-  Card,
-  CardContent,
-} from '@mui/material';
+import './SignUp.css';
 import { toast } from 'react-toastify';
 import { createUser } from '../../apis/UserService';
-import './SignUp.css';
-import backgroundImage from '../../assets/images/backgr.png'; // giữ lại nếu bạn dùng background
-import { useNavigate } from 'react-router-dom'; // Thêm cái này
-export default function Registration() {
-  const navigate = useNavigate(); // Dùng để chuyển trang
+import { useNavigate } from 'react-router-dom';
+
+const SignUp = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -23,7 +14,6 @@ export default function Registration() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -34,13 +24,16 @@ export default function Registration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
-    // Validate mật khẩu trùng khớp
+    // Kiểm tra mật khẩu khớp
     if (formData.password !== formData.confirmPassword) {
-      const msg = 'Mật khẩu xác nhận không khớp';
-      setError(msg);
-      toast.error(msg);
+      toast.error('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    // Kiểm tra độ dài mật khẩu
+    if (formData.password.length < 6) {
+      toast.warn('Mật khẩu phải có ít nhất 6 ký tự');
       return;
     }
 
@@ -51,137 +44,113 @@ export default function Registration() {
         email: formData.email.trim(),
         username: formData.username.trim(),
         password: formData.password,
-        confirmPassword: formData.confirmPassword
-        // confirmPassword: nếu backend không cần thì bỏ, nếu cần thì giữ lại
       });
 
-      toast.success('Đăng ký tài khoản thành công!');
+      toast.success('Đăng ký thành công! Đang chuyển đến trang đăng nhập...');
 
-      // Reset form sau khi đăng ký thành công
+      // Reset form
       setFormData({
         email: '',
         username: '',
         password: '',
         confirmPassword: '',
       });
+
+      // Chuyển về trang login sau 1.5s
       setTimeout(() => {
-        navigate('/'); // Đảm bảo route này tồn tại trong App.jsx
+        navigate('/login');
       }, 1500);
-      // Nếu muốn chuyển hướng sau khi đăng ký thành công:
-      // navigate('/login'); // nếu dùng react-router
-
     } catch (err) {
-      console.error('Registration error:', err);
-
-      // Lấy thông báo lỗi từ backend (theo đúng format bạn cung cấp)
-      const errorMsg =
+      const msg =
         err.response?.data?.errorDescription ||
         err.response?.data?.message ||
         'Đăng ký thất bại, vui lòng thử lại!';
 
-      setError(errorMsg);
-      toast.error(errorMsg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="Signup-container" style={{
-      backgroundImage: `url(${backgroundImage})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      minHeight: '100vh',
-      padding: '20px 0'
-    }}>
-      <Card sx={{ maxWidth: 700, margin: '30px auto', border: '3px solid #335566' }}>
-        <CardContent>
-          <Container maxWidth="sm">
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
-                Đăng ký tài khoản
-              </Typography>
+    <div className="signup-page">
+      <div className="signup-card">
+        <div className="signup-header">
+          <h1>Đăng ký tài khoản</h1>
+          <p>Tham gia Block Chat ngay hôm nay</p>
+        </div>
 
-              <form onSubmit={handleSubmit}>
-                <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Email"
-                      name="email"
-                      type="email"
-                      fullWidth
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      autoComplete="email"
-                    />
-                  </Grid>
+        <form onSubmit={handleSubmit} className="signup-form">
+          <div className="input-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              required
+              disabled={loading}
+            />
+          </div>
 
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Tên đăng nhập"
-                      name="username"
-                      fullWidth
-                      required
-                      value={formData.username}
-                      onChange={handleChange}
-                      autoComplete="username"
-                    />
-                  </Grid>
+          <div className="input-group">
+            <label>Tên đăng nhập</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Nhập tên bạn muốn dùng"
+              required
+              minLength="3"
+              disabled={loading}
+            />
+          </div>
 
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Mật khẩu"
-                      name="password"
-                      type="password"
-                      fullWidth
-                      required
-                      value={formData.password}
-                      onChange={handleChange}
-                      autoComplete="new-password"
-                    />
-                  </Grid>
+          <div className="input-group">
+            <label>Mật khẩu</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Ít nhất 6 ký tự"
+              required
+              minLength="6"
+              disabled={loading}
+            />
+          </div>
 
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Xác nhận mật khẩu"
-                      name="confirmPassword"
-                      type="password"
-                      fullWidth
-                      required
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      autoComplete="new-password"
-                      error={!!error && formData.password !== formData.confirmPassword}
-                    />
-                  </Grid>
+          <div className="input-group">
+            <label>Xác nhận mật khẩu</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Nhập lại mật khẩu"
+              required
+              disabled={loading}
+            />
+          </div>
 
-                  {error && (
-                    <Grid item xs={12}>
-                      <Typography color="error" variant="body2" align="center">
-                        {error}
-                      </Typography>
-                    </Grid>
-                  )}
+          <button
+            type="submit"
+            className={`signup-btn ${loading ? 'loading' : ''}`}
+            disabled={loading}
+          >
+            {loading ? 'Đang tạo tài khoản...' : 'Đăng ký'}
+          </button>
 
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      size="large"
-                      disabled={loading}
-                      sx={{ py: 1.5 }}
-                    >
-                      {loading ? 'Đang xử lý...' : 'Đăng ký'}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </form>
-            </Box>
-          </Container>
-        </CardContent>
-      </Card>
+          <p className="login-link">
+            Đã có tài khoản?{' '}
+            <a href="/">Đăng nhập ngay</a>
+          </p>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default SignUp;

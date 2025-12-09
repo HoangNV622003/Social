@@ -10,6 +10,4 @@ public interface ReportedPostProjection {
     String getReason();
 
     String getPostContent();  // Thêm nội dung bài viết
-
-    String getPostImage();
 }

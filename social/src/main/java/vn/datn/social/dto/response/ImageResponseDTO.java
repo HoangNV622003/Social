@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ImageResponseDTO {
+    Long id;
     Long postId;
-    String image;
+    String imageUrl;
 }

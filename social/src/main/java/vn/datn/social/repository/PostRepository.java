@@ -16,7 +16,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             SELECT
                 p.id                    AS id,
                 p.content               AS content,
-                p.image                 AS image,
                 u.id                    AS authorId,
                 u.username              AS authorUsername,
                 u.image                 AS authorImage,
@@ -43,7 +42,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             SELECT
                 p.id                    AS id,
                 p.content               AS content,
-                p.image                 AS image,
                 u.id                    AS authorId,
                 u.username              AS authorUsername,
                 u.image                 AS authorImage,
@@ -67,14 +65,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     );
 
     @Query("""
-                SELECT p.id AS postId, p.image AS image FROM Post p WHERE p.createdBy=:authorId
-            """)
-    Page<ImageProjection> findAllByAuthorId(@Param("authorId") Long authorId, Pageable pageable);
-    @Query("""
             SELECT
                 p.id                    AS id,
                 p.content               AS content,
-                p.image                 AS image,
                 u.id                    AS authorId,
                 u.username              AS authorUsername,
                 u.image                 AS authorImage,

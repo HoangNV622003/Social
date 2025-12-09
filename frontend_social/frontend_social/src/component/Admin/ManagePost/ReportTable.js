@@ -3,29 +3,31 @@ import React, { useState } from 'react';
 import { IMAGE_SERVER_URL } from '../../../constants/CommonConstants';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import './ReportTable.css';
+import ImageViewer from '../../ImageViewer/ImageViewer';
 
 const ReportTable = ({ reports, onDelete, onIgnore }) => {
     const [textPopup, setTextPopup] = useState({ open: false, title: '', content: '' });
-    const [imagePopup, setImagePopup] = useState({ open: false, url: '' });
+    const [imagePopup, setImagePopup] = useState({ open: false, urls: [] });
 
     const openTextPopup = (title, content) => {
         setTextPopup({ open: true, title, content: content || 'Không có nội dung' });
         document.body.style.overflow = 'hidden';
     };
 
-    const openImagePopup = (url) => {
-        setImagePopup({ open: true, url });
+    const openImagePopup = (urls) => {
+        setImagePopup({ open: true, urls });
         document.body.style.overflow = 'hidden';
     };
 
     const closeAllPopups = () => {
         setTextPopup({ open: false, title: '', content: '' });
-        setImagePopup({ open: false, url: '' });
+        setImagePopup({ open: false, urls: [] });
         document.body.style.overflow = 'auto';
     };
 
     return (
         <>
+            {/* Bảng báo cáo */}
             <div className="report-table-container">
                 <table className="report-table">
                     <thead>
@@ -65,12 +67,12 @@ const ReportTable = ({ reports, onDelete, onIgnore }) => {
                                 </td>
 
                                 <td className="text-center">
-                                    {r.postImage ? (
+                                    {r.postImages && r.postImages.length > 0 ? (
                                         <img
-                                            src={`${IMAGE_SERVER_URL}/${r.postImage}`}
+                                            src={`${IMAGE_SERVER_URL}/${r.postImages[0]}`} // dùng ảnh đầu tiên để preview
                                             alt="post"
                                             className="thumbnail-img"
-                                            onClick={() => openImagePopup(`${IMAGE_SERVER_URL}/${r.postImage}`)}
+                                            onClick={() => openImagePopup(r.postImages)}
                                         />
                                     ) : (
                                         <span className="no-image">—</span>
@@ -91,7 +93,7 @@ const ReportTable = ({ reports, onDelete, onIgnore }) => {
                 </table>
             </div>
 
-            {/* POPUP VĂN BẢN */}
+            {/* POPUP VĂN BẢN - giữ nguyên */}
             {textPopup.open && (
                 <div className="popup-overlay" onClick={closeAllPopups}>
                     <div className="popup-modal" onClick={(e) => e.stopPropagation()}>
@@ -107,15 +109,24 @@ const ReportTable = ({ reports, onDelete, onIgnore }) => {
                 </div>
             )}
 
-            {/* POPUP ẢNH */}
+            {/* POPUP ẢNH - CHỈ SỬA PHẦN NÀY */}
             {imagePopup.open && (
                 <div className="popup-overlay" onClick={closeAllPopups}>
-                    <div className="image-popup-content" onClick={(e) => e.stopPropagation()}>
-                        <IoIosCloseCircleOutline
-                            className="popup-close-icon"
+                    {/* Wrapper quan trọng nhất – chặn sự kiện click lan lên overlay */}
+                    <div
+                        className="image-viewer-container"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Nút X đóng riêng cho ảnh */}
+                        <button
+                            className="image-viewer-close-btn"
                             onClick={closeAllPopups}
-                        />
-                        <img src={imagePopup.url} alt="Phóng to" className="popup-image" />
+                        >
+                            ×
+                        </button>
+
+                        {/* ImageViewer hiện tại của bạn – không cần sửa gì cả */}
+                        <ImageViewer images={imagePopup.urls} />
                     </div>
                 </div>
             )}

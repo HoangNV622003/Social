@@ -34,7 +34,7 @@ export default function ImageManager({ userId, token }) {
             {images.length === 0 && <p>Không có hình ảnh nào.</p>}
             {images.map((item, index) => (
                 <div key={index} className="image-item" onClick={() => handleClick(item.postId)}>
-                    <img src={IMAGE_SERVER_URL + item.image} alt="img" />
+                    <img src={IMAGE_SERVER_URL + item.imageUrl} alt="img" />
                 </div>
             ))}
         </div>

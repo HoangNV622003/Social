@@ -9,8 +9,6 @@ public interface PostProjection {
 
     String getContent();
 
-    String getImage();
-
     Long getAuthorId();
 
     String getAuthorUsername();

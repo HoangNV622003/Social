@@ -21,7 +21,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
 
-    Optional<User> findByEmail(String email);
+    @Query("""
+        SELECT u FROM User u WHERE u.email=:keyword OR u.username = :keyword
+    """)
+    Optional<User> findByEmailOrUsername(String keyword);
 
     @Query("""
                 SELECT u FROM User u INNER JOIN Post p ON p.createdBy=u.id WHERE p.id=:postId

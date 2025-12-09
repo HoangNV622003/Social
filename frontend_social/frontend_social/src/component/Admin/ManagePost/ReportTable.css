@@ -15,7 +15,42 @@
   border-spacing: 0;
   font-size: 0.95rem;
 }
+/* ReportTable.css hoặc App.css */
+.image-viewer-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+}
 
+.image-viewer-close-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  font-size: 40px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-viewer-close-btn:hover {
+  background: rgba(255, 0, 0, 0.8);
+}
 .report-table th {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;

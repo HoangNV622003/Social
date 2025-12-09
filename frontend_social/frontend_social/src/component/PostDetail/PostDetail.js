@@ -16,6 +16,8 @@ import { CiLogout } from "react-icons/ci";
 import { VscSend } from "react-icons/vsc";
 
 import './PostDetail.css';
+import PostImages from '../PostImage/PostImages';
+import ImageViewer from '../ImageViewer/ImageViewer';
 
 const PostDetail = () => {
     const { postId } = useParams();
@@ -118,7 +120,7 @@ const PostDetail = () => {
 
             {/* ẢNH LỚN - 70% - CỐ ĐỊNH */}
             <div className="post-detail-left">
-                <img src={IMAGE_SERVER_URL + post.image} alt="post" />
+                <ImageViewer images={post.imageUrls} />
             </div>
 
             {/* NỘI DUNG + BÌNH LUẬN - 30% */}

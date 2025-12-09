@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.datn.social.dto.response.ImageResponseDTO;
 import vn.datn.social.dto.response.ProfileResponseDTO;
 import vn.datn.social.security.CurrentUserId;
+import vn.datn.social.service.ImageService;
 import vn.datn.social.service.ProfileService;
 
 @RestController
@@ -21,6 +22,7 @@ import vn.datn.social.service.ProfileService;
 public class ProfileController {
 
     ProfileService profileService;
+    private final ImageService imageService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ProfileResponseDTO> getProfile(@PathVariable Long id, @CurrentUserId Long currentUserId) {
@@ -34,6 +36,6 @@ public class ProfileController {
 
     @GetMapping("/{userId}/images")
     public ResponseEntity<Page<ImageResponseDTO>> getImages(@PathVariable Long userId, @PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(profileService.getImages(userId, pageable));
+        return ResponseEntity.ok(imageService.findAll(userId, pageable));
     }
 }

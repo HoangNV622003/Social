@@ -3,6 +3,8 @@ package vn.datn.social.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -11,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class PostResponseDTO {
     Long id;
     UserSummaryResponseDTO author;
-    String image;
+    List<String> imageUrls;
     String content;
     Long dateCreated;
     Integer totalLike;

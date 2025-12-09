@@ -33,13 +33,6 @@ public class ProfileService {
         return convertToDTO(user, currentUserId);
     }
 
-    public Page<ImageResponseDTO> getImages(Long userId, Pageable pageable) {
-        return postRepository.findAllByAuthorId(userId, pageable).map(p -> ImageResponseDTO.builder()
-                .postId(p.getPostId())
-                .image(p.getImage())
-                .build());
-    }
-
     public ProfileResponseDTO changeAvatar(Long userId, MultipartFile file) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ApiResponseCode.ENTITY_NOT_FOUND, "User not found"));

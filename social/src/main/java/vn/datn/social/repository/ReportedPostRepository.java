@@ -21,8 +21,7 @@ public interface ReportedPostRepository extends JpaRepository<ReportedPost, Long
             p.id AS postId,
             rp.createdBy AS reportedBy,
             rp.reason AS reason,
-            p.content AS postContent,
-            p.image AS postImage
+            p.content AS postContent
         FROM ReportedPost rp INNER JOIN Post p ON rp.postId=p.id LEFT JOIN User u ON u.id = rp.createdBy
         """)
     Page<ReportedPostProjection> findAllWithQuery(Pageable pageable);

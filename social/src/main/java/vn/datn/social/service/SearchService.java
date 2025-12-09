@@ -9,11 +9,15 @@ import vn.datn.social.constant.Authorities;
 import vn.datn.social.dto.response.PostResponseDTO;
 import vn.datn.social.dto.response.SearchResponseDTO;
 import vn.datn.social.dto.response.UserSummaryResponseDTO;
+import vn.datn.social.dto.response.projection.PostProjection;
+import vn.datn.social.entity.Image;
 import vn.datn.social.entity.User;
 import vn.datn.social.repository.PostRepository;
 import vn.datn.social.repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,21 +27,23 @@ public class SearchService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostService postService;
+    private final ImageService imageService;
 
     public SearchResponseDTO searchByCriteria(String keyword, Long currentUserId, Pageable pageable) {
         List<UserSummaryResponseDTO> users = userRepository.searchByCriterial(keyword, pageable).stream()
                 .map(this::toDTO).toList();
-        List<PostResponseDTO> posts = postRepository.searchByCriterial(currentUserId, keyword, pageable).stream()
-                .map(postService::convertToDTO).toList();
+        List<PostResponseDTO> postResponseDTOS = searchPostByCriteria(keyword, currentUserId, pageable).getContent();
         return SearchResponseDTO.builder()
                 .users(users)
-                .posts(posts)
+                .posts(postResponseDTOS)
                 .build();
     }
 
     public Page<PostResponseDTO> searchPostByCriteria(String keyword, Long currentUserId, Pageable pageable) {
-        return postRepository.searchByCriterial(currentUserId, keyword, pageable)
-                .map(postService::convertToDTO);
+        Page<PostProjection> projections = postRepository.searchByCriterial(currentUserId, keyword, pageable);
+        List<Long> postIds = projections.stream().map(PostProjection::getId).toList();
+        Map<Long, List<String>> imageMap = imageService.getImageMapByPostIdIn(postIds);
+        return projections.map(projection -> postService.convertToDTO(projection, imageMap));
     }
 
     public Page<UserSummaryResponseDTO> searchUserByCriteria(String keyword, Pageable pageable) {
@@ -50,7 +56,7 @@ public class SearchService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .image(user.getImage())
-                .isAdmin(Authorities.ROLE_ADMIN.getId()==user.getRole())
+                .isAdmin(Authorities.ROLE_ADMIN.getId() == user.getRole())
                 .build();
     }
 }

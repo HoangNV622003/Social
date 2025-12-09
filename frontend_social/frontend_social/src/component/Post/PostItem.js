@@ -13,6 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { IMAGE_SERVER_URL } from '../../constants/CommonConstants';
+import PostImages from '../PostImage/PostImages';
 const PostItem = ({ post: initialPost, onDelete }) => {
   const { token, user } = useAuth();
   const [post, setPost] = useState(initialPost);
@@ -44,9 +45,8 @@ const PostItem = ({ post: initialPost, onDelete }) => {
 
   // Xử lý ảnh
   const postImageUrl = useMemo(() => {
-    console.log(IMAGE_SERVER_URL + post.image)
-    return post.image;
-  }, [post.image]);
+    return post.imageUrls;
+  }, [post.imageUrls]);
 
   // Like handler
   const handleLike = async () => {
@@ -153,7 +153,8 @@ const PostItem = ({ post: initialPost, onDelete }) => {
           {post.content && <p className="post-text">{post.content}</p>}
           {postImageUrl && (
             <div className="post-image-wrapper">
-              <img src={IMAGE_SERVER_URL + postImageUrl} alt="Bài viết" className="post-image" loading="lazy" />
+
+              <PostImages imageUrls={postImageUrl} postId={post.id} />
             </div>
           )}
         </div>

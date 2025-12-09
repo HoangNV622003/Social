@@ -23,7 +23,4 @@ public class Post extends AbstractAuditingEntity implements Serializable {
 
     @Column(name="content", nullable = false)
     String content;
-
-    @Column(name = "image")
-    String image;
 }
