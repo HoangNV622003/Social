@@ -44,6 +44,7 @@ const SignUp = () => {
         email: formData.email.trim(),
         username: formData.username.trim(),
         password: formData.password,
+        confirmPassword: formData.confirmPassword
       });
 
       toast.success('Đăng ký thành công! Đang chuyển đến trang đăng nhập...');
@@ -58,7 +59,7 @@ const SignUp = () => {
 
       // Chuyển về trang login sau 1.5s
       setTimeout(() => {
-        navigate('/login');
+        navigate('/');
       }, 1500);
     } catch (err) {
       const msg =

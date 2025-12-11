@@ -3,13 +3,14 @@ import React from 'react';
 import { FiUserCheck, FiUserX, FiClock } from 'react-icons/fi';
 import UserAvatar from '../../component/UserAvatar/UserAvatar';
 import './FriendRequestItem.css';
-
+import { useNavigate } from 'react-router-dom';
 const FriendRequestItem = ({ request, onAccept, onDecline, formatTime }) => {
+    const navigate = useNavigate();
     const { id, userId, name, image, dateCreated } = request;
 
     return (
         <div className="friend-request-item">
-            <div className="friend-request-avatar">
+            <div className="friend-request-avatar" onClick={() => navigate(`/profile/${userId}`)}>
                 <UserAvatar username={name} image={image} size="large" showOnline={false} />
             </div>
 

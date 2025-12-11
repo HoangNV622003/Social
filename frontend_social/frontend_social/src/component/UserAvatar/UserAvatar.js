@@ -9,7 +9,7 @@ const UserAvatar = ({ username = "", image = null, size = "medium", showOnline =
     // Kiểm tra có ảnh hợp lệ không
     const hasValidImage = image !== null
     return (
-        <div className={`user-avatar ${size === "large" ? "large" : size === "small" ? "small" : "medium"} ${showOnline ? "online" : ""}`}>
+        <div className={`user-avatar ${size === "super-large" ? "super-large" : size === "large" ? "large" : size === "small" ? "small" : "medium"} ${showOnline ? "online" : ""}`}>
             {/* Ảnh thật từ base64 */}
             {hasValidImage && (
                 <img

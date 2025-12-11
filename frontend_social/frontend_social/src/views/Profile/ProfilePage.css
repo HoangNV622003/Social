@@ -1,149 +1,242 @@
-/* ---------------------- */
-/* Layout tổng */
-/* ---------------------- */
+/* src/pages/ProfilePage.css */
+/* Layout cân bằng, không ảnh bìa, đẹp hiện đại 2025 */
+
 .profile-page {
-  background: #f0f2f5;
   min-height: 100vh;
-  font-family: "Inter", sans-serif;
+  background-color: #f0f2f5;
+  padding-top: 60px; /* Để không bị Navbar fixed che */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Header: Avatar trái - Info giữa - Nút hành động phải */
+.profile-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e4e6eb;
+  padding: 32px 16px;
+  margin-bottom: 16px;
+}
+
+.profile-header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+/* .avatar-section: KHÔNG CÓ CSS Ở ĐÂY - theo yêu cầu */
+
+/* Thông tin người dùng */
+.info-section {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #050505;
+  line-height: 1.2;
+}
+
+.profile-bio {
+  margin: 0;
+  font-size: 16px;
+  color: #65676b;
+  line-height: 1.4;
+}
+
+/* Nút hành động (kết bạn, nhắn tin, ...) */
+.profile-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 12px;
+  align-self: flex-start;
+}
+
+/* Tabs - Dính sát dưới navbar khi cuộn */
+.profile-tabs {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e4e6eb;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 60px;
+  z-index: 900;
+  backdrop-filter: blur(10px);
+}
+
+.tabs-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  gap: 40px;
+}
+
+.tab-item {
+  all: unset;
+  padding: 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #65676b;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-item:hover {
+  color: #050505;
+}
+
+.tab-item.active {
+  color: #0866ff;
+}
+
+.tab-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #0866ff;
+  border-radius: 2px;
+}
+
+/* Nội dung tab */
+.profile-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+
+.tab-posts,
+.tab-friends,
+.tab-photos {
+  width: 100%;
 }
 
 /* Loading & Error */
 .profile-loading,
 .profile-error {
-  padding: 40px;
   text-align: center;
-  font-size: 18px;
-  color: #555;
-}
-
-/* ---------------------- */
-/* Header: Cover + Avatar */
-/* ---------------------- */
-.profile-header {
-  background: white;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Cover Photo */
-.cover-photo {
-  width: 100%;
-  height: 220px;
-  background: #d8d8d8;
-  position: relative;
-}
-
-.cover-placeholder {
-  width: 100%;
-  height: 100%;
-  background: white;
-}
-
-/* Profile Info dưới cover */
-.profile-info {
-  display: flex;
-  align-items: flex-end;
-  padding: 0 20px 20px;
-  position: relative;
-}
-
-/* Avatar lớn đặt chồng lên cover */
-.avatar-section {
-  position: relative;
-  margin-top: -70px;
-}
-
-.avatar-section img {
-  border: 4px solid white;
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-}
-
-/* Info phải */
-.info-section {
-  margin-left: 20px;
-}
-
-.profile-name {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.profile-bio {
-  margin: 5px 0 0;
-  color: #666;
-}
-
-/* ---------------------- */
-/* Tabs Menu */
-/* ---------------------- */
-.profile-tabs {
-  background: white;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 15px;
-}
-
-.tabs-container {
-  max-width: 900px;
-  margin: auto;
-  display: flex;
-  justify-content: center;
-}
-
-.tab-item {
-  padding: 14px 24px;
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  font-weight: 500;
-  color: #555;
-  border-bottom: 3px solid transparent;
-  transition: 0.2s ease;
-}
-
-.tab-item:hover {
-  background: #f5f5f5;
-}
-
-.tab-item.active {
-  color: #1877f2;
-  border-bottom: 3px solid #1877f2;
-  font-weight: 600;
-}
-
-/* ---------------------- */
-/* Content */
-/* ---------------------- */
-.profile-content {
-  max-width: 900px;
-  margin: auto;
-  padding-bottom: 40px;
-}
-
-/* Empty states */
-.empty-state {
-  padding: 40px 20px;
-  text-align: center;
-  color: #555;
-}
-
-.empty-state h3 {
-  margin-bottom: 10px;
+  padding: 120px 20px;
   font-size: 20px;
+  color: #65676b;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 60px);
 }
 
-/* Posts tab content */
-.tab-posts {
-  margin-top: 10px;
+.profile-error {
+  color: #e41e3f;
 }
 
-/* Friends & Photos placeholder */
-.tab-friends,
-.tab-photos {
-  margin-top: 20px;
+/* Responsive */
+@media (max-width: 900px) {
+  .profile-header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .info-section {
+    min-width: auto;
+  }
+
+  .profile-name {
+    font-size: 28px;
+  }
+
+  .profile-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-header {
+    padding: 24px 12px;
+  }
+
+  .profile-header-container {
+    align-items: center;
+    text-align: center;
+  }
+
+  .info-section {
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tabs-container {
+    gap: 24px;
+    overflow-x: auto;
+    padding: 0 12px 8px;
+    justify-content: flex-start;
+  }
+
+  .tabs-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .profile-content {
+    padding: 0 12px 40px;
+  }
+}
+
+/* Dark mode tự động */
+@media (prefers-color-scheme: dark) {
+  .profile-page {
+    background-color: #18191a;
+  }
+
+  .profile-header,
+  .profile-tabs {
+    background-color: #242526;
+    border-color: #393a3b;
+  }
+
+  .profile-name {
+    color: #e4e6eb;
+  }
+
+  .profile-bio {
+    color: #b0b3b8;
+  }
+
+  .tab-item {
+    color: #b0b3b8;
+  }
+
+  .tab-item:hover,
+  .tab-item.active {
+    color: #4599ff;
+  }
+
+  .tab-item.active::after {
+    background-color: #4599ff;
+  }
+
+  .profile-loading,
+  .profile-error {
+    background-color: #18191a;
+    color: #b0b3b8;
+  }
 }

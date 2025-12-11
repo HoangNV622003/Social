@@ -35,6 +35,11 @@
   height: 60px;
   font-size: 25px;
 }
+.user-avatar.super-large {
+  width: 100px;
+  height: 100px;
+  font-size: 50px;
+}
 
 /* Ảnh thật */
 .user-avatar .avatar-image {

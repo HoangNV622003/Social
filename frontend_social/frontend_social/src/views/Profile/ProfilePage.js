@@ -76,30 +76,28 @@ const ProfilePage = () => {
             <Navbar />
 
             <div className="profile-header">
-                <div className="cover-photo">
-                    <div className="cover-placeholder"></div>
-                </div>
-
-                <div className="profile-info">
+                <div className="profile-header-container">
                     <div className="avatar-section">
-                        <UserAvatar username={user.username} image={user.image} size="large" />
+                        <UserAvatar username={user.username} image={user.image} size="super-large" />
                     </div>
 
                     <div className="info-section">
                         <h1 className="profile-name">{user.username}</h1>
                         <p className="profile-bio">
-                            {user.email} · {user.address || 'Chưa cập nhật địa chỉ'}
+                            {user.email}
                         </p>
+                        <p>{user.address || 'Chưa cập nhật địa chỉ'}</p>
+                    </div>
+
+                    <div className="profile-actions">
+                        <FriendRelationshipButton
+                            relationship={user.relationship}
+                            profileId={userId}
+                            token={token}
+                            onActionSuccess={refreshProfile}
+                        />
                     </div>
                 </div>
-
-                {/* Truyền callback để cập nhật lại relationship */}
-                <FriendRelationshipButton
-                    relationship={user.relationship}
-                    profileId={userId}
-                    token={token}
-                    onActionSuccess={refreshProfile}
-                />
             </div>
 
             {/* Tabs */}
