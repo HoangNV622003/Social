@@ -34,7 +34,9 @@ const AvatarUploader = ({ avatarUrl, originalAvatar, onAvatarChange, disabled })
         <div className="avatar-uploader">
             <div className="avatar-preview">
                 {displayUrl ? (
-                    <img src={displayUrl} alt="Avatar" />
+                    <img src={displayUrl} alt="Avatar" style={{
+                        height: "180px", width: "180px", borderRadius: "50%"
+                    }} />
                 ) : (
                     <div className="avatar-placeholder">
                         <span>Chưa có ảnh</span>

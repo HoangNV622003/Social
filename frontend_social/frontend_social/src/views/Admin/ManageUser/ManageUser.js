@@ -1,5 +1,5 @@
 // src/pages/admin/ManageUser.jsx
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import { useAuth } from '../../../context/AuthContext';
 import { searchUsers } from '../../../apis/SearchService';
 import Manage_web from "../Manage_web";
@@ -19,7 +19,7 @@ const ManageUser = () => {
   const [hasMore, setHasMore] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
 
-  const loadUsers = async (searchTerm, pageNum, reset = false) => {
+  const loadUsers = useCallback(async (searchTerm, pageNum, reset = false) => {
     if (!token) return;
 
     setLoading(true);
@@ -34,32 +34,35 @@ const ManageUser = () => {
       setTotalPages(data.totalPages || 1);
       setPage(pageNum);
     } catch (err) {
-      toast.error("Có lỗi khi tải danh sách")
+      toast.error("Có lỗi khi tải danh sách");
       setUsers([]);
       setHasMore(false);
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  // Tìm kiếm với debounce (từ UserSearch)
   const handleSearch = (value) => {
     setKeyword(value);
     setPage(0);
     loadUsers(value, 0, true);
   };
 
-  // Load trang tiếp theo
   const loadMore = () => {
     if (hasMore && !loading) {
       loadUsers(keyword, page + 1, false);
     }
   };
 
-  // Load lần đầu
+  // Hàm refresh danh sách khi cập nhật thành công
+  const refreshUserList = useCallback(() => {
+    setPage(0);
+    loadUsers(keyword, 0, true);
+  }, [keyword, loadUsers]);
+
   useEffect(() => {
     if (token) loadUsers("", 0, true);
-  }, [token]);
+  }, [token, loadUsers]);
 
   return (
     <div className="main">
@@ -81,6 +84,7 @@ const ManageUser = () => {
           page={page}
           totalPages={totalPages}
           onLoadMore={loadMore}
+          onUserUpdated={refreshUserList} // Truyền callback refresh
         />
       </div>
     </div>

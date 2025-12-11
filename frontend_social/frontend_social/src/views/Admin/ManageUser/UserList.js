@@ -3,7 +3,15 @@ import React from 'react';
 import UserItem from './UserItem';
 import './UserList.css';
 
-const UserList = ({ users, loading, hasMore, page, totalPages, onLoadMore }) => {
+const UserList = ({
+    users,
+    loading,
+    hasMore,
+    page,
+    totalPages,
+    onLoadMore,
+    onUserUpdated // Nhận từ ManageUser
+}) => {
     if (loading && users.length === 0) {
         return <div className="user-list-loading">Đang tải người dùng...</div>;
     }
@@ -16,7 +24,11 @@ const UserList = ({ users, loading, hasMore, page, totalPages, onLoadMore }) => 
         <div className="user-list-container">
             <div className="user-grid">
                 {users.map(user => (
-                    <UserItem key={user.id || user.username} user={user} />
+                    <UserItem
+                        key={user.id || user.username}
+                        user={user}
+                        onUserUpdated={onUserUpdated} // Truyền tiếp xuống UserItem
+                    />
                 ))}
             </div>
 

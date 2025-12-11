@@ -1,45 +1,112 @@
 /* src/pages/admin/Manage_post.css */
+/* Layout admin đẹp, Manage_web không che nội dung */
+
 .mp-layout {
-  width: 100%;
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background-color: #f0f2f5;
 }
 
+/* Manage_web - Sidebar bên trái (giả sử nó fixed hoặc sticky) */
+.mp-layout > :first-child {
+  /* Đây là <Manage_web /> */
+  flex-shrink: 0; /* Không co lại */
+  width: 260px; /* Chiều rộng sidebar phổ biến, bạn có thể điều chỉnh nếu khác */
+  /* Nếu Manage_web dùng position: fixed, thì không cần width ở đây */
+}
+
+/* Nội dung chính - PHẦN QUAN TRỌNG */
 .mp-container {
-  flex: 1;
-  margin-left: 150px; /* chiều rộng sidebar mở rộng */
-  padding: 2.5rem 2rem;
-  max-width: 1800px auto;
+  flex: 1; /* Chiếm hết phần còn lại */
+  min-width: 0; /* Tránh flex overflow */
+  padding: 32px 40px; /* Khoảng cách đẹp */
+  margin-left: 260px; /* Đẩy sang phải đúng bằng chiều rộng sidebar */
+  box-sizing: border-box;
+  max-width: calc(100% - 260px); /* Đảm bảo không vượt màn hình */
 }
 
-@media (max-width: 1024px) {
-  .mp-container {
-    margin-left: 80px;
-  }
-}
-@media (max-width: 768px) {
-  .mp-container {
-    margin-left: 0;
-    padding: 1.5rem 1rem;
-  }
+/* Nếu Manage_web dùng position: fixed (phổ biến nhất) */
+.mp-layout > :first-child {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1000;
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto;
 }
 
+/* Trường hợp fixed: nội dung chính chỉ cần margin-left */
+.mp-container {
+  margin-left: 260px; /* Đẩy nội dung sang phải */
+  padding: 32px 40px;
+  width: calc(100% - 260px);
+  box-sizing: border-box;
+}
+
+/* Tiêu đề trang */
 .mp-container h1 {
-  font-size: 2.6rem;
-  font-weight: 800;
-  text-align: center;
-  background: linear-gradient(90deg, #6366f1, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0 0 3rem;
+  font-size: 28px;
+  font-weight: 700;
+  color: #050505;
+  margin: 0 0 32px 0;
+  text-align: left;
 }
 
+/* Loading state */
 .mp-loading {
   text-align: center;
-  padding: 4rem;
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  animation: pulse 2s infinite;
+  padding: 80px 20px;
+  font-size: 18px;
+  color: #65676b;
+}
+
+/* Responsive - Khi màn hình nhỏ (tablet/mobile) */
+@media (max-width: 992px) {
+  .mp-layout {
+    flex-direction: column;
+  }
+
+  .mp-layout > :first-child {
+    position: relative; /* Trở về bình thường */
+    width: 100%;
+    height: auto;
+  }
+
+  .mp-container {
+    margin-left: 0;
+    width: 100%;
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mp-container {
+    padding: 20px 16px;
+  }
+
+  .mp-container h1 {
+    font-size: 24px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .mp-layout {
+    background-color: #18191a;
+  }
+
+  .mp-container {
+    background-color: #18191a;
+    color: #e4e6eb;
+  }
+
+  .mp-container h1 {
+    color: #e4e6eb;
+  }
+
+  .mp-loading {
+    color: #b0b3b8;
+  }
 }

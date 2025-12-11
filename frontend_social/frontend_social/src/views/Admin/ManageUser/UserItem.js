@@ -1,32 +1,30 @@
 // src/pages/admin/components/UserList/UserItem.jsx
 import React from 'react';
-import UserEditPopup from '../../../component/Popup/UserEditPopup/UserEditForm';
+import UserEditPopup from '../../../component/Popup/UserEditPopup/UserEditPopup'; // Đường dẫn đúng
 import './UserItem.css';
 import { IMAGE_SERVER_URL } from '../../../constants/CommonConstants';
 
-const UserItem = ({ user }) => {
+const UserItem = ({ user, onUserUpdated }) => {
     const [isEditOpen, setIsEditOpen] = React.useState(false);
 
-    // Xác định URL ảnh avatar
-    const avatarUrl = user.image
+    const avatarUrl = user.image;
+
     return (
         <>
             <div className="user-card">
                 <div className="user-avatar">
                     {avatarUrl ? (
                         <img
-                            src={IMAGE_SERVER_URL + "/" + avatarUrl}
+                            src={`${IMAGE_SERVER_URL}/${avatarUrl}`}
                             alt={user.username}
                             className="user-avatar-img"
                             onError={(e) => {
-                                // Nếu ảnh lỗi (404, hỏng, v.v.) → fallback về placeholder
                                 e.target.style.display = 'none';
                                 e.target.nextElementSibling.style.display = 'flex';
                             }}
                         />
                     ) : null}
 
-                    {/* Placeholder chỉ hiện khi không có ảnh hoặc ảnh lỗi */}
                     <div
                         className="avatar-placeholder"
                         style={{ display: avatarUrl ? 'none' : 'flex' }}
@@ -52,15 +50,13 @@ const UserItem = ({ user }) => {
                 </div>
             </div>
 
-            {/* Popup chỉnh sửa */}
             {isEditOpen && (
                 <UserEditPopup
                     userId={user.id}
                     onClose={() => setIsEditOpen(false)}
                     onUpdateSuccess={() => {
                         setIsEditOpen(false);
-                        // Tùy chọn: reload trang hoặc emit event để refresh danh sách
-                        // window.location.reload();
+                        onUserUpdated?.(); // Gọi refresh danh sách
                     }}
                 />
             )}

@@ -56,7 +56,7 @@ public class UserService {
                 : user.getImage();
         Integer role = (requestDTO.isAdmin() != null && requestDTO.isAdmin())
                 ? Authorities.ROLE_ADMIN.getId()
-                : user.getRole();
+                : Authorities.ROLE_STAFF.getId();
         user.setImage(imageUrl);
         user.setEmail(requestDTO.email());
         user.setUsername(requestDTO.username());

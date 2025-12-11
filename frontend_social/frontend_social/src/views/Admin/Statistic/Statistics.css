@@ -1,17 +1,36 @@
-/* src/pages/admin/Statistics.css */
 .stats-layout {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: "Segoe UI", sans-serif;
+  background-color: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Sidebar Manage_web (giả sử fixed bên trái) */
+.stats-layout > :first-child {
+  flex-shrink: 0;
+  width: 260px; /* Chiều rộng sidebar phổ biến - điều chỉnh nếu khác */
+  position: fixed; /* Cố định khi cuộn */
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
+  background-color: #ffffff; /* Màu sidebar */
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Nội dung chính - Đẩy sang phải để tránh bị che */
 .stats-container {
   flex: 1;
-  margin-left: 150px;
-  padding: 2.5rem;
-  color: white;
+  min-width: 0;
+  margin-left: 260px; /* Đẩy sang phải đúng bằng chiều rộng sidebar */
+  padding: 40px 48px;
+  box-sizing: border-box;
+  background-color: #f0f2f5;
 }
+
+/* Tiêu đề */
 
 @media (max-width: 1024px) {
   .stats-container {
