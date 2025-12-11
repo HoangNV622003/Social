@@ -78,7 +78,7 @@ public interface FriendRepository extends JpaRepository<FriendUser, Long> {
                     f.status AS status,
                     f.dateCreated AS dateCreated
                 FROM FriendUser f
-                LEFT JOIN User u ON f.userId=u.id
+                LEFT JOIN User u ON f.createdBy=u.id
                 WHERE f.userId=:userId AND f.status=1
             """)
     Page<FriendUserProjection> findAllRequestFriends(@Param("userId")Long userId, Pageable pageable);

@@ -74,6 +74,7 @@ public class CommentService {
                 .content(projection.getContent())
                 .image(projection.getImage())
                 .author(authorDTO)
+                .dateCreated(projection.getDateCreated().getEpochSecond())
                 .build();
     }
 

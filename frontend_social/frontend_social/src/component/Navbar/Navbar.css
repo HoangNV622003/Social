@@ -1,138 +1,154 @@
-/* ====================== NAVBAR CHÍNH ====================== */
+/* src/components/Navbar.css */
 .blockchat-navbar-2025-main {
-  position: fixed;
+  position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e5e5;
   z-index: 1000;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e4e6eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  height: 60px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", sans-serif;
 }
 
 .blockchat-navbar-2025-inner {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 0 16px;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  gap: 24px;
 }
 
 /* Logo */
 .blockchat-navbar-2025-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 20px;
   color: #0866ff;
+  font-weight: 800;
+  font-size: 24px;
+  transition: opacity 0.2s;
+}
+
+.blockchat-navbar-2025-logo:hover {
+  opacity: 0.8;
 }
 
 .blockchat-navbar-2025-brand-text {
   color: #0866ff;
-  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
-/* Các icon giữa */
+/* Center Navigation */
 .blockchat-navbar-2025-center {
   display: flex;
-  gap: 24px;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+  max-width: 500px;
 }
 
 .blockchat-navbar-2025-item {
   position: relative;
-  background: none;
-  border: none;
-  padding: 8px;
-  border-radius: 50%;
-  cursor: pointer;
-  color: #65676b;
-  transition: all 0.2s;
-  width: 44px;
-  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: #65676b;
+  transition: all 0.25s cubic-bezier(0.08, 0.52, 0.52, 1);
+  cursor: pointer;
+  text-decoration: none;
+  background-color: transparent;
 }
 
 .blockchat-navbar-2025-item:hover {
-  background: #f0f2f5;
+  background-color: #f0f2f5;
+  color: #050505;
 }
 
 .blockchat-navbar-2025-item svg {
-  width: 26px;
-  height: 26px;
+  transition: transform 0.2s;
 }
 
+.blockchat-navbar-2025-item:hover svg {
+  transform: scale(1.1);
+}
+
+/* Active state */
 .blockchat-navbar-2025-active,
 .blockchat-navbar-2025-item:active {
   color: #0866ff;
-  background: #e7f3ff;
+  background-color: #e7f3ff;
 }
 
-/* CHẤM ĐỎ THÔNG BÁO - SIÊU ĐẸP NHƯ ZALO/FACEBOOK */
+.blockchat-navbar-2025-active svg,
+.blockchat-navbar-2025-item:active svg {
+  transform: scale(1.15);
+}
+
+/* Chấm thông báo đỏ (tin nhắn + thông báo hệ thống) */
 .blockchat-navbar-2025-noti-dot {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  background: #e31c1c;
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
+  top: 8px;
+  right: 8px;
   min-width: 18px;
   height: 18px;
+  background-color: #e41e3f;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 5px;
-  border: 2.5px solid white;
-  box-shadow: 0 2px 6px rgba(227, 28, 28, 0.4);
-  animation: notiPulse 2s infinite;
-  z-index: 10;
-  line-height: 1;
+  padding: 0 4px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s infinite;
 }
 
-@keyframes notiPulse {
+@keyframes pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 2px 6px rgba(227, 28, 28, 0.4);
   }
   50% {
     transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(227, 28, 28, 0.6);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 2px 6px rgba(227, 28, 28, 0.4);
   }
 }
 
-/* Phần user bên phải */
+/* User Section */
 .blockchat-navbar-2025-user-section {
   position: relative;
 }
 
 .blockchat-navbar-2025-user-btn {
+  all: unset;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f0f2f5;
   padding: 6px 12px;
   border-radius: 50px;
+  background-color: #f0f2f5;
   cursor: pointer;
-  border: none;
-  transition: background 0.2s;
-  font-weight: 600;
-  color: #1c1e21;
+  transition: all 0.2s;
+  min-width: 180px;
+  justify-content: space-between;
 }
 
 .blockchat-navbar-2025-user-btn:hover {
-  background: #e4e6ea;
+  background-color: #e4e6eb;
 }
 
 .blockchat-navbar-2025-user-avatar {
@@ -140,93 +156,121 @@
   height: 36px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #e4e6ea;
+  flex-shrink: 0;
 }
 
 .skeleton-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #e4e6ea;
+  width: 100%;
+  height: 100%;
+  background-color: #ced0d4;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
   font-weight: bold;
-  color: #65676b;
   font-size: 16px;
 }
 
 .blockchat-navbar-2025-username {
-  max-width: 120px;
+  font-weight: 600;
+  color: #050505;
+  font-size: 15px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 120px;
 }
 
 .blockchat-navbar-2025-arrow {
-  transition: transform 0.2s;
+  transition: transform 0.25s ease;
+  color: #65676b;
 }
 
 .blockchat-navbar-2025-arrow-up {
   transform: rotate(180deg);
 }
 
-/* Dropdown menu */
+/* Dropdown Menu */
 .blockchat-navbar-2025-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 8px);
   right: 0;
-  background: white;
-  min-width: 220px;
+  min-width: 240px;
+  background-color: white;
   border-radius: 12px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
-  margin-top: 8px;
   overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease-out;
   z-index: 1000;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .blockchat-navbar-2025-dropdown-item {
   display: block;
   padding: 12px 16px;
+  color: #050505;
   text-decoration: none;
-  color: #1c1e21;
-  font-weight: 500;
-  transition: background 0.1s;
+  font-size: 15px;
+  transition: background-color 0.2s;
+  cursor: pointer;
 }
 
 .blockchat-navbar-2025-dropdown-item:hover {
-  background: #f0f2f5;
+  background-color: #f0f2f5;
 }
 
 .blockchat-navbar-2025-admin {
-  color: #e31c1c;
+  color: #d32f2f;
   font-weight: 600;
+}
+
+.blockchat-navbar-2025-logout {
+  color: #e41e3f;
+}
+
+.blockchat-navbar-2025-logout:hover {
+  background-color: #feefef;
 }
 
 .blockchat-navbar-2025-divider {
   height: 1px;
-  background: #e5e5e5;
-  margin: 6px 0;
+  background-color: #e4e6eb;
+  margin: 8px 0;
 }
 
-.blockchat-navbar-2025-logout {
-  color: #e31c1c;
-  cursor: pointer;
-}
-
-.blockchat-navbar-2025-logout:hover {
-  background: #ffebeb;
-}
-
-/* Responsive cho mobile */
+/* Responsive cho mobile (dưới 768px) */
 @media (max-width: 768px) {
+  .blockchat-navbar-2025-inner {
+    padding: 0 8px;
+    gap: 12px;
+  }
+
+  .blockchat-navbar-2025-brand-text {
+    display: none;
+  }
+
+  .blockchat-navbar-2025-logo svg {
+    width: 40px;
+    height: 40px;
+  }
+
   .blockchat-navbar-2025-center {
-    gap: 16px;
+    gap: 4px;
   }
 
   .blockchat-navbar-2025-item {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
   }
 
   .blockchat-navbar-2025-username {
@@ -234,6 +278,63 @@
   }
 
   .blockchat-navbar-2025-user-btn {
-    padding: 6px;
+    padding: 4px;
+    min-width: auto;
+    background-color: transparent;
   }
+
+  .blockchat-navbar-2025-user-btn:hover {
+    background-color: #f0f2f5;
+  }
+}
+
+/* Dark mode support (nếu sau này bật) */
+@media (prefers-color-scheme: dark) {
+  .blockchat-navbar-2025-main {
+    background-color: #242526;
+    border-bottom-color: #393a3b;
+  }
+
+  .blockchat-navbar-2025-item:hover,
+  .blockchat-navbar-2025-active {
+    background-color: #3a3b3c;
+  }
+
+  .blockchat-navbar-2025-user-btn,
+  .blockchat-navbar-2025-user-btn:hover {
+    background-color: #3a3b3c;
+  }
+
+  .blockchat-navbar-2025-dropdown {
+    background-color: #242526;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  }
+
+  .blockchat-navbar-2025-dropdown-item:hover {
+    background-color: #3a3b3c;
+  }
+}
+/* Thêm vào cuối file Navbar.css */
+.blockchat-navbar-2025-item-button {
+  all: unset; /* XÓA HẾT style mặc định của <button> */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  color: #65676b;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  color: inherit;
+  transition: all 0.25s cubic-bezier(0.08, 0.52, 0.52, 1);
+}
+
+.blockchat-navbar-2025-item-button:hover {
+  background-color: #f0f2f5;
+}
+
+.blockchat-navbar-2025-item-button:focus-visible {
+  outline: 3px solid #cce4ff; /* vẫn giữ focus ring cho accessibility */
+  outline-offset: 2px;
 }

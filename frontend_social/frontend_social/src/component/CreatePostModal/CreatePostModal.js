@@ -30,7 +30,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated }) => {
         }
 
         const newFiles = [];
-        const newPreviews = [];
 
         files.forEach((file) => {
             if (file.type.startsWith('image/')) {

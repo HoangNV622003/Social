@@ -1,7 +1,6 @@
 // src/components/comment/CommentSection.js
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import UserAvatar from '../UserAvatar/UserAvatar';
 import CommentList from './CommentList';
 import { createComment, getCommentsByPostId } from '../../apis/CommentService';
 import { toast } from 'react-toastify';

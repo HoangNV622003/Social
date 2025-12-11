@@ -27,7 +27,6 @@ import vn.datn.social.service.UserService;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
     UserService userService;
-    PasswordEncoder passwordEncoder;
 
     // Thêm endpoint để thay đổi mật khẩu
     @PutMapping("/change-password")

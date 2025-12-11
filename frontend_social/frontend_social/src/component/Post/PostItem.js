@@ -12,7 +12,6 @@ import { toggleLike } from '../../apis/LikeService';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { IMAGE_SERVER_URL } from '../../constants/CommonConstants';
 import PostImages from '../PostImage/PostImages';
 const PostItem = ({ post: initialPost, onDelete }) => {
   const { token, user } = useAuth();

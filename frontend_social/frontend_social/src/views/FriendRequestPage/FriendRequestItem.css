@@ -1,0 +1,104 @@
+/* src/components/FriendRequestItem/FriendRequestItem.css */
+.friend-request-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  border: 1px solid #e4e6eb;
+}
+
+.friend-request-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.friend-request-avatar {
+  flex-shrink: 0;
+}
+
+.friend-request-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-request-name {
+  margin: 0 0 6px 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #050505;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-request-time {
+  margin: 0;
+  font-size: 13px;
+  color: #65676b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.friend-request-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.friend-request-btn {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.friend-request-btn.accept {
+  background-color: #1877f2;
+  color: white;
+}
+
+.friend-request-btn.accept:hover {
+  background-color: #166fe5;
+}
+
+.friend-request-btn.decline {
+  background-color: #e4e6eb;
+  color: #050505;
+}
+
+.friend-request-btn.decline:hover {
+  background-color: #d8dadf;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .friend-request-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .friend-request-actions {
+    width: 100%;
+  }
+
+  .friend-request-btn span {
+    display: none;
+  }
+
+  .friend-request-btn {
+    padding: 12px;
+  }
+}

@@ -4,7 +4,7 @@ import React, {
     , useEffect, useRef, memo
 } from 'react';
 import { useMessageWebSocket } from '../../hooks/useMessageWebSocket';
-import MessageList from '../ChatPage/MessageList';
+import MessageList from '../../views/ChatPage/MessageList';
 import UserAvatar from '../UserAvatar/UserAvatar';
 import { AiOutlineSend, AiOutlineMinus, AiOutlineClose } from 'react-icons/ai';
 import { useAuth } from '../../context/AuthContext';

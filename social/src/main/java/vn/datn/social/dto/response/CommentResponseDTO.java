@@ -12,4 +12,5 @@ public class CommentResponseDTO {
     private UserSummaryResponseDTO author;
     private String content;
     private String image;
+    private Long dateCreated;
 }

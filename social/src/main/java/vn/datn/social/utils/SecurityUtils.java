@@ -22,7 +22,7 @@ public final class SecurityUtils {
         return Optional.ofNullable(securityContext.getAuthentication()).map(authentication ->
         {
             if (authentication instanceof AuthenticationToken authenticationToken) {
-                return ((AuthenticationToken) authenticationToken).getUserId();
+                return authenticationToken.getUserId();
             }
             return null;
         });

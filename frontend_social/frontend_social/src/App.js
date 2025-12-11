@@ -1,30 +1,29 @@
 import './App.css';
-import Login from './component/Login/Login';
+import Login from './views/Login/Login';
 
-import SignUp from './component/SignUp/SignUp';  // Path to your SignUp component
+import SignUp from './views/SignUp/SignUp';  // Path to your SignUp component
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Correct import
 import 'font-awesome/css/font-awesome.min.css';
-import SearchPage from './component/Search/SearchPage';
-import ProfilePage from './component/Profile/ProfilePage';
-import NotificationPage from './component/Notification/NotificationPage';
-import Manage_web from './component/Admin/Manage_web';
-import Manage_post from './component/Admin/ManagePost/Manage_post';
-import ManageUser from './component/Admin/ManageUser/ManageUser';
-import EditProfile from './component/EditProfile/EditProfile';
-import Manage_Progress from './component/Admin/ManageProgress/Manage_progress';
-import Contact from './component/Navbar/Contact';
+import SearchPage from './views/Search/SearchPage';
+import ProfilePage from './views/Profile/ProfilePage';
+import NotificationPage from './views/Notification/NotificationPage';
+import Manage_web from './views/Admin/Manage_web';
+import Manage_post from './views/Admin/ManagePost/Manage_post';
+import ManageUser from './views/Admin/ManageUser/ManageUser';
+import EditProfile from './views/EditProfile/EditProfile';
+import Manage_Progress from './views/Admin/ManageProgress/Manage_progress';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import FullScreenLoading from './component/Loading/FullScreenLoading';
 import { WebSocketProvider } from './context/WebSocketContext';
-import ChatPage from './component/ChatPage/ChatPage';
-import HomePage from './component/HomePage/HomePage';
-import PostDetail from './component/PostDetail/PostDetail';
+import ChatPage from './views/ChatPage/ChatPage';
+import HomePage from './views/HomePage/HomePage';
+import PostDetail from './views/PostDetail/PostDetail';
 import MiniChatManager from './component/MiniChat/MiniChatManager';
 import { MiniChatProvider } from './context/MiniChatContext';
-import Statistics from './component/Admin/Statistic/Statistics';
+import Statistics from './views/Admin/Statistic/Statistics';
 import { ChatRealtimeProvider } from './context/ChatRealtimeContext';
-import FriendRequestsPage from './component/FriendRequestPage/FriendRequestPage';
+import FriendRequestsPage from './views/FriendRequestPage/FriendRequestPage';
 function AppContent() {
   const { loading } = useAuth(); // Lấy trạng thái loading từ AuthContext
 
@@ -49,7 +48,6 @@ function AppContent() {
             <Route path="/Manage_progress" element={<Statistics />} />
             <Route path="/Edit_profile" element={<EditProfile />} />
             <Route path='/progress' element={<Manage_Progress />} />
-            <Route path='/contact' element={<Contact />} />
             <Route path='/post/:postId' element={<PostDetail />} />
             <Route path='/friend_page' element={<FriendRequestsPage />} />
           </Routes>

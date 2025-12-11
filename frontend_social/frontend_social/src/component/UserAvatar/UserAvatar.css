@@ -1,73 +1,134 @@
 /* src/components/UserAvatar.css */
 .user-avatar {
-    position: relative;
-    border-radius: 50%;
-    overflow: hidden;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e4e6eb;
+  flex-shrink: 0;
+  user-select: none;
+  box-shadow: 0 0 0 2px #ffffff;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Kích thước */
 .user-avatar.small {
-    width: 40px;
-    height: 40px;
+  width: 35px;
+  height: 35px;
+  font-size: 15px;
 }
 
 .user-avatar.medium {
-    width: 56px;
-    height: 56px;
+  width: 45px;
+  height: 45px;
+  font-size: 18px;
 }
 
 .user-avatar.large {
-    width: 72px;
-    height: 72px;
+  width: 60px;
+  height: 60px;
+  font-size: 25px;
 }
 
-.avatar-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+/* Ảnh thật */
+.user-avatar .avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
 
-.avatar-letter {
-    color: white;
-    font-weight: 700;
-    user-select: none;
-    font-size: 18px;
+/* Chữ cái đầu */
+.user-avatar .avatar-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1877f2 0%, #0d6efd 100%);
+  color: white;
+  border-radius: 50%;
 }
 
-.user-avatar.small .avatar-letter {
-    font-size: 15px;
+/* Hiệu ứng hover (dùng ở navbar, tin nhắn, profile...) */
+.user-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.user-avatar.medium .avatar-letter {
-    font-size: 20px;
+/* Online badge - chấm xanh đẹp như Facebook */
+.user-avatar.online::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30%;
+  height: 30%;
+  min-width: 10px;
+  min-height: 10px;
+  background-color: #31d65a;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(49, 214, 90, 0.6);
+  z-index: 2;
 }
 
-.user-avatar.large .avatar-letter {
-    font-size: 28px;
+/* Điều chỉnh vị trí chấm online theo kích thước */
+.user-avatar.small.online::after {
+  bottom: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
 }
 
-/* Chấm online */
-.online-dot {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 14px;
-    height: 14px;
-    background: #10b981;
-    border: 3px solid white solid;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+.user-avatar.large.online::after {
+  bottom: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
 }
 
-.user-avatar.small .online-dot {
-    width: 10px;
-    height: 10px;
-    bottom: 1px;
-    right: 1px;
+/* Fix lỗi nhỏ khi dùng trong navbar (không bị méo) */
+.user-avatar img {
+  pointer-events: none;
+}
+
+/* Dark mode support (tự động) */
+@media (prefers-color-scheme: dark) {
+  .user-avatar {
+    background-color: #3a3b3c;
+    box-shadow: 0 0 0 2px #242526;
+  }
+
+  .user-avatar .avatar-letter {
+    background: linear-gradient(135deg, #1877f2 0%, #459ff7 100%);
+  }
+
+  .user-avatar.online::after {
+    border-color: #242526;
+  }
+}
+
+/* Animation nhẹ khi online */
+@keyframes onlinePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(49, 214, 90, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(49, 214, 90, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(49, 214, 90, 0);
+  }
+}
+
+.user-avatar.online::after {
+  animation: onlinePulse 2.5s infinite;
 }

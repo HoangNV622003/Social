@@ -11,7 +11,6 @@ const PostImages = ({ imageUrls = [], postId }) => {
 
     // QUAN TRỌNG: Chỉ hiển thị tối đa 4 ảnh thật + 1 ô overlay nếu có nhiều hơn
     const visibleImages = total > 4 ? imageUrls.slice(0, 4) : imageUrls.slice(0, 5);
-    const remaining = total > 4 ? total - 4 : 0;  // Nếu có hơn 4 ảnh → còn lại = total - 4
 
     const handleClick = () => {
         navigate(`/post/${postId}`);

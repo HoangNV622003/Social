@@ -1,0 +1,43 @@
+/* src/pages/FriendRequestsPage.css */
+.fr-page {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.fr-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+.fr-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #050505;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.fr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fr-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #65676b;
+}
+
+.fr-empty h3 {
+  margin: 20px 0 8px;
+  font-size: 20px;
+}
+
+.fr-loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #65676b;
+}

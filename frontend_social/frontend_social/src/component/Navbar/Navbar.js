@@ -106,10 +106,10 @@ function Navbar() {
           {/* ICON THÔNG BÁO HỆ THỐNG */}
           <button
             onClick={handleNotiClick}
-            className={`blockchat-navbar-2025-item ${isActive('/noti') ? 'blockchat-navbar-2025-active' : ''}`}
+            className={`blockchat-navbar-2025-item blockchat-navbar-2025-item-button ${isActive('/noti') ? 'blockchat-navbar-2025-active' : ''}`}
             style={{ position: 'relative' }}
           >
-            <IoIosNotificationsOutline size={30} strokeWidth={10} />
+            <IoIosNotificationsOutline size={26} strokeWidth={10} />
             {unreadNotiCount > 0 && (
               <span className="blockchat-navbar-2025-noti-dot">
                 {unreadNotiCount > 99 ? '99+' : unreadNotiCount}
